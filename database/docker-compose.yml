@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: choosit-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: choosit
+      POSTGRES_PASSWORD: choosit
+      POSTGRES_DB: choosit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    networks:
+      - choosit-network
+
+  adminer:
+    image: adminer
+    container_name: choosit-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - choosit-network
+
+volumes:
+  postgres_data:
+
+networks:
+  choosit-network:
+    driver: bridge
