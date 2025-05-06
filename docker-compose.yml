@@ -1,1 +1,48 @@
 #Levanta server, cliente y bd
+
+
+
+
+services:
+
+  #BASE DE DATOS
+  postgres:
+    image: postgres:15
+    container_name: choosit-postgres-general
+    restart: always
+    environment:
+      POSTGRES_USER: choosit
+      POSTGRES_PASSWORD: choosit
+      POSTGRES_DB: choosit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_general:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+  
+  #CLIENTE BASE DE DATOS
+  adminer:
+    image: adminer
+    container_name: choosit-adminer-general
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  #BACKEND
+
+  server:
+    build: ./server
+    container_name: choosit-server-general
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  postgres_data_general:

@@ -1,9 +1,9 @@
-CREATE TABLE usuario (
+CREATE TABLE usuarios (
   id uuid PRIMARY KEY,
   nombre varchar(20),
   apellido varchar(20),
-  username varchar(20),
-  email varchar(30),
+  username varchar(20) UNIQUE,
+  email varchar(30) UNIQUE,
   contrasena varchar(30),
   reputacion int,
   activo bool,
@@ -12,7 +12,7 @@ CREATE TABLE usuario (
   anio_ingreso int
 );
 
-CREATE TABLE asignatura (
+CREATE TABLE asignaturas (
   id uuid PRIMARY KEY,
   codigo varchar(20),
   nombre varchar(20),
@@ -29,7 +29,7 @@ CREATE TABLE tipo_pregunta (
   tipo varchar(50)
 );
 
-CREATE TABLE pregunta (
+CREATE TABLE preguntas (
   id uuid PRIMARY KEY,
   id_tipo uuid,
   pregunta varchar(20),
@@ -39,18 +39,18 @@ CREATE TABLE pregunta (
       ON DELETE CASCADE
 );
 
-CREATE TABLE encuesta (
+CREATE TABLE encuestas (
   id uuid PRIMARY KEY,
   id_profesor uuid,
   id_usuario uuid,
   id_asignatura uuid,
   CONSTRAINT FK_encuesta_id_usuario
     FOREIGN KEY (id_usuario)
-      REFERENCES usuario(id)
+      REFERENCES usuarios(id)
       ON DELETE CASCADE,
   CONSTRAINT FK_encuesta_id_asignatura
     FOREIGN KEY (id_asignatura)
-      REFERENCES asignatura(id)
+      REFERENCES asignaturas(id)
       ON DELETE CASCADE
 );
 
@@ -62,19 +62,19 @@ CREATE TABLE respuestas (
   respuesta int,
   CONSTRAINT FK_respuestas_id_pregunta
     FOREIGN KEY (id_pregunta)
-      REFERENCES pregunta(id)
+      REFERENCES preguntas(id)
       ON DELETE CASCADE,
   CONSTRAINT FK_respuestas_id_encuesta
     FOREIGN KEY (id_encuesta)
-      REFERENCES encuesta(id)
+      REFERENCES encuestas(id)
       ON DELETE CASCADE,
   CONSTRAINT FK_respuestas_id_usuario
     FOREIGN KEY (id_usuario)
-      REFERENCES usuario(id)
+      REFERENCES usuarios(id)
       ON DELETE CASCADE
 );
 
-CREATE TABLE comentario (
+CREATE TABLE comentarios (
   id uuid,
   id_usuario uuid,
   id_asignatura uuid,
@@ -83,11 +83,11 @@ CREATE TABLE comentario (
   texto varchar(250),
   CONSTRAINT FK_comentario_id_usuario
     FOREIGN KEY (id_usuario)
-      REFERENCES usuario(id)
+      REFERENCES usuarios(id)
       ON DELETE CASCADE,
   CONSTRAINT FK_comentario_id_asignatura
     FOREIGN KEY (id_asignatura)
-      REFERENCES asignatura(id)
+      REFERENCES asignaturas(id)
       ON DELETE CASCADE
 );
 
@@ -98,10 +98,10 @@ CREATE TABLE respuestas_ponderadas (
   respuesta_calculada int,
   CONSTRAINT FK_respuestas_ponderadas_id_asignatura
     FOREIGN KEY (id_asignatura)
-      REFERENCES asignatura(id)
+      REFERENCES asignaturas(id)
       ON DELETE CASCADE,
   CONSTRAINT FK_respuestas_ponderadas_id_pregunta
     FOREIGN KEY (id_pregunta)
-      REFERENCES pregunta(id)
+      REFERENCES preguntas(id)
       ON DELETE CASCADE
 );
