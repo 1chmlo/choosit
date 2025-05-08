@@ -6,6 +6,10 @@ dotenv.config({ path: './.env' });
 // Servidor
 export const PORT = process.env.PORT || 3000;
 
+// Token
+export const JWT_SECRET = process.env.JWT_SECRET || "xyz123";
+
+
 // Base de datos
 export const POSTGRES_USER = process.env.POSTGRES_USER || "choosit";
 export const POSTGRES_DB = process.env.POSTGRES_DB || "choosit";

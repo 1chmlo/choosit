@@ -10,7 +10,7 @@ const puerto = PORT || 3000;
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/api/auth', authRoutes);
+app.use('/api/', authRoutes);
 app.listen(puerto)
 
 

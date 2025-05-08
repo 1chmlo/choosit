@@ -4,11 +4,10 @@ CREATE TABLE usuarios (
   apellido varchar(20),
   username varchar(20) UNIQUE,
   email varchar(30) UNIQUE,
-  contrasena varchar(30),
+  contrasena varchar(100),
   reputacion int,
   activo bool,
   verificado bool,
-  cod_verificacion int,
   anio_ingreso int
 );
 
