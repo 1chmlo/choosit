@@ -87,7 +87,11 @@ export const login = async (req, res) => {
   }
   const usuarioExistente = consulta.rows[0];
   const contrasena_hasheada = usuarioExistente.contrasena;
-
+const verificado = usuarioExistente.verificado;
+  //Validar que el usuario esté verificado
+  if (!verificado) {
+    return res.status(400).json({ message: 'El usuario no está verificado' });
+  }
   //Validar contraseña
   const contrasenaValida = await bcrypt.compare(contrasena, contrasena_hasheada);
   if (!contrasenaValida) {
