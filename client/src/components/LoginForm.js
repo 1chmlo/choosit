@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import axios from "axios" // Necesitarás instalar axios: npm install axios
 import "./LoginForm.css"
 
+
 export default function LoginForm() {
   const navigate = useNavigate()
   const [showcontrasena, setShowcontrasena] = useState(false)
@@ -24,10 +25,12 @@ export default function LoginForm() {
     
     try {
       console.log('Datos del formulario:', formData)
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
+      console.log('URL de la API:', `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/login`)
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/login`, {
         email: formData.email,
         contrasena: formData.contrasena
       });
+      console.log(response)
       
       console.log('Inicio de sesión exitoso:', response.data);
       // Aquí podrías guardar el token y redirigir al usuario

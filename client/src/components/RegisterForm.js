@@ -128,7 +128,7 @@ export default function RegisterForm() {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/register', {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/register`, {
         nombre: formData.nombre,
         apellido: formData.apellido,
         email: formData.email,

@@ -5,6 +5,7 @@ dotenv.config({ path: './.env' });
 
 // Servidor
 export const PORT = process.env.PORT || 3000;
+export const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
 
 // Token
 export const JWT_SECRET = process.env.JWT_SECRET || "xyz123";
@@ -22,4 +23,4 @@ export const SMTP_PASS = process.env.SMTP_PASS || "3714c26cdd2390";
 export const SMTP_USER = process.env.SMTP_USER || "68f29f621a5bae";
 export const SMTP_HOST = process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io";
 export const SMTP_PORT = process.env.SMTP_PORT || 2525;
-export const SMTP_FROM = process.env.SMTP_FROM || "choosit@contacto.vixon"
+export const SMTP_FROM = process.env.SMTP_FROM || "choosit.dev.dev@gmail.com"
