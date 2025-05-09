@@ -86,7 +86,7 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: 'El usuario no existe' });
   }
   const usuarioExistente = consulta.rows[0];
-  const {contrasena_hasheada} = usuarioExistente;
+  const contrasena_hasheada = usuarioExistente.contrasena;
 
   //Validar contraseña
   const contrasenaValida = await bcrypt.compare(contrasena, contrasena_hasheada);
