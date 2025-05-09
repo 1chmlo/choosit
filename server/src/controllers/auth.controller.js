@@ -2,6 +2,9 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
+import { transport, sendMail, sendVerificationEmail } from '../libs/mailer.js';
+import { JWT_SECRET } from '../config.js';
+import jwt from 'jsonwebtoken';
 
 
 export const register = async (req, res) => {
@@ -51,12 +54,17 @@ export const register = async (req, res) => {
   });
 
   // Establecer cookie con el token
-  res.cookie('token', token, {
+    res.cookie('token', token, {
     secure: true,
     sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
     path: '/'                        // Disponible en toda la aplicación
-  });
+    });
+
+
+  // Enviar correo de verificación
+  const mail = await sendVerificationEmail(email, username, token, 'http:localhost:3000/api/auth/verify')
+  console.log(mail);
 
   //debug para ver si se recibe el body y las variables asignadas
   //console.log(req.body);
@@ -123,4 +131,25 @@ return res.status(200).json({
       }
     });
 
+}
+
+
+export const verify = async (req, res) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).json({ message: 'Token no proporcionado' });
+  }
+
+  // Verificar el token
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const { id } = decoded;
+    // Actualizar el estado de verificación del usuario en la base de datos
+    await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
+
+    return res.status(200).json({ message: 'Usuario verificado correctamente', id });
+  } catch (error) {
+    console.error('Error al verificar el token:', error);
+    return res.status(400).json({ message: 'Token inválido o expirado' });
+  }
 }

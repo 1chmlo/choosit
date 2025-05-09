@@ -16,3 +16,10 @@ export const POSTGRES_DB = process.env.POSTGRES_DB || "choosit";
 export const POSTGRES_PASSWORD =  process.env.POSTGRES_PASSWORD || "choosit";
 export const POSTGRES_HOST = process.env.POSTGRES_HOST || "postgres";
 export const POSTGRES_PORT = process.env.POSTGRES_PORT || 5432;
+
+// SMTP
+export const SMTP_PASS = process.env.SMTP_PASS || "3714c26cdd2390";
+export const SMTP_USER = process.env.SMTP_USER || "68f29f621a5bae";
+export const SMTP_HOST = process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io";
+export const SMTP_PORT = process.env.SMTP_PORT || 2525;
+export const SMTP_FROM = process.env.SMTP_FROM || "choosit@contacto.vixon"
