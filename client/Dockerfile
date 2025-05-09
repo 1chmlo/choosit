@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Exponer el puerto por defecto de React
-EXPOSE 3000
+EXPOSE 5000
 
 # Comando por defecto
 CMD ["npm", "start"]

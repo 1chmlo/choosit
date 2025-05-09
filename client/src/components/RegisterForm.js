@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from "axios"
 import "./RegisterForm.css"
 
 export default function RegisterForm() {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordMatch, setPasswordMatch] = useState(true)
@@ -111,7 +113,7 @@ export default function RegisterForm() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     // Verificaciones de validación
@@ -125,8 +127,24 @@ export default function RegisterForm() {
       return
     }
 
-    // Aquí iría la lógica de registro
-    console.log("Datos de registro enviados:", formData)
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/register', {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        email: formData.email,
+        contrasena: formData.password,
+        username: formData.username,
+        anio_ingreso: formData.anioIngreso
+      });
+      
+      console.log('Registro exitoso:', response.data);
+      // Redirigir al usuario a la página de inicio de sesión
+      navigate('/login');
+      
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
+    }
   }
 
   // Generar opciones para el año de ingreso (últimos 50 años)
@@ -137,9 +155,13 @@ export default function RegisterForm() {
     <div className="register-container">
       <div className="register-card">
         {/* Espacio para el logo */}
-        <div className="logo-container">
-          <div className="logo-placeholder">Logo</div>
-        </div>
+        <Link to="/">
+            <img
+              src="https://i.imgur.com/EXI0FXm.png" 
+              alt="Logo de Choosit" 
+              className="logo-image" 
+            />
+          </Link>
 
         <h1 className="register-title">Crear Cuenta</h1>
 

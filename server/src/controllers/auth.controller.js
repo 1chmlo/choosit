@@ -76,7 +76,7 @@ export const register = async (req, res) => {
 
 
 export const login = async (req, res) => {
-
+  console.log(req.body);
  // "id", "reputacion", "activo", "verificado" se manejan desde acá. No se reciben desde el front
   const {email,contrasena} = req.body || {};
   
@@ -96,15 +96,17 @@ export const login = async (req, res) => {
   }
   const usuarioExistente = consulta.rows[0];
   const contrasena_hasheada = usuarioExistente.contrasena;
-const verificado = usuarioExistente.verificado;
-  //Validar que el usuario esté verificado
-  if (!verificado) {
-    return res.status(400).json({ message: 'El usuario no está verificado' });
-  }
+  const verificado = usuarioExistente.verificado;
+  
   //Validar contraseña
   const contrasenaValida = await bcrypt.compare(contrasena, contrasena_hasheada);
   if (!contrasenaValida) {
     return res.status(400).json({ message: 'Contraseña incorrecta' });
+  }
+
+  //Validar que el usuario esté verificado
+  if (!verificado) {
+    return res.status(400).json({ message: 'El usuario no está verificado' });
   }
   const token = createAccessToken({
     id: usuarioExistente.id,

@@ -1,14 +1,14 @@
-"use client"
-
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from "axios" // Necesitarás instalar axios: npm install axios
 import "./LoginForm.css"
 
 export default function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  const [showcontrasena, setShowcontrasena] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
+    contrasena: "",
   })
 
   const handleChange = (e) => {
@@ -19,19 +19,37 @@ export default function LoginForm() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Aquí iría la lógica de autenticación
-    console.log("Datos enviados:", formData)
+    
+    try {
+      console.log('Datos del formulario:', formData)
+      const response = await axios.post('http://localhost:3000/api/auth/login', {
+        email: formData.email,
+        contrasena: formData.contrasena
+      });
+      
+      console.log('Inicio de sesión exitoso:', response.data);
+      // Aquí podrías guardar el token y redirigir al usuario
+      // localStorage.setItem('token', response.data.token);
+      navigate('/');
+      
+    } catch (error) {
+      console.error('Error en inicio de sesión:', error);
+    }
   }
 
   return (
     <div className="login-container">
       <div className="login-card">
         {/* Espacio para el logo */}
-        <div className="logo-container">
-          <div className="logo-placeholder">Logo</div>
-        </div>
+        <Link to="/">
+            <img
+              src="https://i.imgur.com/EXI0FXm.png" 
+              alt="Logo de Choosit" 
+              className="logo-image" 
+            />
+          </Link>
 
         <h1 className="login-title">Iniciar Sesión</h1>
 
@@ -53,28 +71,28 @@ export default function LoginForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="form-label">
+            <label htmlFor="contrasena" className="form-label">
               Contraseña
             </label>
-            <div className="password-container">
+            <div className="contrasena-container">
               <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
+                id="contrasena"
+                name="contrasena"
+                type={showcontrasena ? "text" : "contrasena"}
                 placeholder="••••••••"
-                value={formData.password}
+                value={formData.contrasena}
                 onChange={handleChange}
                 required
                 className="form-input"
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="toggle-password">
-                {showPassword ? "Ocultar" : "Mostrar"}
+              <button type="button" onClick={() => setShowcontrasena(!showcontrasena)} className="toggle-contrasena">
+                {showcontrasena ? "Ocultar" : "Mostrar"}
               </button>
             </div>
           </div>
 
-          <div className="forgot-password">
-            <Link to="/reset-password" className="forgot-link">
+          <div className="forgot-contrasena">
+            <Link to="/reset-contrasena" className="forgot-link">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>

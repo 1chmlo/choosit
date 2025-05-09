@@ -76,11 +76,11 @@
   }
   
   /* Contenedor de contraseña */
-  .password-container {
+  .contrasena-container {
     position: relative;
   }
   
-  .toggle-password {
+  .toggle-contrasena {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -93,7 +93,7 @@
   }
   
   /* Enlace de contraseña olvidada */
-  .forgot-password {
+  .forgot-contrasena {
     text-align: right;
   }
   

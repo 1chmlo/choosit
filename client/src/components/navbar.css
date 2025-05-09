@@ -43,27 +43,32 @@
   }
   
   /* Botones */
-  .login-button {
-    padding: 0.5rem 1rem;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-  }
+  .login-button,
+.register-button {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  display: inline-block;
+  text-align: center;
+  min-width: 120px; /* Ancho mínimo para ambos botones */
+}
+
+.login-button {
+  background-color: white;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
   
   .login-button:hover {
     background-color: #fee2e2;
   }
-  
+
   .register-button {
-    padding: 0.5rem 1rem;
     background-color: #ef4444;
     color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    border: 1px solid #ef4444;
   }
   
   .register-button:hover {
@@ -140,11 +145,22 @@
       display: flex;
     }
   
-    .login-button,
-    .register-button {
-      width: 100%;
-      text-align: center;
-      padding: 0.75rem;
-    }
+   .login-button,
+  .register-button {
+    width: 100%;
+    padding: 0.75rem;
+    min-width: auto;
+  }
+  }
+
+  .logo-image {
+    height: 100px; /* Ajusta esta altura según tus necesidades */
+    width: auto;
+    object-fit: contain;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
   }
   

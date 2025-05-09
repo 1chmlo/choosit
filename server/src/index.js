@@ -3,11 +3,20 @@ import {PORT} from './config.js';
 import morgan from 'morgan';
 import authRoutes from "./routes/auth.routes.js";
 import coockieParser from 'cookie-parser';
+import cors from 'cors';
 
+
+const app = express();
+
+// Configuración de CORS
+app.use(cors({
+    origin: "*", // Añade aquí los orígenes permitidos
+    credentials: true // Permite enviar cookies en solicitudes cross-origin
+  }));
 // Descomentar cuando ya existan las rutas de asignaturas
 //import asignaturasRoutes from "./routes/asignaturas.routes.js";
 
-const app = express();
+
 
 
 const puerto = PORT || 3000;

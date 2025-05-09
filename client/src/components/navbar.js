@@ -15,9 +15,13 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         {/* Logo */}
-        <div className="logo">
-          <div className="logo-placeholder">Logo</div>
-        </div>
+        <Link to="/">
+            <img
+              src="https://i.imgur.com/EXI0FXm.png" 
+              alt="Logo de Choosit" 
+              className="logo-image" 
+            />
+          </Link>
 
         {/* Botón de menú móvil */}
         <button className="mobile-menu-button" onClick={toggleMenu}>
