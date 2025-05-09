@@ -136,6 +136,8 @@ return res.status(200).json({
 
 
 export const verify = async (req, res) => {
+
+  //busca el token en la url (query param)
   const { token } = req.query;
   if (!token) {
     return res.status(400).json({ message: 'Token no proporcionado' });
