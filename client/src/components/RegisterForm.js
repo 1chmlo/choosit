@@ -128,6 +128,7 @@ export default function RegisterForm() {
     }
 
     try {
+      console.log('URL de la API:', `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/register`)
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/auth/register`, {
         nombre: formData.nombre,
         apellido: formData.apellido,
