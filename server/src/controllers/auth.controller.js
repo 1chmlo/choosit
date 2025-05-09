@@ -50,7 +50,8 @@ export const register = async (req, res) => {
     id,
     username,
     activo,
-    verificado
+    verificado,
+    "rol": "usuario"
   });
 
   // Establecer cookie con el token
@@ -146,7 +147,13 @@ export const verify = async (req, res) => {
     const { id } = decoded;
     // Actualizar el estado de verificación del usuario en la base de datos
     await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
-
+    
+    res.cookie('token', token, {
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
+    });
+    
     return res.status(200).json({ message: 'Usuario verificado correctamente', id });
   } catch (error) {
     console.error('Error al verificar el token:', error);
