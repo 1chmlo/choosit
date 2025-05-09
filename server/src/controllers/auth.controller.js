@@ -1,7 +1,8 @@
 import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt';
+import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
+
 
 export const register = async (req, res) => {
 
@@ -66,5 +67,56 @@ export const register = async (req, res) => {
 
 
 export const login = async (req, res) => {
+
+ // "id", "reputacion", "activo", "verificado" se manejan desde acá. No se reciben desde el front
+  const {email,contrasena} = req.body || {};
+  
+  //Manejo completo de errores con info de cada campo
+  const errores = [];
+  if (!email) errores.push('email');
+  if (!contrasena) errores.push('contrasena');
+
+  if (errores.length > 0) {
+    return res.status(400).json({ message: 'Faltan campos obligatorios', campos: errores });
+  }
+
+  //Validar que el usuario exista
+  const consulta = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  if (consulta.rows.length === 0) {
+    return res.status(400).json({ message: 'El usuario no existe' });
+  }
+  const usuarioExistente = consulta.rows[0];
+  const {contrasena_hasheada} = usuarioExistente;
+
+  //Validar contraseña
+  const contrasenaValida = await bcrypt.compare(contrasena, contrasena_hasheada);
+  if (!contrasenaValida) {
+    return res.status(400).json({ message: 'Contraseña incorrecta' });
+  }
+  const token = createAccessToken({
+    id: usuarioExistente.id,
+    username: usuarioExistente.username,
+    activo: usuarioExistente.activo,
+    verificado: usuarioExistente.verificado
+  });
+  // Establecer cookie con el token
+  res.cookie('token', token, {
+    //httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
+    path: '/'                        // Disponible en toda la aplicación
+});
+
+return res.status(200).json({
+      message: "Login exitoso",
+      user: {
+        id: usuarioExistente.id,
+        username: usuarioExistente.username,
+        email: usuarioExistente.email,
+        activo: usuarioExistente.activo,
+        verificado: usuarioExistente.verificado
+      }
+    });
 
 }
