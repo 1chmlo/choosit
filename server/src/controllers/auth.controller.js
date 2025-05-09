@@ -1,7 +1,6 @@
 import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { createAccessToken } from "../libs/jwt.js";
 
 export const register = async (req, res) => {
@@ -52,9 +51,8 @@ export const register = async (req, res) => {
 
   // Establecer cookie con el token
   res.cookie('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
     path: '/'                        // Disponible en toda la aplicación
   });
@@ -63,10 +61,8 @@ export const register = async (req, res) => {
   //console.log(req.body);
   //console.log({id, reputacion, activo, verificado, contrasena_hasheada});  
   
-  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado } });
+  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }, token });
 }
-
-
 
 
 export const login = async (req, res) => {

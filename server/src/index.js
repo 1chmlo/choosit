@@ -3,6 +3,9 @@ import {PORT} from './config.js';
 import morgan from 'morgan';
 import authRoutes from "./routes/auth.routes.js";
 
+// Descomentar cuando ya existan las rutas de asignaturas
+//import asignaturasRoutes from "./routes/asignaturas.routes.js";
+
 const app = express();
 
 const puerto = PORT || 3000;
@@ -10,7 +13,11 @@ const puerto = PORT || 3000;
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/api/', authRoutes);
+app.use('/api/auth', authRoutes);
+
+//Descomentar cuando ya existan las rutas de asignaturas
+//app.use('/api/asignaturas', asignaturasRoutes);
+
 app.listen(puerto)
 
 
