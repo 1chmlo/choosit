@@ -19,6 +19,7 @@ export const validateLogin = [
     .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
     
     .isLength({ max: 100 }), // Verifica que la longitud mínima sea 10 y máxima 50
+   
     
   body('contrasena')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
@@ -57,6 +58,7 @@ export const validateRegister = [
     .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
     
     .isLength({ max: 100 }), // Verifica que la longitud mínima sea 10 y máxima 50
+
     
   body('contrasena')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
@@ -66,16 +68,64 @@ export const validateRegister = [
 
     .isLength({ min: 8, max: 40 }) // Verifica que la longitud mínima sea 8 y maxima 20
     .withMessage('La contraseña debe tener 8 y 40 caracteres'),
+
     
   body('nombre')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
     .notEmpty()
     .withMessage('El nombre es requerido')
-    .trim(),
+    
+    .customSanitizer(value => value.toLowerCase()) // Transforma el nombre a minúsculas
+
+    .isAlpha('es-ES') // Verifica que el nombre contenga solo letras sin espacios en blanco
+    .withMessage('El nombre solo puede contener letras sin espacios')
+
+    .isLength({ min: 2, max: 20 })
+    .withMessage('El nombre debe tener entre 2 y 20 caracteres'),
+
 
   body('apellido')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
     .notEmpty()
-    .withMessage('El nombre es requerido'),
+    .withMessage('El apellido es requerido')
+    
+    .customSanitizer(value => value.toLowerCase()) // Transforma el nombre a minúsculas
+
+    .isAlpha('es-ES') // Verifica que el nombre contenga solo letras sin espacios en blanco
+    .withMessage('El apellido solo puede contener letras sin espacios')
+
+    .isLength({ min: 2, max: 20 })
+    .withMessage('El apellido debe tener entre 2 y 20 caracteres'),    
+
+
+  body('username')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
+    .notEmpty()
+    .withMessage('El username es requerido')
+    
+    .customSanitizer(value => value.toLowerCase()) // Transforma el username a minúsculas
+
+    .matches(/^[a-z]+\.[a-z]+(\d+)?$/)
+    .withMessage('El username debe seguir el formato nombre.apellido[numero]')
+
+    .isLength({ min: 3, max: 41 }) // 41 porque nombre es 20, apellido es 20 y el punto es 1
+    .withMessage('El username debe tener entre 2 y 41 caracteres'),
+    
+
+  body('anio_ingreso')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
+    .notEmpty()
+    .withMessage('El anio_ingreso es requerido')
+
+    .isNumeric()
+    .withMessage('El anio_ingreso solo puede contener números')
+
+    .isInt({ min: 1989, max: 2025 })
+    .withMessage('El anio_ingreso debe ser un número entre 1989 y 2025'),
     
   (req, res, next) => {
     const errors = validationResult(req);
