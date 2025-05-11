@@ -6,6 +6,7 @@
 services:
   #FRONTEND
   react-app:
+    container_name: choosit-client-general
     build: ./client
     ports:
       - "5000:5000"

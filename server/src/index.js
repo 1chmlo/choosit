@@ -25,6 +25,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(coockieParser());
 
+app.get('/', (req, res) => { res.send('Bienvenido a la API de UDP') });
 app.use('/api/auth', authRoutes);
 
 //Descomentar cuando ya existan las rutas de asignaturas
