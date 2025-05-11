@@ -3,7 +3,7 @@ CREATE TABLE usuarios (
   nombre varchar(20),
   apellido varchar(20),
   username varchar(20) UNIQUE,
-  email varchar(30) UNIQUE,
+  email varchar(100) UNIQUE,
   contrasena varchar(100),
   reputacion int,
   activo bool,
