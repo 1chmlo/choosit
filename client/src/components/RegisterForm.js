@@ -12,6 +12,10 @@ export default function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordMatch, setPasswordMatch] = useState(true)
   const [emailError, setEmailError] = useState("")
+  // Nuevos estados para errores
+  const [nombreError, setNombreError] = useState("")
+  const [apellidoError, setApellidoError] = useState("")
+  const [passwordError, setPasswordError] = useState("")
   const emailInputRef = useRef(null)
   const [formData, setFormData] = useState({
     nombre: "",
@@ -28,6 +32,19 @@ export default function RegisterForm() {
     const udpPattern = /@mail\.udp\.cl$/
     if (!email) return true // No mostrar error si está vacío
     return udpPattern.test(email)
+  }
+
+  // Nueva función para validar nombre y apellido (solo letras, 2-20 caracteres)
+  const validateName = (name) => {
+    const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]{2,20}$/
+    if (!name) return true // No mostrar error si está vacío
+    return namePattern.test(name)
+  }
+
+  // Nueva función para validar contraseña (8-40 caracteres)
+  const validatePassword = (password) => {
+    if (!password) return true // No mostrar error si está vacío
+    return password.length >= 8 && password.length <= 40
   }
 
   // Función para posicionar el cursor antes de @mail.udp.cl - versión corregida
@@ -101,6 +118,24 @@ export default function RegisterForm() {
       return
     }
     
+    // Manejo especial para nombre
+    if (name === "nombre") {
+      const isValidName = validateName(value)
+      setNombreError(isValidName || value === "" ? "" : "El nombre debe tener entre 2 y 20 caracteres y solo letras")
+    }
+    
+    // Manejo especial para apellido
+    if (name === "apellido") {
+      const isValidName = validateName(value)
+      setApellidoError(isValidName || value === "" ? "" : "El apellido debe tener entre 2 y 20 caracteres y solo letras")
+    }
+    
+    // Manejo especial para password
+    if (name === "password") {
+      const isValidPassword = validatePassword(value)
+      setPasswordError(isValidPassword || value === "" ? "" : "La contraseña debe tener entre 8 y 40 caracteres")
+    }
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -114,44 +149,67 @@ export default function RegisterForm() {
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    // Verificaciones de validación
-    if (!validateEmail(formData.email)) {
-      setEmailError("El correo debe tener el formato @mail.udp.cl")
-      return
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordMatch(false)
-      return
-    }
-
-    try {
-      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
-      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        email: formData.email,
-        contrasena: formData.password,
-        username: formData.username,
-        anio_ingreso: formData.anioIngreso
-      });
-      
-      console.log('Registro exitoso:', response.data);
-      // Redirigir al usuario a la página de inicio de sesión
-      navigate('/login');
-      
-    } catch (error) {
-      console.error('Error en el registro:', error);
-      // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
-    }
+  // Verificaciones de validación
+  if (!validateEmail(formData.email)) {
+    setEmailError("El correo debe tener el formato @mail.udp.cl")
+    return
   }
 
-  // Generar opciones para el año de ingreso (últimos 50 años)
-  const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: 50 }, (_, i) => currentYear - i)
+  if (!validateName(formData.nombre)) {
+    setNombreError("El nombre debe tener entre 2 y 20 caracteres y solo letras")
+    return
+  }
+
+  if (!validateName(formData.apellido)) {
+    setApellidoError("El apellido debe tener entre 2 y 20 caracteres y solo letras")
+    return
+  }
+
+  if (!validatePassword(formData.password)) {
+    setPasswordError("La contraseña debe tener entre 8 y 40 caracteres")
+    return
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    setPasswordMatch(false)
+    return
+  }
+
+  try {
+    console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
+    const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
+      nombre: formData.nombre,
+      apellido: formData.apellido,
+      email: formData.email,
+      contrasena: formData.password,
+      username: formData.username,
+      anio_ingreso: formData.anioIngreso
+    });
+    
+    console.log('Registro exitoso:', response.data);
+    
+    // Cambiar esta línea: redirigir al usuario a la página de verificación de email
+    // en lugar de la página de inicio de sesión
+    navigate('/email-verification', { 
+      state: { 
+        email: formData.email 
+      } 
+    });
+    
+  } catch (error) {
+    console.error('Error en el registro:', error);
+    // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
+  }
+}
+
+  // Generar opciones para el año de ingreso (solo entre 1989 y 2025)
+  const years = Array.from(
+    { length: 2025 - 1989 + 1 }, 
+    (_, i) => 2025 - i
+  )
 
   return (
     <div className="register-container">
@@ -180,8 +238,9 @@ export default function RegisterForm() {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className="form-input"
+              className={`form-input ${nombreError ? "input-error" : ""}`}
             />
+            {nombreError && <p className="error-message">{nombreError}</p>}
           </div>
 
           <div className="form-group">
@@ -196,8 +255,9 @@ export default function RegisterForm() {
               value={formData.apellido}
               onChange={handleChange}
               required
-              className="form-input"
+              className={`form-input ${apellidoError ? "input-error" : ""}`}
             />
+            {apellidoError && <p className="error-message">{apellidoError}</p>}
           </div>
 
           <div className="form-group">
@@ -247,12 +307,13 @@ export default function RegisterForm() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="form-input"
+                className={`form-input ${passwordError ? "input-error" : ""}`}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="toggle-password">
                 {showPassword ? "Ocultar" : "Mostrar"}
               </button>
             </div>
+            {passwordError && <p className="error-message">{passwordError}</p>}
           </div>
 
           <div className="form-group">

@@ -85,7 +85,7 @@ export default function LoginForm() {
               <input
                 id="contrasena"
                 name="contrasena"
-                type={showcontrasena ? "text" : "contrasena"}
+                type={showcontrasena ? "text" : "password"}
                 placeholder="••••••••"
                 value={formData.contrasena}
                 onChange={handleChange}
