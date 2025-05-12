@@ -6,7 +6,7 @@ export const ValidarAsignatura = [
     .notEmpty()
     .withMessage('Codigo es requerido')
     .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-    .matches(/^(CFG|CIT|ICB)-\d+/)
+    .matches(/^(cfg|cit|icb)-\d+$/)
     .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
     .isLength({ max: 20 }), // Verifica que la longitud máxima sea 20
 
@@ -27,7 +27,7 @@ export const ValidarAsignatura = [
   body('lab')
     .notEmpty()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    .withMessage("El campo lab debe ser un valor booleano (true o false)"),
 
   body('controles')
     .notEmpty()
@@ -37,12 +37,12 @@ export const ValidarAsignatura = [
   body('proyecto')
     .notEmpty()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    .withMessage("El campo proyecto debe ser un valor booleano (true o false)"),
 
   body('cfg')
     .notEmpty()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    .withMessage("El campo cfg debe ser un valor booleano (true o false)"),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -58,7 +58,7 @@ export const Validarcambio = [
     .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-    .matches(/^(CFG|CIT|ICB)-\d+/)
+    .matches(/^(cfg|cit|icb)-\d+$/)
     .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
     .isLength({ max: 20 }), // Verifica que la longitud máxima sea 20
 
