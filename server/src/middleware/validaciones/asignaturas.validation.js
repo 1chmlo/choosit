@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { param, body, validationResult } from 'express-validator';
 
 export const ValidarAsignatura = [
   body('codigo')
