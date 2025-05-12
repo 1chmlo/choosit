@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios" // Necesitarás instalar axios: npm install axios
 import "./LoginForm.css"
+import { REACT_APP_BACKEND_URL } from "../config"
+
 
 
 export default function LoginForm() {
@@ -25,8 +27,8 @@ export default function LoginForm() {
     
     try {
       console.log('Datos del formulario:', formData)
-      console.log('URL de la API:', `${process.env.REACT_APP_BACKEND_URL}:/api/auth/login`)
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}:/api/auth/login`, {
+      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}:/api/auth/login`)
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}:/api/auth/login`, {
         email: formData.email,
         contrasena: formData.contrasena
       }, {

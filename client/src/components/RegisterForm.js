@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import "./RegisterForm.css"
+import { REACT_APP_BACKEND_URL } from "../config"
 
 export default function RegisterForm() {
   const navigate = useNavigate()
@@ -128,8 +129,8 @@ export default function RegisterForm() {
     }
 
     try {
-      console.log('URL de la API:', `${process.env.REACT_APP_BACKEND_URL}/api/auth/register`)
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/register`, {
+      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
         nombre: formData.nombre,
         apellido: formData.apellido,
         email: formData.email,
