@@ -137,7 +137,9 @@ export default function RegisterForm() {
         contrasena: formData.password,
         username: formData.username,
         anio_ingreso: formData.anioIngreso
-      });
+      },{
+    withCredentials: true // Importante para cookies cross-origin
+  });
       
       console.log('Registro exitoso:', response.data);
       // Redirigir al usuario a la página de inicio de sesión
