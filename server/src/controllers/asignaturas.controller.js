@@ -5,30 +5,7 @@ import validator from 'validator';
 const esBool = valor => typeof valor === "boolean"; // Funcion para verificar si el valor ingresado es bool
 
 export const add_subject = async (req, res) => { //Añade la asignatura
-  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
-
-  const errores = [];
-  if (!codigo) errores.push('codigo');
-  if (!nombre) errores.push('nombre');
-  if (!descripcion) errores.push('descripcion');
-  if (!lab) errores.push('lab');
-  if (!controles) errores.push('controles');
-  if (!proyecto) errores.push('proyecto');
-  if (!cfg) errores.push('cfg');
-
-  if (errores.length > 0) {
-    return res.status(400).json({
-      message: 'Faltan campos obligatorios',
-      campos: errores,
-    });
-  }
-
-  const codigo_valido = /^(CFG|CIT|ICB)/.test(codigo); //Verifica si el codigo en cuestion es valido
-  if (!codigo_valido) {
-    return res.status(400).json({
-      message: 'El código no lleva un identificador válido (CFG|CIT|ICB)',
-    });
-  }
+  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
 
   const Asignatura_existe = await pool.query(
     'SELECT * FROM asignaturas WHERE codigo = $1',
@@ -70,7 +47,7 @@ export const modify_subject = async (req, res) => {
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
 
   if (codigo !== undefined) { // verifica si el codigo es valido y verifica si el formato esta correcto
-    const codigo_valido = /^(CFG|CIT|ICB)/.test(codigo);
+    const codigo_valido = /^(CFG|CIT|ICB)/.test(codigo);// <------ ESTO PUEDE CAMBIA O SACARSE POR VALIDATION
     if (!codigo_valido) {
       return res.status(400).json({
         message: 'El código no lleva un identificador válido (CFG|CIT|ICB)',
