@@ -7,6 +7,12 @@ import { BACKEND_URL, JWT_SECRET } from '../config.js';
 import jwt from 'jsonwebtoken';
 
 
+export const isAuthUserContent = (req, res) => {
+  //console.log(req.userId, req.userUsername, req.userActivo, req.userVerificado);
+  return res.status(200).json({ message: "Ruta protegida", userId: req.userId, userUsername: req.userUsername, userActivo: req.userActivo, userVerificado: req.userVerificado });
+}
+
+
 export const register = async (req, res) => {
   // Aca no se realizan validaciones de los campos, porque el middleware de express-validator se encarga de eso
   // Se asume que el body ya fue validado y sanitizado por express-validator
@@ -54,7 +60,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   console.log(req.body);
  // "id", "reputacion", "activo", "verificado" se manejan desde acá. No se reciben desde el front
-  const {email,contrasena} = req.body || {};
+  const {email,contrasena} = req.body;
   
   //Validar que el usuario exista
   const consulta = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
@@ -83,8 +89,8 @@ export const login = async (req, res) => {
   });
   // Establecer cookie con el token
   res.cookie('token', token, {
-    //httpOnly: true,
-    secure: true,
+    httpOnly: true,
+    secure: false,
     sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
     path: '/'                        // Disponible en toda la aplicación
@@ -120,7 +126,8 @@ export const verify = async (req, res) => {
     await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
     
     res.cookie('token', token, {
-      secure: true,
+      httpOnly: true,
+      secure: false,
       sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
     });

@@ -1,5 +1,5 @@
 import express from 'express';
-import {PORT} from './config.js';
+import {FRONTEND_URL, PORT} from './config.js';
 import morgan from 'morgan';
 import authRoutes from "./routes/auth.routes.js";
 import coockieParser from 'cookie-parser';
@@ -10,7 +10,7 @@ const app = express();
 
 // Configuración de CORS
 app.use(cors({
-    origin: "*", // Añade aquí los orígenes permitidos
+    origin: [`${FRONTEND_URL}`, "https://delete-offices-challenge-whats.trycloudflare.com"], // Añade aquí los orígenes permitidos
     credentials: true // Permite enviar cookies en solicitudes cross-origin
   }));
 // Descomentar cuando ya existan las rutas de asignaturas

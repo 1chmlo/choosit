@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 // Config() considera como raiz la carpeta donde está el package.json
 dotenv.config({ path: './.env' });
 
+// Frontend
+export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5000";
+
 // Servidor
 export const PORT = process.env.PORT || 3000;
 export const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";

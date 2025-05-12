@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExanJtbmU5Nm1sMnc5a3JyM2Vsc29pandwZXF5YmVweHhub2s4ODBsbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5oWpOD8Thsmo8/giphy.gif');
+  background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGV0aG5oazZsemc3dnI4NjRsaXEzcW5ybXI0cHIwbDdkMmhmZ2gxNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Q34Q46x7bUUKJfbn0s/giphy.gif');
   background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
   background-position: center;
   background-repeat: no-repeat;
@@ -82,7 +82,7 @@ body {
   .section-title {
     font-size: 2rem;
     font-weight: 700;
-    color: #ff0000;
+    color: #ffffff;
     text-align: center;
     margin-bottom: 3rem;
   }
