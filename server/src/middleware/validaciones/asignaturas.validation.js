@@ -54,6 +54,14 @@ export const ValidarAsignatura = [
 ];
 
 export const Validarcambio = [
+  param('id')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+    .notEmpty()
+    .withMessage("Se Necesita el parametro de id")
+    .customSanitizer(value => value.toLowerCase())
+    .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    .withMessage('El ID debe ser un UUID Valido'),
+
   body('codigo')
     .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
