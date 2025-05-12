@@ -14,7 +14,7 @@ CREATE TABLE usuarios (
 CREATE TABLE asignaturas (
   id uuid PRIMARY KEY,
   codigo varchar(20) UNIQUE,
-  nombre varchar(20),
+  nombre varchar(50),
   descripcion varchar(250),
   n_encuestas int,
   lab bool,
