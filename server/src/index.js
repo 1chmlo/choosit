@@ -10,8 +10,9 @@ import cors from 'cors';
 const app = express();
 
 // Configuración de CORS
+// ["http:localhost:5000", `${FRONTEND_URL}`, "https://delete-offices-challenge-whats.trycloudflare.com"]
 app.use(cors({
-    origin: [`${FRONTEND_URL}`, "https://delete-offices-challenge-whats.trycloudflare.com"], // Añade aquí los orígenes permitidos
+    origin: true, // Añade aquí los orígenes permitidos
     credentials: true // Permite enviar cookies en solicitudes cross-origin
   }));
 // Descomentar cuando ya existan las rutas de asignaturas
