@@ -29,6 +29,9 @@ export default function RegisterForm() {
 
   // Validar el formato de correo electrónico UDP
   const validateEmail = (email) => {
+    // Verificar que no tenga espacios
+    if (email.includes(' ')) return false;
+    
     const udpPattern = /@mail\.udp\.cl$/
     if (!email) return true // No mostrar error si está vacío
     return udpPattern.test(email)
@@ -89,8 +92,8 @@ export default function RegisterForm() {
     
     // Manejo especial para el email
     if (name === "email") {
-      // Asegurarse de que siempre termine con @mail.udp.cl
-      let newEmail = value
+      // Eliminar espacios y asegurarse de que siempre termine con @mail.udp.cl
+      let newEmail = value.replace(/\s+/g, '')
       
       if (!newEmail.endsWith('@mail.udp.cl')) {
         const username = newEmail.split('@')[0] || ''
@@ -98,7 +101,7 @@ export default function RegisterForm() {
       }
       
       const isValidEmail = validateEmail(newEmail)
-      setEmailError(isValidEmail ? "" : "El correo debe tener el formato @mail.udp.cl")
+      setEmailError(isValidEmail ? "" : "El correo debe tener el formato usuario@mail.udp.cl sin espacios")
       
       // Si cambia el email y es válido, actualizar el username
       if (isValidEmail && newEmail.includes("@")) {
@@ -149,17 +152,27 @@ export default function RegisterForm() {
     }
   }
 
-const handleSubmit = async (e) => {
-  e.preventDefault()
-
-  // Verificaciones de validación
-  if (!validateEmail(formData.email)) {
-    setEmailError("El correo debe tener el formato @mail.udp.cl")
-    return
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
     // Verificaciones de validación
     if (!validateEmail(formData.email)) {
-      setEmailError("El correo debe tener el formato @mail.udp.cl")
+      setEmailError("El correo debe tener el formato usuario@mail.udp.cl sin espacios")
+      return
+    }
+
+    if (!validateName(formData.nombre)) {
+      setNombreError("El nombre debe tener entre 2 y 20 caracteres y solo letras")
+      return
+    }
+
+    if (!validateName(formData.apellido)) {
+      setApellidoError("El apellido debe tener entre 2 y 20 caracteres y solo letras")
+      return
+    }
+
+    if (!validatePassword(formData.password)) {
+      setPasswordError("La contraseña debe tener entre 8 y 40 caracteres")
       return
     }
 
@@ -177,67 +190,22 @@ const handleSubmit = async (e) => {
         contrasena: formData.password,
         username: formData.username,
         anio_ingreso: formData.anioIngreso
-      },{
-    withCredentials: true // Importante para cookies cross-origin
-  });
+      });
       
       console.log('Registro exitoso:', response.data);
-      // Redirigir al usuario a la página de inicio de sesión
-      navigate('/login');
+      
+      // Redirigir al usuario a la página de verificación de email
+      navigate('/email-verification', { 
+        state: { 
+          email: formData.email 
+        } 
+      });
       
     } catch (error) {
       console.error('Error en el registro:', error);
       // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
     }
-
   }
-
-  if (!validateName(formData.nombre)) {
-    setNombreError("El nombre debe tener entre 2 y 20 caracteres y solo letras")
-    return
-  }
-
-  if (!validateName(formData.apellido)) {
-    setApellidoError("El apellido debe tener entre 2 y 20 caracteres y solo letras")
-    return
-  }
-
-  if (!validatePassword(formData.password)) {
-    setPasswordError("La contraseña debe tener entre 8 y 40 caracteres")
-    return
-  }
-
-  if (formData.password !== formData.confirmPassword) {
-    setPasswordMatch(false)
-    return
-  }
-
-  try {
-    console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
-    const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
-      nombre: formData.nombre,
-      apellido: formData.apellido,
-      email: formData.email,
-      contrasena: formData.password,
-      username: formData.username,
-      anio_ingreso: formData.anioIngreso
-    });
-    
-    console.log('Registro exitoso:', response.data);
-    
-    // Cambiar esta línea: redirigir al usuario a la página de verificación de email
-    // en lugar de la página de inicio de sesión
-    navigate('/email-verification', { 
-      state: { 
-        email: formData.email 
-      } 
-    });
-    
-  } catch (error) {
-    console.error('Error en el registro:', error);
-    // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
-  }
-}
 
   // Generar opciones para el año de ingreso (solo entre 1989 y 2025)
   const years = Array.from(
