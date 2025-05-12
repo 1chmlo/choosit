@@ -152,12 +152,11 @@ export default function RegisterForm() {
 const handleSubmit = async (e) => {
   e.preventDefault()
 
-<<<<<<< HEAD
   // Verificaciones de validación
   if (!validateEmail(formData.email)) {
     setEmailError("El correo debe tener el formato @mail.udp.cl")
     return
-=======
+
     // Verificaciones de validación
     if (!validateEmail(formData.email)) {
       setEmailError("El correo debe tener el formato @mail.udp.cl")
@@ -190,7 +189,7 @@ const handleSubmit = async (e) => {
       console.error('Error en el registro:', error);
       // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
     }
->>>>>>> bf33457fca3c093a26989e89d88b6e3fcc6a2f1a
+
   }
 
   if (!validateName(formData.nombre)) {
