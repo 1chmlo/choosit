@@ -26,19 +26,23 @@ export const ValidarAsignatura = [
 
   body('lab')
     .notEmpty()
-    .withMessage("Tiene que tener datos Bool"),
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   body('controles')
     .notEmpty()
-    .withMessage("Tiene que tener datos Bool"),
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   body('proyecto')
     .notEmpty()
-    .withMessage("Tiene que tener datos Bool"),
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   body('cfg')
     .notEmpty()
-    .withMessage("Tiene que tener datos Bool"),
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -51,6 +55,7 @@ export const ValidarAsignatura = [
 
 export const Validarcambio = [
   body('codigo')
+    .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
     .matches(/^(CFG|CIT|ICB)-\d+/)
@@ -58,27 +63,63 @@ export const Validarcambio = [
     .isLength({ max: 20 }), // Verifica que la longitud máxima sea 20
 
   body('nombre')
+    .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .isLength({ min: 8, max: 50 }) // Verifica que la longitud mínima sea 8 y maxima 50
     .withMessage('el nombre debe tener 8 y 50 caracteres'),
 
   body('descripcion')
+    .optional()
     .trim()
     .isLength({ max: 250 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
-    .trim(),
+    .optional()
+    .trim()
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   body('controles')
-    .trim(),
+    .optional()
+    .trim()
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
 
   body('proyecto')
-    .trim(),
+    .optional()
+    .trim()
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
 
   body('cfg')
-    .trim(),
+    .optional()
+    .trim()
+    .isBoolean()
+    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    (req, res, next) => {
+    const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body;
+    
+    if (
+      codigo === undefined && 
+      nombre === undefined && 
+      descripcion === undefined && 
+      lab === undefined && 
+      controles === undefined && 
+      proyecto === undefined && 
+      cfg === undefined
+    ) {
+      return res.status(400).json({ 
+        errors: [{ 
+          msg: "Debe proporcionar al menos un campo para actualizar", 
+          param: "body" 
+        }] 
+      });
+    }
+    
+    next();
+  },
 
   (req, res, next) => {
     const errors = validationResult(req);

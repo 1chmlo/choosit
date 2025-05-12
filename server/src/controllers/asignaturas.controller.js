@@ -2,8 +2,6 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import validator from 'validator';
 
-const esBool = valor => typeof valor === "boolean"; // Funcion para verificar si el valor ingresado es bool
-
 export const add_subject = async (req, res) => { //Añade la asignatura
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
 
@@ -15,12 +13,6 @@ export const add_subject = async (req, res) => { //Añade la asignatura
   if (Asignatura_existe.rows.length > 0) { // Verificacion si existe la asignatura
     return res.status(400).json({
       message: 'La asignatura ya fue creada anteriormente',
-    });
-  }
-
-  if (![lab, controles, proyecto, cfg].every(esBool)) { // Ver si es boleano
-    return res.status(400).json({
-      message: 'Los valores lab, controles, proyecto y cfg deben ser booleanos',
     });
   }
 
@@ -57,11 +49,6 @@ export const modify_subject = async (req, res) => {
       Valores.push(datos_a_cambiar[llave]);
       posicion++;
     }
-  }
-
-  if (campo_con_datos.length === 0) { // manejo de errores
-
-    return res.status(400).json({ message: 'No existen datos para actualizar' });
   }
 
   Valores.push(id); // Arma arreglo con valores para verificarlos despues
