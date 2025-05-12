@@ -25,22 +25,18 @@ export const ValidarAsignatura = [
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
-    .trim()
     .notEmpty()
     .withMessage("Tiene que tener datos Bool"),
 
   body('controles')
-    .trim()
     .notEmpty()
     .withMessage("Tiene que tener datos Bool"),
 
   body('proyecto')
-    .trim()
     .notEmpty()
     .withMessage("Tiene que tener datos Bool"),
 
   body('cfg')
-    .trim()
     .notEmpty()
     .withMessage("Tiene que tener datos Bool"),
 
@@ -72,20 +68,17 @@ export const Validarcambio = [
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
-    .trim()
-    .withMessage("Tiene que tener datos Bool"),
+    .trim(),
 
   body('controles')
-    .trim()
-    .withMessage("Tiene que tener datos Bool"),
+    .trim(),
+
 
   body('proyecto')
-    .trim()
-    .withMessage("Tiene que tener datos Bool"),
+    .trim(),
 
   body('cfg')
-    .trim()
-    .withMessage("Tiene que tener datos Bool"),
+    .trim(),
 
   (req, res, next) => {
     const errors = validationResult(req);

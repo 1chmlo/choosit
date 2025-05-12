@@ -46,15 +46,6 @@ export const modify_subject = async (req, res) => {
   const { id } = req.params;
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
 
-  if (codigo !== undefined) { // verifica si el codigo es valido y verifica si el formato esta correcto
-    const codigo_valido = /^(CFG|CIT|ICB)/.test(codigo);// <------ ESTO PUEDE CAMBIA O SACARSE POR VALIDATION
-    if (!codigo_valido) {
-      return res.status(400).json({
-        message: 'El código no lleva un identificador válido (CFG|CIT|ICB)',
-      });
-    }
-  }
-
   const datos_a_cambiar = { codigo, nombre, descripcion, lab, controles, proyecto, cfg };
   const campo_con_datos = [];
   const Valores = [];
