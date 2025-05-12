@@ -27,8 +27,8 @@ export default function LoginForm() {
     
     try {
       console.log('Datos del formulario:', formData)
-      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}:/api/auth/login`)
-      const response = await axios.post(`${REACT_APP_BACKEND_URL}:/api/auth/login`, {
+      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/login`)
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/login`, {
         email: formData.email,
         contrasena: formData.contrasena
       }, {

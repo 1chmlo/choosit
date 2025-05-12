@@ -152,10 +152,45 @@ export default function RegisterForm() {
 const handleSubmit = async (e) => {
   e.preventDefault()
 
+<<<<<<< HEAD
   // Verificaciones de validación
   if (!validateEmail(formData.email)) {
     setEmailError("El correo debe tener el formato @mail.udp.cl")
     return
+=======
+    // Verificaciones de validación
+    if (!validateEmail(formData.email)) {
+      setEmailError("El correo debe tener el formato @mail.udp.cl")
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordMatch(false)
+      return
+    }
+
+    try {
+      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        email: formData.email,
+        contrasena: formData.password,
+        username: formData.username,
+        anio_ingreso: formData.anioIngreso
+      },{
+    withCredentials: true // Importante para cookies cross-origin
+  });
+      
+      console.log('Registro exitoso:', response.data);
+      // Redirigir al usuario a la página de inicio de sesión
+      navigate('/login');
+      
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
+    }
+>>>>>>> bf33457fca3c093a26989e89d88b6e3fcc6a2f1a
   }
 
   if (!validateName(formData.nombre)) {
