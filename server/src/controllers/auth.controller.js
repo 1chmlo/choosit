@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
 import { transport, sendMail, sendVerificationEmail } from '../libs/mailer.js';
-import { BACKEND_URL, JWT_SECRET } from '../config.js';
+import { BACKEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 
 
@@ -41,19 +41,15 @@ export const register = async (req, res) => {
     return res.status(400).json({ message: 'Error al crear el usuario' });
   }
 
-   // Crear token de acceso
+   // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
    const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
-
-  // Establecer cookie con el token
-  const duracion = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
-    res.cookie('token', token, { secure: true, sameSite: 'none', maxAge: duracion, path: '/'});
 
   // Enviar correo de verificación
   // TODO: Validar que el email sea enviado y recibido de forma correcta
   const mail = await sendVerificationEmail(email, username, token, `${BACKEND_URL}/api/auth/verify`)
   console.log(mail); 
   
-  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }, token });
+  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }});
 }
 
 
@@ -85,15 +81,15 @@ export const login = async (req, res) => {
     id: usuarioExistente.id,
     username: usuarioExistente.username,
     activo: usuarioExistente.activo,
-    verificado: usuarioExistente.verificado
+    verificado: usuarioExistente.verificado,
+    "rol": "usuario"
   });
   // Establecer cookie con el token
   res.cookie('token', token, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
-    path: '/'                        // Disponible en toda la aplicación
+    maxAge: MAX_AGE_TOKEN
 });
 
 return res.status(200).json({
@@ -114,9 +110,6 @@ export const verify = async (req, res) => {
 
   //busca el token en la url (query param)
   const { token } = req.query;
-  if (!token) {
-    return res.status(400).json({ message: 'Token no proporcionado' });
-  }
 
   // Verificar el token
   try {
@@ -127,14 +120,31 @@ export const verify = async (req, res) => {
     
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos (para que coincida con el expiresIn del token)
+      maxAge: MAX_AGE_TOKEN, // 7 días en milisegundos (para que coincida con el expiresIn del token)
     });
     
     return res.status(200).json({ message: 'Usuario verificado correctamente', id });
   } catch (error) {
     console.error('Error al verificar el token:', error);
     return res.status(400).json({ message: 'Token inválido o expirado' });
+  }
+}
+
+export const logout = async (req, res) => {
+  try {
+    // Eliminar la cookie que contiene el token
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'none',
+      path: '/'
+    });
+    
+    return res.status(200).json({ message: 'Sesión cerrada correctamente' });
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }

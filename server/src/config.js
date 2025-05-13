@@ -12,6 +12,7 @@ export const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
 
 // Token
 export const JWT_SECRET = process.env.JWT_SECRET || "xyz123";
+export const MAX_AGE_TOKEN = process.env.MAX_AGE_TOKEN || 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
 
 
 // Base de datos

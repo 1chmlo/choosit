@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 
 /**
  * Middleware para validar campos de inicio de sesión
@@ -126,6 +126,26 @@ export const validateRegister = [
 
     .isInt({ min: 1989, max: new Date().getFullYear()})
     .withMessage(`El anio_ingreso debe ser un número entre 1989 y ${new Date().getFullYear()}`),
+    
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
+
+export const validateVerifyEmail = [
+  query('token')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
+    .notEmpty()
+    .withMessage('El token es requerido')
+    
+    .isJWT()
+    .withMessage('El token no es válido'),
     
   (req, res, next) => {
     const errors = validationResult(req);
