@@ -23,7 +23,7 @@ Para instalar y ejecutar Choosit en tu máquina local, sigue estos pasos:
 
 ## Instrucciones para ejecutar los servicios
 
-> **Warning**
+> [!WARNING]  
 > Para ejecutar Choosit es necesario tener Docker y Docker Compose instalados en tu sistema.
 
 Para levantar todos los servicios, ejecuta el siguiente comando desde la raíz del proyecto (/choosit):
