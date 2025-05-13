@@ -6,7 +6,9 @@ export const isAuthUser = (req, res, next) => {
     if (!token) return res.status(400).json({ message: "No se ha proporcionado un token, inicia sesion"});
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(400).json({message: "No estas autorizado"});
+    if (err) return res.status(400).json({message: err.message});
+    if(decoded.activo === false) return res.status(400).json({message: "Usuario no activo"});
+    if(decoded.verificado === false) return res.status(400).json({message: "Usuario no verificado"});
 
     // Estos datos se pasan al controlador para que no se tenga que volver a decodificar el token
     // y se pueda acceder a ellos directamente desde req.userId, req.userUsername, etc.

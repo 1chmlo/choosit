@@ -124,8 +124,8 @@ export const validateRegister = [
     .isNumeric()
     .withMessage('El anio_ingreso solo puede contener números')
 
-    .isInt({ min: 1989, max: 2025 })
-    .withMessage('El anio_ingreso debe ser un número entre 1989 y 2025'),
+    .isInt({ min: 1989, max: new Date().getFullYear()})
+    .withMessage(`El anio_ingreso debe ser un número entre 1989 y ${new Date().getFullYear()}`),
     
   (req, res, next) => {
     const errors = validationResult(req);

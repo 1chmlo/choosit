@@ -1,6 +1,6 @@
 import { param, body, validationResult } from 'express-validator';
 
-export const ValidarAsignatura = [
+export const ValidateCreateAsignatura = [
   body('codigo')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .notEmpty()
@@ -53,7 +53,7 @@ export const ValidarAsignatura = [
   }
 ];
 
-export const Validarcambio = [
+export const ValidateUpdateAsignatura = [
   param('id')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .notEmpty()
