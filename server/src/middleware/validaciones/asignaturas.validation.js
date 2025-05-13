@@ -1,4 +1,4 @@
-import { param, body, validationResult } from 'express-validator';
+import { param, body,query, validationResult } from 'express-validator';
 
 export const ValidateCreateAsignatura = [
   body('codigo')
@@ -128,6 +128,26 @@ export const ValidateUpdateAsignatura = [
     
     next();
   },
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
+
+export const ValidateSearch = [
+  query('codigo')
+  .trim()
+  .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
+  .matches(/^(cfg|cit|icb)-\d+$/)
+  .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
+  .isLength({ max: 20 }),
+
+
 
   (req, res, next) => {
     const errors = validationResult(req);
