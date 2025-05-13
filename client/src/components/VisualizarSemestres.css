@@ -1,0 +1,135 @@
+/* Asegurar que el fondo blanco cubra toda la página */
+html, body {
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.semesters-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    /* Aumentar el espacio superior para evitar solapamiento con la navbar */
+    padding-top: 130px; 
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    /* Asegurarse de que el contenedor principal también tenga altura mínima */
+    min-height: calc(100vh - 120px);
+}
+
+.semesters-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+  
+.semesters-subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+  
+.semesters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+  
+.semester-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+  
+.semester-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+  
+.semester-header:hover {
+    background-color: #f9fafb;
+}
+  
+.semester-header.expanded {
+    background-color: #fee2e2;
+    border-bottom: 1px solid #e5e7eb;
+}
+  
+.semester-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1f2937;
+}
+  
+.semester-icon {
+    font-size: 1.5rem;
+    color: #ef4444;
+    font-weight: bold;
+}
+  
+.semester-content {
+    padding: 1.5rem;
+    background-color: white;
+    animation: expandContent 0.3s ease-out;
+}
+  
+.empty-content {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    border: 1px dashed #e5e7eb;
+    border-radius: 4px;
+}
+  
+@keyframes expandContent {
+    from {
+      opacity: 0;
+      max-height: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      max-height: 500px;
+      transform: translateY(0);
+    }
+}
+  
+/* Responsive */
+@media (max-width: 640px) {
+    .semesters-container {
+      padding: 1rem;
+      /* Ajustar también el padding superior en móviles */
+      padding-top: 100px;
+    }
+  
+    .semesters-title {
+      font-size: 1.5rem;
+    }
+  
+    .semesters-subtitle {
+      font-size: 1rem;
+    }
+  
+    .semester-header {
+      padding: 0.75rem 1rem;
+    }
+  
+    .semester-title {
+      font-size: 1rem;
+    }
+}

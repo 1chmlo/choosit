@@ -8,7 +8,7 @@ export default function HomeContent() {
         <h1 className="hero-title">Bienvenido a Choosit!</h1>
         <p className="hero-subtitle">El lugar perfecto para comenzar consultar sobre las asignaturas que vas a tomar.</p>
         <div className="hero-buttons">
-          <Link to="/VisualizasAsignaturas" className="hero-button primary">
+          <Link to="/visualizar-semestres" className="hero-button primary">
             Visualizar Asignaturas
           </Link>
           <a href="#features" className="hero-button secondary">

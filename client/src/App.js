@@ -5,7 +5,7 @@ import RegisterForm from './components/RegisterForm';
 import HomeContent from './components/home';
 import Navbar from './components/navbar';
 import EmailVerification from './components/EmailVerification'; // Importa el nuevo componente
-
+import VisualizarSemestres from './components/VisualizarSemestres'; // Importa el nuevo componente
 // Componente que decide si mostrar Navbar o no basado en la ruta
 function AppContent() {
   const location = useLocation();
@@ -20,6 +20,7 @@ function AppContent() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/home" element={<HomeContent />} />
+        <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
         <Route path="/email-verification" element={<EmailVerification />} /> {/* Añade esta nueva ruta */}
       </Routes>
     </div>
