@@ -70,10 +70,10 @@ export const modify_subject = async (req, res) => {
 };
 
 export const search_subject = async (req, res) => {
-  const { codigo} = req.query || {};
+  const {nombre} = req.query || {};
 
    try {  
-      const resultado = await pool.query('SELECT nombre FROM asignaturas WHERE codigo ILIKE $1', [`%${codigo}%`])
+      const resultado = await pool.query('SELECT nombre FROM asignaturas WHERE codigo ILIKE $1', [`%${nombre}%`])
       res.json(resultado.rows)
   } catch (error) { // falla interna
     console.error('Error al buscar asignatura:', error);

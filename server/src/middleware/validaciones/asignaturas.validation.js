@@ -140,12 +140,12 @@ export const ValidateUpdateAsignatura = [
 
 
 export const ValidateSearch = [
-  query('codigo')
+  query('nombre')
   .trim()
+  .notEmpty()
+  .withMessage('La Nombre es requerida')
   .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-  .matches(/^(cfg|cit|icb)-\d+$/)
-  .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
-  .isLength({ max: 20 }),
+  .isLength({ max: 50 }),
 
 
 
