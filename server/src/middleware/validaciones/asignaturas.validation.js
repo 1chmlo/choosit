@@ -143,9 +143,10 @@ export const ValidateSearch = [
   query('nombre')
   .trim()
   .notEmpty()
-  .withMessage('La Nombre es requerida')
+  .withMessage('La Informacion es requerida')
   .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-  .isLength({ max: 50 }),
+  .isString()
+  .withMessage('El parámetro debe ser texto'),
 
 
 
