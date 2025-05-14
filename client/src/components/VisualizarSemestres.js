@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./VisualizarSemestres.css"
 
 export default function Semesters() {
   const [expandedSemesters, setExpandedSemesters] = useState({})
   const [searchOpen, setSearchOpen] = useState(false)
-  const [searchText, setSearchText] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
 
   const toggleSemester = (semesterId) => {
     setExpandedSemesters((prev) => ({
@@ -17,45 +17,51 @@ export default function Semesters() {
 
   const semesters = Array.from({ length: 10 }, (_, i) => i + 1)
 
-  const subjectData = {
-    1: ["Matemática I", "Introducción a la Ingeniería"],
-    2: ["Comunicación Oral", "Física I"],
-    3: ["Comunicación Escrita", "Programación I"],
-    4: ["Cálculo II", "Física II"],
-    5: ["Electrónica", "Bases de Datos"],
-    6: ["Comunicaciones Digitales", "Algoritmos"],
-    7: ["Redes", "Sistemas Operativos"],
-    8: ["Proyecto Integrador", "IA"],
-    9: ["Taller Profesional", "Ética"],
-    10: ["Práctica Profesional", "Seminario Final"],
+  const fakeData = {
+    1: ["Matemática", "Comunicación"],
+    2: ["Comunicación Digital", "Programación"],
+    3: ["Redes", "Bases de Datos"],
+    4: ["Física", "Cálculo"],
+    5: ["Estadística", "Inglés Técnico"],
+    6: ["Inteligencia Artificial", "Algoritmos"],
   }
 
-  const filteredSemesters = semesters.filter((semester) =>
-    subjectData[semester].some((subject) =>
-      subject.toLowerCase().includes(searchText.toLowerCase())
-    )
+  const filteredSemesters = semesters.filter((sem) =>
+    searchTerm.trim() === ""
+      ? true
+      : fakeData[sem]?.some((ramo) =>
+          ramo.toLowerCase().includes(searchTerm.toLowerCase())
+        )
   )
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") return
+    const autoExpanded = {}
+    filteredSemesters.forEach((sem) => {
+      autoExpanded[sem] = true
+    })
+    setExpandedSemesters(autoExpanded)
+  }, [searchTerm])
 
   return (
     <div className="semesters-container">
-      {/* Barra de búsqueda */}
-      <div className="search-container">
-        <button className="search-toggle" onClick={() => setSearchOpen(!searchOpen)}>
+      <h1 className="semesters-title">Plan de Estudios</h1>
+      <p className="semesters-subtitle">Explora el contenido por semestre</p>
+
+      <div className={`search-wrapper-inline ${searchOpen ? "expanded" : ""}`}>
+        <button className="search-button" onClick={() => setSearchOpen(!searchOpen)}>
           🔍
         </button>
         {searchOpen && (
           <input
             type="text"
-            placeholder="Buscar ramo..."
-            className="search-bar"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            className="search-input"
+            placeholder="Buscar ramos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         )}
       </div>
-
-      <h1 className="semesters-title">Plan de Estudios</h1>
-      <p className="semesters-subtitle">Explora el contenido por semestre</p>
 
       <div className="semesters-list">
         {filteredSemesters.map((semester) => (
@@ -71,13 +77,15 @@ export default function Semesters() {
             </button>
             {expandedSemesters[semester] && (
               <div className="semester-content">
-                {subjectData[semester]
-                  .filter((subject) =>
-                    subject.toLowerCase().includes(searchText.toLowerCase())
-                  )
-                  .map((subject, index) => (
-                    <p key={index}>{subject}</p>
-                  ))}
+                <div className="empty-content">
+                  <ul>
+                    {fakeData[semester]?.map((ramo, idx) => (
+                      <li key={idx}>{ramo}</li>
+                    )) || (
+                      <li>No hay asignaturas registradas para este semestre.</li>
+                    )}
+                  </ul>
+                </div>
               </div>
             )}
           </div>
