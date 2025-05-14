@@ -1,6 +1,5 @@
 import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
-import validator from 'validator';
 
 export const add_subject = async (req, res) => { //Añade la asignatura
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
