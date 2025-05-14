@@ -133,3 +133,34 @@ html, body {
       font-size: 1rem;
     }
 }
+
+.search-container {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.search-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.search-bar {
+  width: 0;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: width 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+
+.search-container .search-bar {
+  width: 200px;
+  opacity: 1;
+}
