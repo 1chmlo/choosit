@@ -12,7 +12,7 @@ CREATE TABLE usuarios (
 );
 
 CREATE TABLE asignaturas (
-  id uuid PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   codigo varchar(20) UNIQUE,
   nombre varchar(50),
   descripcion varchar(250),
