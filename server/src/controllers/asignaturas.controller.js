@@ -1,5 +1,16 @@
 import { pool } from '../db.js';
 
+
+export const get_all_subjects = async (req, res) => { // Obtiene todas las asignaturas
+  try {
+    const resultado = await pool.query('SELECT * FROM asignaturas');
+    res.json(resultado.rows);
+  } catch (error) { // Manejo de errores
+    console.error('Error al obtener asignaturas:', error);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+};
+
 export const add_subject = async (req, res) => { //Añade la asignatura
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
 
