@@ -16,7 +16,7 @@ CREATE TABLE asignaturas (
   codigo varchar(20) UNIQUE,
   nombre varchar(50),
   semestre int,
-  descripcion varchar(250),
+  descripcion varchar(500),
   n_encuestas int,
   lab bool,
   controles bool,
