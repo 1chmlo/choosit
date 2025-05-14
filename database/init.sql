@@ -15,6 +15,7 @@ CREATE TABLE asignaturas (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   codigo varchar(20) UNIQUE,
   nombre varchar(50),
+  semestre int,
   descripcion varchar(250),
   n_encuestas int,
   lab bool,
