@@ -30,16 +30,22 @@ export const register = async (req, res) => {
   const contrasena_hasheada = await bcrypt.hash(contrasena, 10);
 
   //asignar id, reputacion, activo, verificado
-  const id = uuidv4();
+  //const id = uuidv4();
   const reputacion = 0;
   const activo = true;
   const verificado = false;
 
   //insertar usuario en la base de datos
-  const nuevoUsuario = await pool.query('INSERT INTO usuarios (id, nombre, apellido, username, email, contrasena, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)', [id, nombre, apellido, username, email, contrasena_hasheada, anio_ingreso, reputacion, activo, verificado]);
+  const nuevoUsuario = await pool.query('INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [nombre, apellido, username, email, contrasena_hasheada, anio_ingreso, reputacion, activo, verificado]);
+  
   if (nuevoUsuario.rowCount === 0) {
     return res.status(400).json({ message: 'Error al crear el usuario' });
   }
+
+  // Obtener el id del nuevo usuario
+  const { id } = nuevoUsuario.rows[0];
+
+
 
    // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
    const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
