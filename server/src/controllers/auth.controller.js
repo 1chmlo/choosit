@@ -14,6 +14,9 @@ export const isAuthUserContent = (req, res) => {
 
 
 export const register = async (req, res) => {
+  try{
+
+  
   // Aca no se realizan validaciones de los campos, porque el middleware de express-validator se encarga de eso
   // Se asume que el body ya fue validado y sanitizado por express-validator
 
@@ -56,10 +59,16 @@ export const register = async (req, res) => {
   console.log(mail); 
   
   return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }});
+  }
+  catch (error) {
+    console.error('Error al registrar usuario:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
 }
 
 
 export const login = async (req, res) => {
+  try {
   console.log(req.body);
  // "id", "reputacion", "activo", "verificado" se manejan desde acá. No se reciben desde el front
   const {email,contrasena} = req.body;
@@ -109,6 +118,11 @@ return res.status(200).json({
       }
     });
 
+}
+  catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
 }
 
 
