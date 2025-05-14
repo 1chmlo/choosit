@@ -12,7 +12,7 @@ export default function Semesters() {
   const [asignaturas, setAsignaturas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
+
   // Lista predefinida de todos los semestres (1 al 10)
   const allSemesters = Array.from({ length: 10 }, (_, i) => i + 1)
 
@@ -41,6 +41,10 @@ export default function Semesters() {
     }))
   }
 
+  // Función para normalizar texto (elimina tildes y pasa a minúsculas)
+  const normalizeText = (text) =>
+    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+
   // Organizar asignaturas por semestre
   const asignaturasPorSemestre = {}
   
@@ -57,17 +61,17 @@ export default function Semesters() {
   // Filtrar semestres según el término de búsqueda
   const filteredSemesters = allSemesters.filter((sem) => {
     if (searchTerm.trim() === "") return true
-    
+
     return asignaturasPorSemestre[sem]?.some((asignatura) =>
-      asignatura.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asignatura.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+      normalizeText(asignatura.nombre).includes(normalizeText(searchTerm)) ||
+      normalizeText(asignatura.codigo).includes(normalizeText(searchTerm))
     )
   })
 
   // Expandir automáticamente los semestres que contienen resultados de búsqueda
   useEffect(() => {
     if (searchTerm.trim() === "") return
-    
+
     const autoExpanded = {}
     filteredSemesters.forEach((sem) => {
       autoExpanded[sem] = true
