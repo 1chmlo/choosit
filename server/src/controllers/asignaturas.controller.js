@@ -1,5 +1,4 @@
 import { pool } from '../db.js';
-import { v4 as uuidv4 } from 'uuid';
 
 export const add_subject = async (req, res) => { //Añade la asignatura
   const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
@@ -15,11 +14,12 @@ export const add_subject = async (req, res) => { //Añade la asignatura
     });
   }
 
-  const id = uuidv4();
   const Nuevo_Ramo = await pool.query( // Crear asignatura
-    'INSERT INTO asignaturas (id, codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-    [id, codigo, nombre, descripcion, lab, controles, proyecto, cfg]
+    'INSERT INTO asignaturas (id, codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+    [codigo, nombre, descripcion, lab, controles, proyecto, cfg]
   );
+
+  const {id} = Nuevo_Ramo.rows[0]; // Obtener el id del nuevo ramo
 
   if (Nuevo_Ramo.rowCount === 0) { // manejo de errores
     return res.status(400).json({
@@ -29,7 +29,7 @@ export const add_subject = async (req, res) => { //Añade la asignatura
 
   res.status(201).json({ // Creacion correcta
     message: 'Ramo creado correctamente',
-    Nuevo_Ramo: { codigo, nombre, descripcion, lab, controles, proyecto, cfg },
+    ramo: { id, codigo, nombre, descripcion, lab, controles, proyecto, cfg },
   });
 };
 
