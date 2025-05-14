@@ -140,7 +140,7 @@ export const ValidateUpdateAsignatura = [
 
 
 export const ValidateSearch = [
-  query('Pedido')
+  query('busqueda')
   .trim()
   .notEmpty()
   .withMessage('La Informacion es requerida')
