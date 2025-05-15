@@ -16,6 +16,9 @@ export default function RegisterForm() {
   const [nombreError, setNombreError] = useState("")
   const [apellidoError, setApellidoError] = useState("")
   const [passwordError, setPasswordError] = useState("")
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const emailInputRef = useRef(null)
   const [formData, setFormData] = useState({
     nombre: "",
@@ -182,6 +185,9 @@ export default function RegisterForm() {
     }
 
     try {
+
+      setIsLoading(true)
+
       console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
       const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
         nombre: formData.nombre,
@@ -204,6 +210,8 @@ export default function RegisterForm() {
     } catch (error) {
       console.error('Error en el registro:', error);
       // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -375,9 +383,13 @@ export default function RegisterForm() {
             </label>
           </div>
 
-          <button type="submit" className="register-button">
-            Registrarse
-          </button>
+          <button 
+  type="submit" 
+  className={`register-button ${isLoading ? "loading" : ""}`}
+  disabled={isLoading}
+>
+  {isLoading ? "Cargando" : "Registrarse"}
+</button>
         </form>
 
         <div className="login-prompt">

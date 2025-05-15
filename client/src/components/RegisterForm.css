@@ -129,33 +129,40 @@
     text-decoration: underline;
   }
   
-  /* Botón de registro */
-  .register-button {
-    width: 100%;
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  /* Prompt de inicio de sesión */
-  .login-prompt {
-    margin-top: 24px;
-    text-align: center;
-    font-size: 14px;
-    color: #6b7280;
-  }
-  
-  .login-link {
-    color: #ef4444;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
-  .login-link:hover {
-    text-decoration: underline;
-  }
-  
+  /* Botón de registro mejorado */
+.register-button {
+  width: 100%;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.register-button:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+/* Estilos para el botón deshabilitado */
+.register-button:disabled {
+  background-color: #f87171;
+  cursor: not-allowed;
+}
+
+/* Estado de carga simplificado */
+.register-button.loading {
+  background-color: #f87171;
+}
+
+/* Eliminar animaciones complejas */
+.loading-dots {
+  display: none;
+}
+
+.loading-text {
+  font-size: 15px;
+  /* Sin animación */
+}
