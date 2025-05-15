@@ -28,7 +28,7 @@ export const ValidateCreateAsignatura = [
     .trim()
     .notEmpty()
     .withMessage('La asignatura debe tener descripcion')
-    .isLength({ max: 250 })
+    .isLength({ max: 500 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
@@ -92,7 +92,7 @@ export const ValidateUpdateAsignatura = [
   body('descripcion')
     .optional()
     .trim()
-    .isLength({ max: 250 })
+    .isLength({ max: 500 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
