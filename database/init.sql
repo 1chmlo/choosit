@@ -1,3 +1,8 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+
+
+
 CREATE TABLE usuarios (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   nombre varchar(20),
