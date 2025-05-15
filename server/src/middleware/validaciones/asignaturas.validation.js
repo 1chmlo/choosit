@@ -86,7 +86,7 @@ export const ValidateUpdateAsignatura = [
     body('semestre')
     .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
-    .isInt()
+    .isInt({min: 1, max:10})
     .withMessage('el valor es entero'),
 
   body('descripcion')
