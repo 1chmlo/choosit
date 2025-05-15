@@ -6,7 +6,7 @@ export const ValidateCreateAsignatura = [
     .notEmpty()
     .withMessage('Codigo es requerido')
     .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-    .matches(/^(cfg|cit|icb)-\d+$/)
+    .matches(/^(cfg|cit|icb|cbm|cbq|fic)-\d+$/)
     .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
     .isLength({ max: 20 }), // Verifica que la longitud máxima sea 20
 
@@ -66,7 +66,7 @@ export const ValidateUpdateAsignatura = [
     .optional()
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
-    .matches(/^(cfg|cit|icb)-\d+$/)
+    .matches(/^(cfg|cit|icb|cbm|cbq|fic)-\d+$/)
     .withMessage('El codigo debe llevar CIT o CFG o ICB + - + el codigo')
     .isLength({ max: 20 }), // Verifica que la longitud máxima sea 20
 
