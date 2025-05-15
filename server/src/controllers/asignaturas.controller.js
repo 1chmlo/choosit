@@ -26,7 +26,7 @@ export const add_subject = async (req, res) => { //Añade la asignatura
   }
 
   const Nuevo_Ramo = await pool.query( // Crear asignatura
-    'INSERT INTO asignaturas (codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, )',
+    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )',
     [codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg]
   );
   
@@ -40,7 +40,7 @@ export const add_subject = async (req, res) => { //Añade la asignatura
 
   res.status(201).json({ // Creacion correcta
     message: 'Ramo creado correctamente',
-    ramo: { id, codigo, nombre, descripcion, lab, controles, proyecto, cfg },
+    ramo: { id, codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg },
   });
 };
 
