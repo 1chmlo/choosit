@@ -5,7 +5,7 @@ import { ValidateCreateAsignatura, ValidateSearch, ValidateUpdateAsignatura } fr
 const router = Router();
 router.get('/', get_all_subjects);
 router.post('/',ValidateCreateAsignatura, add_subject);
-router.put('/:id',ValidateUpdateAsignatura, modify_subject);
+router.patch('/:id',ValidateUpdateAsignatura, modify_subject);
 router.get('/buscar',ValidateSearch, search_subject);
 
 export default router;

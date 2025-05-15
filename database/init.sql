@@ -1,3 +1,8 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+
+
+
 CREATE TABLE usuarios (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   nombre varchar(20),
@@ -16,7 +21,7 @@ CREATE TABLE asignaturas (
   codigo varchar(20) UNIQUE,
   nombre varchar(50),
   semestre int,
-  descripcion varchar(250),
+  descripcion varchar(500),
   n_encuestas int,
   lab bool,
   controles bool,
