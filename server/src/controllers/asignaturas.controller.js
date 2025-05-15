@@ -12,7 +12,7 @@ export const get_all_subjects = async (req, res) => { // Obtiene todas las asign
 };
 
 export const add_subject = async (req, res) => { //Añade la asignatura
-  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
+  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
 
   const Asignatura_existe = await pool.query(
     'SELECT * FROM asignaturas WHERE codigo = $1',
@@ -26,10 +26,10 @@ export const add_subject = async (req, res) => { //Añade la asignatura
   }
 
   const Nuevo_Ramo = await pool.query( // Crear asignatura
-    'INSERT INTO asignaturas (id, codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-    [codigo, nombre, descripcion, lab, controles, proyecto, cfg]
+    'INSERT INTO asignaturas (id, codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    [codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg]
   );
-
+  
   const {id} = Nuevo_Ramo.rows[0]; // Obtener el id del nuevo ramo
 
   if (Nuevo_Ramo.rowCount === 0) { // manejo de errores
@@ -46,9 +46,9 @@ export const add_subject = async (req, res) => { //Añade la asignatura
 
 export const modify_subject = async (req, res) => {
   const { id } = req.params;
-  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
+  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
 
-  const datos_a_cambiar = { codigo, nombre, descripcion, lab, controles, proyecto, cfg };
+  const datos_a_cambiar = { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg };
   const campo_con_datos = [];
   const Valores = [];
   let posicion = 1;
