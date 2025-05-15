@@ -9,6 +9,7 @@ import { REACT_APP_BACKEND_URL } from "../config"
 export default function LoginForm() {
   const navigate = useNavigate()
   const [showcontrasena, setShowcontrasena] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     contrasena: "",
@@ -26,6 +27,7 @@ export default function LoginForm() {
     e.preventDefault()
     
     try {
+      setIsLoading(true)
       console.log('Datos del formulario:', formData)
       console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/login`)
       const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/login`, {
@@ -43,6 +45,9 @@ export default function LoginForm() {
       
     } catch (error) {
       console.error('Error en inicio de sesión:', error);
+    } finally {
+      // Desactivamos el estado de carga cuando termine (éxito o error)
+      setIsLoading(false)
     }
   }
 
@@ -104,9 +109,20 @@ export default function LoginForm() {
             </Link>
           </div>
 
-          <button type="submit" className="login-button">
-            Iniciar Sesión
-          </button>
+          <button 
+  type="submit" 
+  className={`login-button ${isLoading ? "loading" : ""}`}
+  disabled={isLoading}
+>
+  {isLoading ? (
+    <>
+      <span className="spinner"></span>
+      Cargando
+    </>
+  ) : (
+    "Iniciar Sesión"
+  )}
+</button>
         </form>
 
         <div className="register-prompt">
