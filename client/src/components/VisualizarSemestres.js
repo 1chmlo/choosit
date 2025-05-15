@@ -41,18 +41,27 @@ export default function Semesters() {
     }))
   }
 
-  // Función para normalizar texto (elimina tildes y pasa a minúsculas)
+  // Función para normalizar texto (ignora tildes y mayúsculas)
   const normalizeText = (text) =>
     text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
+  // Función para verificar si una asignatura coincide con el término de búsqueda
+  const matchesSearch = (asignatura) => {
+    const term = normalizeText(searchTerm)
+    return (
+      normalizeText(asignatura.nombre).includes(term) ||
+      normalizeText(asignatura.codigo).includes(term)
+    )
+  }
+
   // Organizar asignaturas por semestre
   const asignaturasPorSemestre = {}
-  
+
   // Inicializar todos los semestres como arrays vacíos
-  allSemesters.forEach(sem => {
+  allSemesters.forEach((sem) => {
     asignaturasPorSemestre[sem] = []
   })
-  
+
   // Llenar con asignaturas disponibles
   asignaturas.forEach((asignatura) => {
     asignaturasPorSemestre[asignatura.semestre].push(asignatura)
@@ -62,10 +71,7 @@ export default function Semesters() {
   const filteredSemesters = allSemesters.filter((sem) => {
     if (searchTerm.trim() === "") return true
 
-    return asignaturasPorSemestre[sem]?.some((asignatura) =>
-      normalizeText(asignatura.nombre).includes(normalizeText(searchTerm)) ||
-      normalizeText(asignatura.codigo).includes(normalizeText(searchTerm))
-    )
+    return asignaturasPorSemestre[sem]?.some(matchesSearch)
   })
 
   // Expandir automáticamente los semestres que contienen resultados de búsqueda
@@ -128,13 +134,20 @@ export default function Semesters() {
                 </button>
                 {expandedSemesters[semester] && (
                   <div className="semester-content">
-                    {asignaturasPorSemestre[semester].length === 0 ? (
+                    {/* Mostrar solo asignaturas que coincidan con la búsqueda si hay término activo */}
+                    {(searchTerm.trim() === ""
+                      ? asignaturasPorSemestre[semester]
+                      : asignaturasPorSemestre[semester].filter(matchesSearch)
+                    ).length === 0 ? (
                       <div className="empty-semester">No hay asignaturas para este semestre</div>
                     ) : (
                       <div className="courses-grid">
-                        {asignaturasPorSemestre[semester].map((asignatura) => (
-                          <div 
-                            key={asignatura.id} 
+                        {(searchTerm.trim() === ""
+                          ? asignaturasPorSemestre[semester]
+                          : asignaturasPorSemestre[semester].filter(matchesSearch)
+                        ).map((asignatura) => (
+                          <div
+                            key={asignatura.id}
                             className="course-card"
                             onClick={() => handleCursoClick(asignatura)}
                           >
