@@ -104,7 +104,7 @@ export default function Semesters() {
         {searchOpen && (
           <input
             type="text"
-            className="search-input"
+            className="search-input search-input-animated"
             placeholder="Buscar asignaturas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -134,7 +134,6 @@ export default function Semesters() {
                 </button>
                 {expandedSemesters[semester] && (
                   <div className="semester-content">
-                    {/* Mostrar solo asignaturas que coincidan con la búsqueda si hay término activo */}
                     {(searchTerm.trim() === ""
                       ? asignaturasPorSemestre[semester]
                       : asignaturasPorSemestre[semester].filter(matchesSearch)
