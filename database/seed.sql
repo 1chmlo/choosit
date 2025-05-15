@@ -2,7 +2,6 @@
 --1er semestre
 INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, controles, proyecto, cfg) VALUES
 ('CBQ1000','QUÍMICA',1,'Curso que entrega entendimiento de cómo la química modela los fenómenos más importantes de transformaciones de la materia en la naturaleza y la ingeniería, cómo está confirmada la materia a nivel cuántico, y las implicancias de la química en diversos fenómenos como el efecto invernadero, su influencia en la sociedad, entro otros casos reales.',0 , false, true, false, false),
-<<<<<<< HEAD
 ('CBM1001','CÁLCULO I',1,'Curso que entrega fundamentos matemáticos para futuros cursos de ingeniería. Aborda funciones, derivadas y aplicaciones en ingeniería y ciencias. Al finalizar podrás resolver inecuaciones, aplicar funciones, analizar límites y continuidad, comprender la derivada y sus aplicaciones, contenidos fundamentales para cuantificar una gran variedad de fenómenos naturales y en ingeniería.'0 , false, true, false, false),
 ('CIT1000','PROGRAMACIÓN',1,'Curso que entrega las herramientas básicas de programación, y desarrollo de los primeros programas. Además, aborda el diseño de soluciones para problemas ingenieriles simples, implementar algoritmos en C++, procesar datos básicos y trabajar en proyectos de procesamiento de datos, documentando sus soluciones.',0 , false, true, false, false),
 ('CBM-1000','Álgebra y geometría',1,'Curso en el que se aprende sobre álgebra, geometría y números complejos. Se entregan herramientas para resolver problemas matemáticos aplicados y desarrollar habilidades lógicas y de demostración. Se incluye lógica proposicional, inducción matemática, sumatorias, trigonometría, geometría analítica y números complejos.',0 , false, true, false, false),
@@ -52,16 +51,6 @@ INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, 
 --10mo semestre
 ('CIT3203','Proyecto TICS II',10,'Curso en el que desarrollarás un proyecto real de tecnología de la información y comunicaciones. Aprenderás a planificar, gestionar y evaluar proyectos TI, considerando riesgos, calidad y contratos. Se fomentará el trabajo en equipo y la comunicación efectiva.',0 , false, true, false, false);
 --11vo semestre
-=======
-('CBM1001','CÁLCULO I',1,'Curso que entrega fundamentos matemáticos para futuros cursos de ingeniería. Aborda funciones, derivadas y aplicaciones en ingeniería y ciencias. Al finalizar podrás resolver inecuaciones, aplicar funciones, analizar límites y continuidad, comprender la derivada y sus aplicaciones, contenidos fundamentales para cuantificar una gran variedad de fenómenos naturales y en ingeniería.',0 , false, true, false, false),
-('CIT1000','PROGRAMACIÓN',1,'Curso que entrega las herramientas básicas de programación, y desarrollo de los primeros programas. Además, aborda el diseño de soluciones para problemas ingenieriles simples, implementar algoritmos en C++, procesar datos básicos y trabajar en proyectos de procesamiento de datos, documentando sus soluciones.',0 , false, true, false, false),
-('CBM-1000','Álgebra y geometría',1,'Curso en el que se aprende sobre álgebra, geometría y números complejos. Se entregan herramientas para resolver problemas matemáticos aplicados y desarrollar habilidades lógicas y de demostración. Se incluye lógica proposicional, inducción matemática, sumatorias, trigonometría, geometría analítica y números complejos.',0 , false, true, false, false),
-('FIC-1000','Comunicación para la ingeniería',1,'Curso que mejora la escritura, comprensión lectora y capacidad de redacción de textos. Esencial para poder comunicar ideas con precisión y fortalecer la formación profesional integral.',0 , false, true, false, false);
-
-INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, controles, proyecto, cfg) VALUES
-('CBM-1003','Cálculo II',2,'Curso enfocado en la resolución de problemas en matemáticas e ingeniería a partir de integrales, por ejemplo: cómo calcular áreas y perímetros, analizar convergencia de integrales y series, y utilizar series de potencias para representar funciones.',0 , false, true, false, false),
-('CBF-1000','Mecánica',2,'Curso sobre las leyes que rigen el funcionamiento de las cosas en el mundo físico. Conceptos como fuerza, movimiento, energía y cómo se aplican en la ingeniería. También se realizarán experimentos en laboratorio para ver estos principios en acción.',0 , false, true, false, false);
->>>>>>> 705a30d6ff2ae2b21e935d0c0bf397f769019512
 
 
 -- Insertar usuarios
