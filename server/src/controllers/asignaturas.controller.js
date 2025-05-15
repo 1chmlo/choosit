@@ -26,7 +26,7 @@ export const add_subject = async (req, res) => { //Añade la asignatura
   }
 
   const Nuevo_Ramo = await pool.query( // Crear asignatura
-    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )',
+    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
     [codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg]
   );
   
