@@ -21,7 +21,7 @@ export const ValidateCreateAsignatura = [
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .notEmpty()
     .withMessage('el semestre es requerida')
-    .isInt()
+    .isInt({min: 1, max:10})
     .withMessage('el valor es entero'),
 
   body('descripcion')
