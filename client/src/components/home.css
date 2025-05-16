@@ -1,9 +1,9 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGV0aG5oazZsemc3dnI4NjRsaXEzcW5ybXI0cHIwbDdkMmhmZ2gxNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Q34Q46x7bUUKJfbn0s/giphy.gif');
+  background-image: url('https://i.imgur.com/PTkEgwK.jpeg'); /*fondo udp*/
   background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
-  background-position: center;
+  background-position: center 40px;
   background-repeat: no-repeat;
   background-attachment: fixed; /* Mantiene el fondo fijo durante el scroll */
   min-height: 100vh;
