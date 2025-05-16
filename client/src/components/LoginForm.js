@@ -10,6 +10,8 @@ export default function LoginForm() {
   const { login } = useAuth();   // Obtiene la función login del contexto
   const [showcontrasena, setShowcontrasena] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // Estado para mensajes de error del servidor
+  const [serverError, setServerError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     contrasena: "",
@@ -17,6 +19,11 @@ export default function LoginForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Limpiar errores del servidor cuando el usuario empieza a escribir
+    if (serverError) {
+      setServerError("");
+    }
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -25,6 +32,9 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Limpiar cualquier error del servidor anterior
+    setServerError("");
 
     try {
       setIsLoading(true);
@@ -45,6 +55,19 @@ export default function LoginForm() {
 
     } catch (error) {
       console.error("Error en inicio de sesión:", error);
+      
+      // Mostrar mensaje de error del servidor
+      if (error.response && error.response.data) {
+        if (error.response.data.message) {
+          setServerError(error.response.data.message);
+        } else if (error.response.data.errors && error.response.data.errors.length > 0) {
+          setServerError(error.response.data.errors[0].msg);
+        } else {
+          setServerError(JSON.stringify(error.response.data));
+        }
+      } else {
+        setServerError("Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +86,13 @@ export default function LoginForm() {
         </Link>
 
         <h1 className="login-title">Iniciar Sesión</h1>
+        
+        {/* Mostrar mensaje de error del servidor si existe */}
+        {serverError && (
+          <div className="server-error-message">
+            {serverError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">

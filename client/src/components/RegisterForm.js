@@ -16,6 +16,8 @@ export default function RegisterForm() {
   const [nombreError, setNombreError] = useState("")
   const [apellidoError, setApellidoError] = useState("")
   const [passwordError, setPasswordError] = useState("")
+  // Estado para mensajes de error del servidor
+  const [serverError, setServerError] = useState("")
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -40,9 +42,9 @@ export default function RegisterForm() {
     return udpPattern.test(email)
   }
 
-  // Nueva función para validar nombre y apellido (solo letras, 2-20 caracteres)
+  // Nueva función para validar nombre y apellido (permite tildes y ñ)
   const validateName = (name) => {
-    const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]{2,20}$/
+    const namePattern = /^[a-zA-ZáéíóúüÁÉÍÓÚÜñÑ]{2,20}$/
     if (!name) return true // No mostrar error si está vacío
     return namePattern.test(name)
   }
@@ -93,6 +95,11 @@ export default function RegisterForm() {
   const handleChange = (e) => {
     const { name, value } = e.target
     
+    // Limpiar errores del servidor cuando el usuario empieza a escribir
+    if (serverError) {
+      setServerError("");
+    }
+    
     // Manejo especial para el email
     if (name === "email") {
       // Eliminar espacios y asegurarse de que siempre termine con @mail.udp.cl
@@ -127,13 +134,13 @@ export default function RegisterForm() {
     // Manejo especial para nombre
     if (name === "nombre") {
       const isValidName = validateName(value)
-      setNombreError(isValidName || value === "" ? "" : "El nombre debe tener entre 2 y 20 caracteres y solo letras")
+      setNombreError(isValidName || value === "" ? "" : "El nombre debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
     }
     
     // Manejo especial para apellido
     if (name === "apellido") {
       const isValidName = validateName(value)
-      setApellidoError(isValidName || value === "" ? "" : "El apellido debe tener entre 2 y 20 caracteres y solo letras")
+      setApellidoError(isValidName || value === "" ? "" : "El apellido debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
     }
     
     // Manejo especial para password
@@ -157,6 +164,9 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Limpiar cualquier error del servidor anterior
+    setServerError("");
 
     // Verificaciones de validación
     if (!validateEmail(formData.email)) {
@@ -165,12 +175,12 @@ export default function RegisterForm() {
     }
 
     if (!validateName(formData.nombre)) {
-      setNombreError("El nombre debe tener entre 2 y 20 caracteres y solo letras")
+      setNombreError("El nombre debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
       return
     }
 
     if (!validateName(formData.apellido)) {
-      setApellidoError("El apellido debe tener entre 2 y 20 caracteres y solo letras")
+      setApellidoError("El apellido debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
       return
     }
 
@@ -185,7 +195,6 @@ export default function RegisterForm() {
     }
 
     try {
-
       setIsLoading(true)
 
       console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
@@ -209,7 +218,22 @@ export default function RegisterForm() {
       
     } catch (error) {
       console.error('Error en el registro:', error);
-      // Aquí podrías manejar errores específicos o mostrar mensajes al usuario
+      
+      // Mostrar mensaje de error del servidor
+      if (error.response && error.response.data) {
+        // Mostrar directamente el mensaje de error desde la respuesta
+        if (error.response.data.message) {
+          setServerError(error.response.data.message);
+        } else if (error.response.data.errors && error.response.data.errors.length > 0) {
+          setServerError(error.response.data.errors[0].msg);
+        } else {
+          // Si hay datos pero no en el formato esperado, convertirlos a string
+          setServerError(JSON.stringify(error.response.data));
+        }
+      } else {
+        setServerError("Ocurrió un error en el registro. Inténtalo de nuevo más tarde.");
+      }
+      
     } finally {
       setIsLoading(false)
     }
@@ -234,6 +258,13 @@ export default function RegisterForm() {
           </Link>
 
         <h1 className="register-title">Crear Cuenta</h1>
+        
+        {/* Mostrar mensaje de error del servidor si existe */}
+        {serverError && (
+          <div className="server-error-message">
+            {serverError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
@@ -384,12 +415,12 @@ export default function RegisterForm() {
           </div>
 
           <button 
-  type="submit" 
-  className={`register-button ${isLoading ? "loading" : ""}`}
-  disabled={isLoading}
->
-  {isLoading ? "Cargando" : "Registrarse"}
-</button>
+            type="submit" 
+            className={`register-button ${isLoading ? "loading" : ""}`}
+            disabled={isLoading}
+          >
+            {isLoading ? "Cargando" : "Registrarse"}
+          </button>
         </form>
 
         <div className="login-prompt">
@@ -401,4 +432,4 @@ export default function RegisterForm() {
       </div>
     </div>
   )
-}
+} 

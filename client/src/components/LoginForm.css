@@ -184,3 +184,13 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.server-error-message {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid #f87171;
+}
