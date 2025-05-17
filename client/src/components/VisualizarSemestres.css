@@ -254,3 +254,14 @@ html, body {
         transform: translateX(0);
     }
 }
+
+.lupa-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.search-button:hover .lupa-icon {
+  transform: scale(1.1);
+}

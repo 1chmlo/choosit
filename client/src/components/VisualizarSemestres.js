@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import "./VisualizarSemestres.css"
 import { REACT_APP_BACKEND_URL } from "../config"
+import lupaIcon from "./Recurso_1lupa.svg"
 
 export default function Semesters() {
   const [expandedSemesters, setExpandedSemesters] = useState({})
@@ -98,9 +99,9 @@ export default function Semesters() {
       <p className="semesters-subtitle">Explora el contenido por semestre</p>
 
       <div className={`search-wrapper-inline ${searchOpen ? "expanded" : ""}`}>
-        <button className="search-button" onClick={() => setSearchOpen(!searchOpen)}>
-          🔍
-        </button>
+              <button className="search-button" onClick={() => setSearchOpen(!searchOpen)}>
+                <img src={lupaIcon} alt="Buscar" className="lupa-icon" />
+              </button>
         {searchOpen && (
           <input
             type="text"
