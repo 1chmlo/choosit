@@ -99,16 +99,17 @@ export const search_subject = async (req, res) => {
 };
 
 export const subject_all = async (req, res) => {
-  const { id } = req.params;
+  const { codigo } = req.params;
   try {
     const asignaturaQuery = await pool.query(
-      `SELECT codigo, nombre, n_encuestas, lab, controles, proyecto, cfg
-      FROM asignaturas WHERE id = $1`,
-      [id]
+      `SELECT id, codigo, nombre, n_encuestas, lab, controles, proyecto, cfg
+      FROM asignaturas WHERE codigo = $1`,
+      [codigo]
     );
-    if(asignaturaQuery.rows.length === 0) return res.status(404).json({ok: false, message: "Asignatura no encontrada bajo tal id"});
+    if(asignaturaQuery.rows.length === 0) return res.status(404).json({ok: false, message: "Asignatura no encontrada bajo tal codigo"});
     const asignatura = asignaturaQuery.rows[0];
-    const comentariosQuery = await pool.query( //  Queda pendiente qué reputacion hay que utilizar, la de comentarios o la de usuario
+    const id = asignatura.id;
+    const comentariosQuery = await pool.query(
       `SELECT u.nombre, u.apellido, c.fecha, c.reputacion, c.texto
       FROM comentarios AS c
       JOIN usuarios AS u ON c.id_usuario = u.id

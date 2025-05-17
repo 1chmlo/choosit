@@ -7,6 +7,6 @@ router.get('/', get_all_subjects);
 router.post('/',ValidateCreateAsignatura, add_subject);
 router.patch('/:id',ValidateUpdateAsignatura, modify_subject);
 router.get('/buscar',ValidateSearch, search_subject);
-router.get('/asignaturas/:id/all', subject_all);
+router.get('/:codigo/all', subject_all);
 
 export default router;
