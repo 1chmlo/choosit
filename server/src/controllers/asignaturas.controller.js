@@ -97,3 +97,28 @@ export const search_subject = async (req, res) => {
   }
 
 };
+
+export const subject_all = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const asignaturaQuery = await pool.query(
+      `SELECT codigo, nombre, n_encuestas, lab, controles, proyecto, cfg
+      FROM asignaturas WHERE id = $1`,
+      [id]
+    );
+    if(asignaturaQuery.rows.length === 0) return res.status(404).json({ok: false, message: "Asignatura no encontrada bajo tal id"});
+    const asignatura = asignaturaQuery.rows[0];
+    const comentariosQuery = await pool.query( //  Queda pendiente qué reputacion hay que utilizar, la de comentarios o la de usuario
+      `SELECT u.nombre, u.apellido, c.fecha, c.reputacion, c.texto
+      FROM comentarios AS c
+      JOIN usuarios AS u ON c.id_usuario = u.id
+      WHERE c.id_asignatura = $1`,
+      [id]
+    );
+    asignatura.comentarios = comentariosQuery.rows;
+    res.status(200).json({ok: true, asignatura});
+  } catch (error){
+    console.error('Error al buscar asignatura', error);
+    res.status(500).json({error: 'Error interno del servidor.'});
+  }
+}
