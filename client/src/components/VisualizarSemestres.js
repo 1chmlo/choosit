@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom" // Añadido para la navegación
 import "./VisualizarSemestres.css"
 import { REACT_APP_BACKEND_URL } from "../config"
 import lupaIcon from "./Recurso_1lupa.svg"
 
 export default function Semesters() {
+  const navigate = useNavigate() // Hook para la navegación
   const [expandedSemesters, setExpandedSemesters] = useState({})
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -87,10 +89,9 @@ export default function Semesters() {
   }, [searchTerm, filteredSemesters])
 
   const handleCursoClick = (asignatura) => {
-    // Aquí puedes implementar lo que ocurre al hacer clic en un curso
-    console.log("Curso seleccionado:", asignatura)
-    // Por ejemplo, podrías abrir un modal con detalles del curso
-    // o navegar a una página de detalles
+    // Navegar a la página de visualización de asignatura con el código como parámetro
+    console.log("Navegando a:", `/visualizar-asignatura?id=${asignatura.codigo}`)
+    navigate(`/visualizar-asignatura?id=${asignatura.codigo}`)
   }
 
   return (
