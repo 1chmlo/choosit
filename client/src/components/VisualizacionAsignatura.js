@@ -15,7 +15,7 @@ const VisualizacionAsignatura = () => {
       return;
     }
 
-    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`)
+    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`) // Variable de entorno
       .then((res) => {
         if (!res.ok) throw new Error('Asignatura no encontrada');
         return res.json();
