@@ -6,10 +6,11 @@ import HomeContent from './components/home';
 import Navbar from './components/navbar';
 import EmailVerification from './components/EmailVerification';
 import VisualizarSemestres from './components/VisualizarSemestres';
+import VisualizacionAsignatura from './components/VisualizacionAsignatura'; // ✅ Nuevo componente importado
 
-import { AuthProvider } from './context/AuthContext'; // auth context
+import { AuthProvider } from './context/AuthContext';
 
-function AppContent() { // controla el navbar segun la ruta, cuando está logeado se esconde login y register 
+function AppContent() {
   const location = useLocation();
   const hideNavbarPaths = ['/login', '/register', '/email-verification'];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
@@ -24,6 +25,7 @@ function AppContent() { // controla el navbar segun la ruta, cuando está logead
         <Route path="/home" element={<HomeContent />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
         <Route path="/email-verification" element={<EmailVerification />} />
+        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> {/* ✅ Nueva ruta */}
       </Routes>
     </div>
   );
@@ -31,8 +33,7 @@ function AppContent() { // controla el navbar segun la ruta, cuando está logead
 
 function App() {
   return (
-    <BrowserRouter> 
-      {/* auth context y browser router para mostrar componentes segun url*/}
+    <BrowserRouter>
       <AuthProvider>
         <AppContent />
       </AuthProvider>
@@ -41,3 +42,4 @@ function App() {
 }
 
 export default App;
+
