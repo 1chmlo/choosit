@@ -57,7 +57,7 @@ export const validateRegister = [
     .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
     .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
     
-    .isLength({ max: 100 }), // Verifica que la longitud mínima sea 10 y máxima 50
+    .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
 
     
   body('contrasena')
@@ -112,7 +112,30 @@ export const validateRegister = [
     .withMessage('El username debe seguir el formato nombre.apellido[numero]')
 
     .isLength({ min: 3, max: 41 }) // 41 porque nombre es 20, apellido es 20 y el punto es 1
-    .withMessage('El username debe tener entre 2 y 41 caracteres'),
+    .withMessage('El username debe tener entre 2 y 41 caracteres')
+
+    .custom((username, { req }) => {
+      const { email } = req.body;
+      const usernameMail = email.split('@')[0];
+      if (username !== usernameMail) return false
+      return true;
+    })
+    .withMessage('El username debe ser igual al email antes del @')
+    
+    .custom((username, { req }) => {
+      const nombre_username = username.split('.')[0];
+      if (nombre_username !== req.body.nombre) return false
+      return true;
+    })
+    .withMessage('El nombre del username debe coincidir con el nombre')
+
+    .custom((username, { req }) => {
+      const apellido_username = username.replace(/\d+$/, '').split('.')[1];
+      if (apellido_username !== req.body.apellido) return false
+      return true;
+    })
+    .withMessage('El apellido del username debe coincidir con el apellido')
+    ,
     
 
   body('anio_ingreso')

@@ -20,10 +20,6 @@ export const register = async (req, res) => {
 
   // "id", "reputacion", "activo", "verificado" se crean y manejan desde acá. No se reciben desde el front
   const {nombre, apellido, username, email, contrasena, anio_ingreso } = req.body;
-
-  //Validar que el nombre de usuario sea igual al email antes del @
-  const emailUsername = email.split('@')[0];
-  if (username !== emailUsername) return res.status(400).json({ message: 'El nombre de usuario debe ser igual al email antes del @' });
   
   //Validar que el usuario no exista
   const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1 or username = $2', [email, username]);
