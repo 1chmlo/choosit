@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
 import { transport, sendMail, sendVerificationEmail } from '../libs/mailer.js';
-import { BACKEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
+import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 
 
@@ -63,7 +63,7 @@ export const register = async (req, res) => {
 
   // Enviar correo de verificación
   // TODO: Validar que el email sea enviado y recibido de forma correcta
-  const mail = await sendVerificationEmail(email, username, token, `${BACKEND_URL}/api/auth/verify`)
+  const mail = await sendVerificationEmail(email, username, token, `${FRONTEND_URL}/verificar-correo`)
   console.log(mail); 
   
   return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
