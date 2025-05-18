@@ -11,8 +11,11 @@ export const get_all_comments = async (req, res) => { // Obtiene todos los comen
     }
 
 export const create_comment = async (req, res) => { // Crea un nuevo comentario
-    const { id_asignatura, id_usuario, fecha, reputacion, texto } = req.body;
+    const { id_asignatura, id_usuario, texto } = req.body;
     try {
+        const fecha = new Date().toISOString(); // Fecha actual en formato ISO
+        const reputacion = 0;
+
         const resultado = await pool.query(
             'INSERT INTO comentarios (id_asignatura, id_usuario, fecha, reputacion, texto) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [id_asignatura, id_usuario, fecha, reputacion, texto]

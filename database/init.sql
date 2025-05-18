@@ -13,7 +13,8 @@ CREATE TABLE usuarios (
   reputacion int,
   activo bool,
   verificado bool,
-  anio_ingreso int
+  anio_ingreso int,
+  created_at TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE TABLE asignaturas (

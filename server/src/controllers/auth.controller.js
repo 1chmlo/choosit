@@ -26,8 +26,16 @@ export const register = async (req, res) => {
   //Validar que el usuario no exista
   const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
   if (usuarioExistente.rows.length > 0) {
-    return res.status(400).json({ message: 'El usuario ya existe' });
-  }
+    const usuario = usuarioExistente.rows[0];
+    const isVerified = usuario.verificado; 
+    const isMenorQueUnDia = new Date(usuario.created_at) > new Date(Date.now() -  60 * 1000);
+    //Si el usuario existe, verificar si está verificado
+    if (isVerified || isMenorQueUnDia) return res.status(400).json({ message: 'El usuario ya existe' }); //protege el registro actual
+    // Si el usuario existe, no está verificado y ya pasaron 24hrs, eliminar el registro antiguo (para permitir al dueño real registrarse)
+    const usuario_eliminado = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING *', [usuario.id]);
+    const { id, nombre, apellido, username, email, contrasena, anio_ingreso } = usuario_eliminado.rows[0];
+    console.log(`Usuario no verificado antiguo eliminado: ${id, nombre, apellido, username, email, contrasena, anio_ingreso}`);
+}
 
   //hashear contraseña
   const contrasena_hasheada = await bcrypt.hash(contrasena, 10);
@@ -46,7 +54,7 @@ export const register = async (req, res) => {
   }
 
   // Obtener el id del nuevo usuario
-  const { id } = nuevoUsuario.rows[0];
+  const { id, created_at} = nuevoUsuario.rows[0];
 
 
 
@@ -58,7 +66,7 @@ export const register = async (req, res) => {
   const mail = await sendVerificationEmail(email, username, token, `${BACKEND_URL}/api/auth/verify`)
   console.log(mail); 
   
-  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }});
+  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
   }
   catch (error) {
     console.error('Error al registrar usuario:', error);
