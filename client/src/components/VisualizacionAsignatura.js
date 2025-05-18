@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "./VisualizacionAsignatura.css";
+import { REACT_APP_BACKEND_URL } from '../config';
 
 const VisualizacionAsignatura = () => {
   const [asignatura, setAsignatura] = useState(null);
@@ -14,7 +15,7 @@ const VisualizacionAsignatura = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/api/asignaturas/${codigo}/all`)
+    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`)
       .then((res) => {
         if (!res.ok) throw new Error('Asignatura no encontrada');
         return res.json();
