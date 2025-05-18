@@ -80,11 +80,11 @@ CREATE TABLE respuestas (
 );
 
 CREATE TABLE comentarios (
-  id uuid,
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   id_usuario uuid,
   id_asignatura uuid,
   reputacion int,
-  fecha date,
+  fecha timestamp,
   texto varchar(250),
   CONSTRAINT FK_comentario_id_usuario
     FOREIGN KEY (id_usuario)

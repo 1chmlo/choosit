@@ -136,8 +136,13 @@ export const verify = async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const { id } = decoded;
     // Actualizar el estado de verificación del usuario en la base de datos
-    await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
+    const result = await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
     
+    // Verificar si se actualizó alguna fila
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
