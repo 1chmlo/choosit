@@ -15,22 +15,30 @@ export const isAuthUserContent = (req, res) => {
 
 export const register = async (req, res) => {
   try{
-
-  
   // Aca no se realizan validaciones de los campos, porque el middleware de express-validator se encarga de eso
   // Se asume que el body ya fue validado y sanitizado por express-validator
 
   // "id", "reputacion", "activo", "verificado" se crean y manejan desde acá. No se reciben desde el front
   const {nombre, apellido, username, email, contrasena, anio_ingreso } = req.body;
+
+  //Validar que el nombre de usuario sea igual al email antes del @
+  const emailUsername = email.split('@')[0];
+  if (username !== emailUsername) return res.status(400).json({ message: 'El nombre de usuario debe ser igual al email antes del @' });
   
   //Validar que el usuario no exista
-  const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1 or username = $2', [email, username]);
+
   if (usuarioExistente.rows.length > 0) {
+
     const usuario = usuarioExistente.rows[0];
+
     const isVerified = usuario.verificado; 
+
     const isMenorQueUnDia = new Date(usuario.created_at) > new Date(Date.now() -  60 * 1000);
+
     //Si el usuario existe, verificar si está verificado
     if (isVerified || isMenorQueUnDia) return res.status(400).json({ message: 'El usuario ya existe' }); //protege el registro actual
+
     // Si el usuario existe, no está verificado y ya pasaron 24hrs, eliminar el registro antiguo (para permitir al dueño real registrarse)
     const usuario_eliminado = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING *', [usuario.id]);
     const { id, nombre, apellido, username, email, contrasena, anio_ingreso } = usuario_eliminado.rows[0];
@@ -40,8 +48,7 @@ export const register = async (req, res) => {
   //hashear contraseña
   const contrasena_hasheada = await bcrypt.hash(contrasena, 10);
 
-  //asignar id, reputacion, activo, verificado
-  //const id = uuidv4();
+  //asignar reputacion, activo, verificado
   const reputacion = 0;
   const activo = true;
   const verificado = false;
@@ -49,17 +56,13 @@ export const register = async (req, res) => {
   //insertar usuario en la base de datos
   const nuevoUsuario = await pool.query('INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [nombre, apellido, username, email, contrasena_hasheada, anio_ingreso, reputacion, activo, verificado]);
   
-  if (nuevoUsuario.rowCount === 0) {
-    return res.status(400).json({ message: 'Error al crear el usuario' });
-  }
+  if (nuevoUsuario.rowCount === 0) return res.status(400).json({ message: 'Error al crear el usuario' });
 
   // Obtener el id del nuevo usuario
   const { id, created_at} = nuevoUsuario.rows[0];
 
-
-
-   // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
-   const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
+  // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
+  const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
 
   // Enviar correo de verificación
   // TODO: Validar que el email sea enviado y recibido de forma correcta
@@ -67,8 +70,8 @@ export const register = async (req, res) => {
   console.log(mail); 
   
   return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
-  }
-  catch (error) {
+  
+  } catch (error) {
     console.error('Error al registrar usuario:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
