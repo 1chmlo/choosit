@@ -1,8 +1,12 @@
 import express from 'express';
 import {BACKEND_URL, FRONTEND_URL, PORT} from './config.js';
 import morgan from 'morgan';
+
+//RUTAS
 import authRoutes from "./routes/auth.routes.js";
 import asignaturasRoutes from "./routes/asignaturas.routes.js";
+import comentariosRoutes from "./routes/comentarios.routes.js";
+
 import coockieParser from 'cookie-parser';
 import cors from 'cors';
 
@@ -31,6 +35,7 @@ app.use(coockieParser());
 app.get('/', (req, res) => { res.json({  message: "BIENVENIDO", BACKEND_URL, FRONTEND_URL}) });
 app.use('/api/auth', authRoutes);
 app.use('/api/asignaturas', asignaturasRoutes);
+app.use('/api/comentarios', comentariosRoutes);
 
 //Descomentar cuando ya existan las rutas de asignaturas
 //app.use('/api/asignaturas', asignaturasRoutes);
