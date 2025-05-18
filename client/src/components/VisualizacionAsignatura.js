@@ -13,7 +13,7 @@ const VisualizacionAsignatura = () => {
       return;
     }
 
-    fetch(`/asignaturas/${idAsignatura}/all`)
+    fetch(`/api/asignaturas/{codigo}/all`)
       .then((res) => {
         if (!res.ok) throw new Error('Asignatura no encontrada');
         return res.json();
