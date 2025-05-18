@@ -102,7 +102,7 @@ export const subject_all = async (req, res) => {
   const { codigo } = req.params;
   try {
     const asignaturaQuery = await pool.query(
-      `SELECT id, codigo, nombre, n_encuestas, lab, controles, proyecto, cfg
+      `SELECT id, codigo, descripcion, nombre, n_encuestas, lab, controles, proyecto, cfg
       FROM asignaturas WHERE codigo = $1`,
       [codigo]
     );
