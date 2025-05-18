@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import "./VisualizacionAsignatura.css"
+import "./VisualizacionAsignatura.css";
+
 const VisualizacionAsignatura = () => {
   const [asignatura, setAsignatura] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const idAsignatura = urlParams.get('id');
+    const codigo = urlParams.get('id');
 
-    if (!idAsignatura) {
+    if (!codigo) {
       setError('No se ha especificado una asignatura');
       return;
     }
 
-    fetch(`/api/asignaturas/{codigo}/all`)
+    fetch(`http://localhost:3000/api/asignaturas/${codigo}/all`)
       .then((res) => {
         if (!res.ok) throw new Error('Asignatura no encontrada');
         return res.json();
       })
-      .then(setAsignatura)
+      .then((data) => {
+        if (data.ok) setAsignatura(data.asignatura);
+        else throw new Error();
+      })
       .catch(() => {
         setError('Error al cargar los datos de la asignatura');
       });
@@ -33,20 +37,6 @@ const VisualizacionAsignatura = () => {
       </div>
     );
   };
-
-  if (error) {
-    return (
-      <div className="container">
-        <div className="error-message">
-          <i className="fas fa-exclamation-triangle"></i>
-          <h2>{error}</h2>
-          <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!asignatura) return null;
 
   const mostrarMetodo = (id, valor) => (
     <span id={id}>
@@ -75,75 +65,93 @@ const VisualizacionAsignatura = () => {
     );
   };
 
+  if (error) {
+    return (
+      <div className="fondo-blanco">
+        <div className="container">
+          <div className="error-message">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h2>{error}</h2>
+            <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!asignatura) return null;
+
   const ratingsMap = Object.fromEntries(
     (asignatura.ratings || []).map((r) => [r.id_pregunta, r])
   );
 
   return (
-    <div className="container">
-      <header>
-        <h1 id="asignatura-nombre">{asignatura.nombre}</h1>
-      </header>
+    <div className="fondo-blanco">
+      <div className="container">
+        <header>
+          <h1 id="asignatura-nombre">{asignatura.nombre}</h1>
+        </header>
 
-      <main>
-        <section className="descripcion">
-          <h2>Descripción</h2>
-          <p id="asignatura-descripcion">{asignatura.descripcion}</p>
-          <div className="metodos-evaluacion">
-            {mostrarMetodo('lab', asignatura.lab)}
-            {mostrarMetodo('controles', asignatura.controles)}
-            {mostrarMetodo('proyecto', asignatura.proyecto)}
-            {mostrarMetodo('cfg', asignatura.cfg)}
-          </div>
-        </section>
+        <main>
+          <section className="descripcion">
+            <h2>Descripción</h2>
+            <p id="asignatura-descripcion">{asignatura.descripcion}</p>
+            <div className="metodos-evaluacion">
+              {mostrarMetodo('lab', asignatura.lab)}
+              {mostrarMetodo('controles', asignatura.controles)}
+              {mostrarMetodo('proyecto', asignatura.proyecto)}
+              {mostrarMetodo('cfg', asignatura.cfg)}
+            </div>
+          </section>
 
-        <section className="resumen-evaluacion">
-          <div className="evaluacion-box">
-            <h2 className="evaluacion-titulo">Resumen de Evaluaciones</h2>
-            {mostrarRating('dificultad', 'Dificultad:', ratingsMap['ID_PREGUNTA_DIFICULTAD'])}
-            {mostrarRating('tiempo', 'Tiempo requerido:', ratingsMap['ID_PREGUNTA_TIEMPO'])}
-            {mostrarRating('material', 'Calidad del material:', ratingsMap['ID_PREGUNTA_MATERIAL'])}
-          </div>
-          <div className="encuestas-info">
-            Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
-          </div>
-        </section>
+          <section className="resumen-evaluacion">
+            <div className="evaluacion-box">
+              <h2 className="evaluacion-titulo">Resumen de Evaluaciones</h2>
+              {mostrarRating('dificultad', 'Dificultad:', ratingsMap['ID_PREGUNTA_DIFICULTAD'])}
+              {mostrarRating('tiempo', 'Tiempo requerido:', ratingsMap['ID_PREGUNTA_TIEMPO'])}
+              {mostrarRating('material', 'Calidad del material:', ratingsMap['ID_PREGUNTA_MATERIAL'])}
+            </div>
+            <div className="encuestas-info">
+              Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
+            </div>
+          </section>
 
-        <section className="comentarios">
-          <h2>Comentarios</h2>
-          <div className="comentarios-container" id="comentarios-container">
-            {asignatura.comentarios?.length ? (
-              asignatura.comentarios.map((comentario, index) => {
-                const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
-                  year: 'numeric', month: 'long', day: 'numeric'
-                });
-                return (
-                  <div className="comentario-box" key={index}>
-                    <div className="comentario-header">
-                      <div className="user-avatar">
-                        <i className="fas fa-user-circle"></i>
-                      </div>
-                      <div className="user-info">
-                        <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
-                        <span className="comment-date">{fecha}</span>
-                      </div>
-                      <span className="user-reputation">
-                        Puntuación:
-                        <span className="user-stars">
-                          {'★'.repeat(comentario.reputacion)}{'☆'.repeat(5 - comentario.reputacion)}
+          <section className="comentarios">
+            <h2>Comentarios</h2>
+            <div className="comentarios-container" id="comentarios-container">
+              {asignatura.comentarios?.length ? (
+                asignatura.comentarios.map((comentario, index) => {
+                  const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                  });
+                  return (
+                    <div className="comentario-box" key={index}>
+                      <div className="comentario-header">
+                        <div className="user-avatar">
+                          <i className="fas fa-user-circle"></i>
+                        </div>
+                        <div className="user-info">
+                          <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
+                          <span className="comment-date">{fecha}</span>
+                        </div>
+                        <span className="user-reputation">
+                          Puntuación:
+                          <span className="user-stars">
+                            {'★'.repeat(comentario.reputacion)}{'☆'.repeat(5 - comentario.reputacion)}
+                          </span>
                         </span>
-                      </span>
+                      </div>
+                      <div className="comentario-texto">{comentario.texto}</div>
                     </div>
-                    <div className="comentario-texto">{comentario.texto}</div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="no-comments">No hay comentarios disponibles</div>
-            )}
-          </div>
-        </section>
-      </main>
+                  );
+                })
+              ) : (
+                <div className="no-comments">No hay comentarios disponibles</div>
+              )}
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   );
 };

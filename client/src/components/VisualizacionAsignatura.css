@@ -280,3 +280,7 @@ h2 {
     margin-right: 0;
   }
 }
+.fondo-blanco {
+  background-color: white;
+  min-height: 100vh;
+}

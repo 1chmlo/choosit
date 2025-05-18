@@ -6,7 +6,7 @@ import HomeContent from './components/home';
 import Navbar from './components/navbar';
 import EmailVerification from './components/EmailVerification';
 import VisualizarSemestres from './components/VisualizarSemestres';
-import VisualizacionAsignatura from './components/VisualizacionAsignatura'; // ✅ Nuevo componente importado
+import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
 
 import { AuthProvider } from './context/AuthContext';
 
@@ -25,7 +25,7 @@ function AppContent() {
         <Route path="/home" element={<HomeContent />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
         <Route path="/email-verification" element={<EmailVerification />} />
-        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> {/* ✅ Nueva ruta */}
+        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> 
       </Routes>
     </div>
   );
