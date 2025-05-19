@@ -10,6 +10,7 @@ import VisualizarSemestres from './components/VisualizarSemestres';
 import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
 
 import { AuthProvider } from './context/AuthContext';
+import Profile from './components/Profile';
 
 function AppContent() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function AppContent() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/home" element={<HomeContent />} />
+        <Route path="/perfil" element={<Profile />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/verificar-correo" element={<VerificarCorreo />} />
