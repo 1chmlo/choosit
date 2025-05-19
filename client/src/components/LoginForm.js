@@ -51,7 +51,7 @@ export default function LoginForm() {
 
       console.log("Inicio de sesión exitoso:", response.data);
       login();        // Marca usuario como logueado
-      navigate("/");  // Redirige a home
+      navigate("/visualizar-semestres");  // Redirige a home
 
     } catch (error) {
       console.error("Error en inicio de sesión:", error);
