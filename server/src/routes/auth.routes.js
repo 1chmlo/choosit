@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { isAuthUserContent, login, register, verify, logout } from '../controllers/auth.controller.js';
+import { me, login, register, verify, logout } from '../controllers/auth.controller.js';
 import { validateLogin, validateRegister, validateVerifyEmail } from '../middleware/validaciones/auth.validation.js';
 import { isAuthUser } from '../middleware/autorizacion/isAuthUser.js';
 
@@ -14,6 +14,6 @@ router.post('/login', validateLogin, login);
 
 router.post('/logout', isAuthUser, logout);
 
-router.get('/rutaprotegida', isAuthUser, isAuthUserContent);
+router.get('/me', isAuthUser, me);
 
 export default router;
