@@ -202,7 +202,7 @@ export const logout = async (req, res) => {
     // Eliminar la cookie que contiene el token
     res.clearCookie('token', {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
       path: '/'
     });

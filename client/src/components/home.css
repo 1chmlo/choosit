@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url('https://i.imgur.com/PTkEgwK.jpeg'); /*fondo udp*/
+  background-image: url('../../public/fondo_choosit.jpeg'); /*fondo udp*/
   background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
   background-position: center 40px;
   background-repeat: no-repeat;

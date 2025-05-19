@@ -5,7 +5,7 @@ import "./navbar.css";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -68,9 +68,6 @@ export default function Navbar() {
         <div className="nav-links-mobile">
           {isAuthenticated ? (
             <>
-              <div className="user-welcome">
-                Hola, {user?.nombre || 'Usuario'}
-              </div>
               <Link to="/visualizar-semestres" className="btn-outline" onClick={toggleMenu}>
                 Ver Asignaturas
               </Link>
