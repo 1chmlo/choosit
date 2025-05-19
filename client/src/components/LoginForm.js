@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { REACT_APP_BACKEND_URL } from "../config";
-import { useAuth } from "../context/AuthContext";  // Importa el contexto
+import { useAuth } from "../context/AuthContext";
 import "./LoginForm.css";
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const { login } = useAuth();   // Obtiene la función login del contexto
+  const { login, loading } = useAuth();
   const [showcontrasena, setShowcontrasena] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // Estado para mensajes de error del servidor
   const [serverError, setServerError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -19,7 +15,6 @@ export default function LoginForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Limpiar errores del servidor cuando el usuario empieza a escribir
     if (serverError) {
       setServerError("");
     }
@@ -32,44 +27,18 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Limpiar cualquier error del servidor anterior
     setServerError("");
 
     try {
-      setIsLoading(true);
-      const response = await axios.post(
-        `${REACT_APP_BACKEND_URL}/api/auth/login`,
-        {
-          email: formData.email,
-          contrasena: formData.contrasena,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log("Inicio de sesión exitoso:", response.data);
-      login();        // Marca usuario como logueado
-      navigate("/visualizar-semestres");  // Redirige a home
-
-    } catch (error) {
-      console.error("Error en inicio de sesión:", error);
+      const result = await login(formData.email, formData.contrasena);
       
-      // Mostrar mensaje de error del servidor
-      if (error.response && error.response.data) {
-        if (error.response.data.message) {
-          setServerError(error.response.data.message);
-        } else if (error.response.data.errors && error.response.data.errors.length > 0) {
-          setServerError(error.response.data.errors[0].msg);
-        } else {
-          setServerError(JSON.stringify(error.response.data));
-        }
+      if (result.success) {
+        navigate("/perfil");
       } else {
-        setServerError("Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde.");
+        setServerError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      setServerError("Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde.");
     }
   };
 
@@ -144,10 +113,10 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            className={`login-button ${isLoading ? "loading" : ""}`}
-            disabled={isLoading}
+            className={`login-button ${loading ? "loading" : ""}`}
+            disabled={loading}
           >
-            {isLoading ? (
+            {loading ? (
               <>
                 <span className="spinner"></span>
                 Cargando
