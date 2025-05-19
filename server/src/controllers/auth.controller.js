@@ -97,7 +97,7 @@ export const register = async (req, res) => {
   const mail = await sendVerificationEmail(email, username, token, `${FRONTEND_URL}/verificar-correo`)
   console.log(mail); 
   
-  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
+  return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
   
   } catch (error) {
     console.error('Error al registrar usuario:', error);
@@ -147,6 +147,7 @@ export const login = async (req, res) => {
 });
 
 return res.status(200).json({
+      ok: true,
       message: "Login exitoso",
       user: {
         id: usuarioExistente.id,
