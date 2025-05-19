@@ -35,9 +35,6 @@ export default function Navbar() {
         <div className="nav-links-desktop">
           {isAuthenticated ? (
             <>
-              <div className="user-welcome">
-                Hola, {user?.nombre || 'Usuario'}
-              </div>
               <Link to="/visualizar-semestres" className="btn-outline">
                 Ver Asignaturas
               </Link>
