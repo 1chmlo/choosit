@@ -113,7 +113,7 @@ export const validateRegister = [
 
     .isLength({ min: 3, max: 41 }) // 41 porque nombre es 20, apellido es 20 y el punto es 1
     .withMessage('El username debe tener entre 2 y 41 caracteres')
-
+/*
     .custom((username, { req }) => {
       const { email } = req.body;
       const usernameMail = email.split('@')[0];
@@ -134,7 +134,7 @@ export const validateRegister = [
       if (apellido_username !== req.body.apellido) return false
       return true;
     })
-    .withMessage('El apellido del username debe coincidir con el apellido')
+    .withMessage('El apellido del username debe coincidir con el apellido')*/
     ,
     
 
