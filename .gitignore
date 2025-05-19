@@ -3,3 +3,5 @@
 */.env           # one level deep
 */*/.env         # two levels deep
 **/.env          # any level (most comprehensive)
+client/.env
+server/.env
