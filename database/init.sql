@@ -36,7 +36,7 @@ CREATE TABLE tipo_pregunta (
 );
 
 CREATE TABLE preguntas (
-  id uuid PRIMARY KEY NOT NULL,
+  id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
   id_tipo uuid NOT NULL,
   pregunta varchar(20) NOT NULL,
   CONSTRAINT FK_pregunta_id_tipo
@@ -47,36 +47,28 @@ CREATE TABLE preguntas (
 
 CREATE TABLE encuestas (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
-  id_usuario uuid NOT NULL, 
+  id_tipo_pregunta NOT NULL, 
   id_asignatura uuid NOT NULL,
-  CONSTRAINT FK_encuesta_id_usuario
-    FOREIGN KEY (id_usuario)
-      REFERENCES usuarios(id)
-      ON DELETE CASCADE,
+  CONSTRAINT FK_encuesta_id_tipo_pregunta
+    FOREIGN KEY (id_tipo_pregunta)
+      REFERENCES tipo_pregunta(id),
   CONSTRAINT FK_encuesta_id_asignatura
     FOREIGN KEY (id_asignatura)
       REFERENCES asignaturas(id)
-      ON DELETE CASCADE
 );
 
-CREATE TABLE respuestas (
+CREATE TABLE evaluacion (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
-  id_encuesta uuid NOT NULL,
   id_pregunta uuid NOT NULL,
   id_usuario uuid NOT NULL,
   respuesta int NOT NULL,
   CONSTRAINT FK_respuestas_id_pregunta
     FOREIGN KEY (id_pregunta)
-      REFERENCES preguntas(id)
-      ON DELETE CASCADE,
-  CONSTRAINT FK_respuestas_id_encuesta
-    FOREIGN KEY (id_encuesta)
-      REFERENCES encuestas(id)
-      ON DELETE CASCADE,
+      REFERENCES preguntas(id),
+      
   CONSTRAINT FK_respuestas_id_usuario
     FOREIGN KEY (id_usuario)
       REFERENCES usuarios(id)
-      ON DELETE CASCADE
 );
 
 CREATE TABLE comentarios (
