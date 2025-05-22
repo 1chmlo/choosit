@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
-import { transport, sendMail, sendVerificationEmail } from '../libs/mailer.js';
+import { transport, sendMail, sendVerificationEmail, resendVerificationEmail } from '../libs/mailer.js';
 import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 
@@ -212,4 +212,25 @@ export const logout = async (req, res) => {
     console.error('Error al cerrar sesión:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
+}
+
+
+export const resendEmail = async (req, res) => {
+  
+  const userMail = req.body.email;
+
+  const user = await pool.query('SELECT * FROM usuarios WHERE email = $1', [userMail]);
+
+  if (user.rows.length === 0) return res.status(400).json({ ok:false, message: 'El usuario no existe' })
+  
+  const { id, username, activo, verificado } = user.rows[0];
+
+  if(verificado) return res.status(409).json({ok: false, message: 'El usuario ya está verificado'})
+  
+  // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
+  const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
+  
+  const mail = await resendVerificationEmail(userMail, username, token, `${FRONTEND_URL}/verificar-correo`)
+  
+  return res.status(200).json({ ok: true, message: 'Correo de verificación enviado correctamente'});
 }
