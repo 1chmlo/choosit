@@ -8,7 +8,7 @@ const router = Router();
 
 router.post('/register', validateRegister,register);
 
-router.post('/send-verification-email', validateResendEmail, resendEmail);
+router.post('/resend-verification-email', validateResendEmail, resendEmail);
 
 router.get('/verify', validateVerifyEmail, verify)
 

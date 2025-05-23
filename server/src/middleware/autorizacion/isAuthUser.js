@@ -1,6 +1,15 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../config.js";
 
+/**
+ * Middleware para verificar si el usuario está autenticado
+ * Requiere un token en las cookies
+ * El usuario debe tener rol usuario o admin
+ * El usuario debe estar activo
+ * El usuario debe estar verificado
+ * Si el token es válido, se decodifica y se pasan los datos al controlador en el request
+ */
+
 export const isAuthUser = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) return res.status(400).json({ ok: false, message: "No se ha proporcionado un token, inicia sesion"});

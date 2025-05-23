@@ -2,6 +2,8 @@ import { body, query, validationResult } from 'express-validator';
 
 /**
  * Middleware para validar campos de inicio de sesión
+ * @body('email') - email del usuario
+ * @body('contrasena') - contraseña del usuario
  */
 export const validateLogin = [
   body('email')
@@ -41,6 +43,12 @@ export const validateLogin = [
 
 /**
  * Middleware para validar campos de registro de usuario, es un arreglo de validaciones
+ * @body('email') - email del usuario
+ * @body('contrasena') - contraseña del usuario
+ * @body('nombre') - nombre del usuario
+ * @body('apellido') - apellido del usuario
+ * @body('username') - username del usuario
+ * @body('anio_ingreso') - año de ingreso del usuario
  */
 export const validateRegister = [
   body('email')
@@ -159,6 +167,10 @@ export const validateRegister = [
   }
 ];
 
+/**
+ * Middleware para validar campos de reenvio de email
+ * @body('email') - email del usuario
+ **/
 export const validateResendEmail = [
   body('email')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
@@ -186,6 +198,10 @@ export const validateResendEmail = [
   }
 ];
 
+/**
+ * Middleware para validar campos de verificacion de email
+ * @query('token') - token de verificacion
+ **/
 export const validateVerifyEmail = [
   query('token')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
