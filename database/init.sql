@@ -47,7 +47,7 @@ CREATE TABLE preguntas (
 
 CREATE TABLE encuestas (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
-  id_tipo_pregunta NOT NULL, 
+  id_tipo_pregunta uuid NOT NULL, 
   id_asignatura uuid NOT NULL,
   CONSTRAINT FK_encuesta_id_tipo_pregunta
     FOREIGN KEY (id_tipo_pregunta)

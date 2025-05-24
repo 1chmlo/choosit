@@ -23,7 +23,7 @@ router.post('/logout', isAuthUser, logout);
 
 router.get('/me', isAuthUser, me);
 
-router.get('/Changedata', isAuthUser, validateChangedata, Changedata );
+router.post('/Changedata', isAuthUser, validateChangedata, Changedata );
 
 
 export default router;
