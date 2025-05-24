@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { me, login, register, verify, logout, resendEmail, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
-import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail, validateForgotPassword } from '../middleware/validaciones/auth.validation.js';
+import { me, login, register, verify, logout, resendEmail, forgotPassword, resetPassword,Changedata } from '../controllers/auth.controller.js';
+import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail, validateForgotPassword, validateChangedata } from '../middleware/validaciones/auth.validation.js';
 import { isAuthUser } from '../middleware/autorizacion/isAuthUser.js';
 import { isAuthResetPassword } from '../middleware/autorizacion/isAuthResetPassword.js';
 
@@ -22,6 +22,8 @@ router.post('/login', validateLogin, login);
 router.post('/logout', isAuthUser, logout);
 
 router.get('/me', isAuthUser, me);
+
+router.get('/Changedata', isAuthUser, validateChangedata, Changedata );
 
 
 export default router;
