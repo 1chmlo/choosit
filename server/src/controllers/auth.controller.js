@@ -168,3 +168,34 @@ export const logout = async (req, res) => {
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
+
+export const deactivateUser = async (req, res) => {
+  try {
+    // Obtener el ID del usuario desde el token
+    const userId = req.userId;
+    
+    // Actualizar el estado del usuario a inactivo en la base de datos
+    const result = await pool.query(
+      'UPDATE usuarios SET activo = $1 WHERE id = $2 RETURNING id',
+      [false, userId]
+    );
+    
+    // Verificar si se actualizó correctamente
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    
+    // Limpiar la cookie del token
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/'
+    });
+    
+    return res.status(200).json({ message: 'Usuario desactivado correctamente' });
+  } catch (error) {
+    console.error('Error al desactivar usuario:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+}

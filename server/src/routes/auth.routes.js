@@ -14,6 +14,8 @@ router.post('/login', validateLogin, login);
 
 router.post('/logout', isAuthUser, logout);
 
+router.post('/deactivate', isAuthUser, deactivateUser); 
+
 router.get('/rutaprotegida', isAuthUser, isAuthUserContent);
 
 export default router;
