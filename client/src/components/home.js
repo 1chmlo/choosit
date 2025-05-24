@@ -11,8 +11,8 @@ export default function HomeContent() {
           <Link to="/visualizar-semestres" className="hero-button primary">
             Visualizar Asignaturas
           </Link>
-          <a href="#features" className="hero-button secondary">
-            Contactar   
+          <a href="#about" className="hero-button secondary">
+            ¿Qué es Choosit?   
           </a>
         </div>
       </div>
@@ -37,6 +37,26 @@ export default function HomeContent() {
             <h3 className="feature-title">Intuitivo</h3>
             <p className="feature-description">Interfaz fácil de usar diseñada para todos los estudiantes.</p>
           </div>
+        </div>
+      </div>
+
+      <div className="about-section" id="about">
+        <h2 className="section-title">¿Qué es Choosit?</h2>
+        <div className="about-content">
+          <p>
+            Choosit es una plataforma diseñada específicamente para estudiantes de la carrera de Ingeniería en Informática y 
+            Telecomunicaciones de la Universidad Diego Portales (UDP). La plataforma permite a los estudiantes:
+          </p>
+          <ul className="about-list">
+            <li>Realizar evaluaciones de los ramos cursados</li>
+            <li>Visualizar resúmenes estadísticos informativos sobre cada asignatura</li>
+            <li>Consultar métricas clave como nivel de dificultad, carga académica y calidad de la enseñanza</li>
+            <li>Acceder a opiniones y experiencias de otros estudiantes para tomar decisiones informadas sobre su planificación académica</li>
+          </ul>
+          <p>
+            El objetivo principal de Choosit es proporcionar información valiosa basada en experiencias reales que ayude a los 
+            estudiantes a tomar mejores decisiones en su trayectoria universitaria.
+          </p>
         </div>
       </div>
     </div>

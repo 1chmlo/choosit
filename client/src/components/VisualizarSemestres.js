@@ -1,21 +1,42 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom" 
 import "./VisualizarSemestres.css"
 import { REACT_APP_BACKEND_URL } from "../config"
+import lupaIcon from "./Recurso_1lupa.svg"
 
 export default function Semesters() {
+  const navigate = useNavigate()
   const [expandedSemesters, setExpandedSemesters] = useState({})
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [asignaturas, setAsignaturas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isAutoExpanding, setIsAutoExpanding] = useState(false)
 
   // Lista predefinida de todos los semestres (1 al 10)
-  const allSemesters = Array.from({ length: 10 }, (_, i) => i + 1)
+  const allSemesters = useMemo(() => Array.from({ length: 10 }, (_, i) => i + 1), [])
 
+  // Función para normalizar texto (ignora tildes y mayúsculas)
+  const normalizeText = useCallback((text) => {
+    if (!text) return '';
+    return text.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }, []);
+
+  // Función para verificar si una asignatura coincide con el término de búsqueda
+  const matchesSearch = useCallback((asignatura) => {
+    if (!asignatura) return false;
+    const term = normalizeText(searchTerm);
+    return (
+      normalizeText(asignatura.nombre).includes(term) ||
+      normalizeText(asignatura.codigo).includes(term)
+    );
+  }, [searchTerm, normalizeText]);
+
+  // Cargar asignaturas
   useEffect(() => {
     const fetchAsignaturas = async () => {
       try {
@@ -34,63 +55,91 @@ export default function Semesters() {
     fetchAsignaturas()
   }, [])
 
-  const toggleSemester = (semesterId) => {
+  // Toggle manual para un semestre
+  const toggleSemester = useCallback((semesterId) => {
     setExpandedSemesters((prev) => ({
       ...prev,
       [semesterId]: !prev[semesterId],
     }))
-  }
+  }, [])
 
-  // Función para normalizar texto (ignora tildes y mayúsculas)
-  const normalizeText = (text) =>
-    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-
-  // Función para verificar si una asignatura coincide con el término de búsqueda
-  const matchesSearch = (asignatura) => {
-    const term = normalizeText(searchTerm)
-    return (
-      normalizeText(asignatura.nombre).includes(term) ||
-      normalizeText(asignatura.codigo).includes(term)
-    )
-  }
-
-  // Organizar asignaturas por semestre
-  const asignaturasPorSemestre = {}
-
-  // Inicializar todos los semestres como arrays vacíos
-  allSemesters.forEach((sem) => {
-    asignaturasPorSemestre[sem] = []
-  })
-
-  // Llenar con asignaturas disponibles
-  asignaturas.forEach((asignatura) => {
-    asignaturasPorSemestre[asignatura.semestre].push(asignatura)
-  })
+  // Usar useMemo para evitar cálculos repetidos en cada renderizado
+  const asignaturasPorSemestre = useMemo(() => {
+    const semestreMap = {}
+    
+    // Inicializar todos los semestres como arrays vacíos
+    allSemesters.forEach((sem) => {
+      semestreMap[sem] = []
+    })
+    
+    // Llenar con asignaturas disponibles
+    asignaturas.forEach((asignatura) => {
+      if (asignatura && asignatura.semestre) {
+        semestreMap[asignatura.semestre].push(asignatura)
+      }
+    })
+    
+    return semestreMap
+  }, [asignaturas, allSemesters])
 
   // Filtrar semestres según el término de búsqueda
-  const filteredSemesters = allSemesters.filter((sem) => {
-    if (searchTerm.trim() === "") return true
+  const filteredSemesters = useMemo(() => {
+    return allSemesters.filter((sem) => {
+      if (searchTerm.trim() === "") return true
+      
+      const asignaturasEnSemestre = asignaturasPorSemestre[sem] || [];
+      return asignaturasEnSemestre.some((asignatura) => matchesSearch(asignatura))
+    })
+  }, [allSemesters, searchTerm, asignaturasPorSemestre, matchesSearch])
 
-    return asignaturasPorSemestre[sem]?.some(matchesSearch)
-  })
+  // Manejar cambios en el término de búsqueda
+  const handleSearchChange = useCallback((e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+    
+    // Si hay un término de búsqueda, marcar que vamos a auto-expandir
+    if (newSearchTerm.trim() !== "") {
+      setIsAutoExpanding(true);
+    }
+  }, []);
 
   // Expandir automáticamente los semestres que contienen resultados de búsqueda
   useEffect(() => {
-    if (searchTerm.trim() === "") return
+    // Solo ejecutar la lógica si está marcado para auto-expandir
+    if (!isAutoExpanding) return;
+    
+    // Resetear la marca para evitar ejecutar este efecto en ciclos futuros
+    setIsAutoExpanding(false);
+    
+    if (searchTerm.trim() === "") {
+      // Si se borró el término de búsqueda, no hacer nada más
+      return;
+    }
 
-    const autoExpanded = {}
+    // Expandir solo los semestres con resultados
+    const autoExpanded = {};
     filteredSemesters.forEach((sem) => {
-      autoExpanded[sem] = true
-    })
-    setExpandedSemesters(autoExpanded)
-  }, [searchTerm, filteredSemesters])
+      autoExpanded[sem] = true;
+    });
+    
+    // Actualizar estado preservando expansiones previas
+    setExpandedSemesters(prev => ({
+      ...prev,
+      ...autoExpanded
+    }));
+  }, [isAutoExpanding, filteredSemesters, searchTerm]);
 
-  const handleCursoClick = (asignatura) => {
-    // Aquí puedes implementar lo que ocurre al hacer clic en un curso
-    console.log("Curso seleccionado:", asignatura)
-    // Por ejemplo, podrías abrir un modal con detalles del curso
-    // o navegar a una página de detalles
-  }
+  // Manejar clic en asignatura
+  const handleCursoClick = useCallback((event, asignatura) => {
+    // Prevenir la propagación del evento para evitar conflictos
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Navegar a la página de visualización de asignatura con el código como parámetro
+    console.log("Navegando a:", `/visualizar-asignatura?id=${asignatura.codigo}`);
+    // Usar replace en lugar de navigate para evitar problemas con la pila de historial
+    navigate(`/visualizar-asignatura?id=${asignatura.codigo}`, { replace: true });
+  }, [navigate]);
 
   return (
     <div className="semesters-container">
@@ -99,15 +148,15 @@ export default function Semesters() {
 
       <div className={`search-wrapper-inline ${searchOpen ? "expanded" : ""}`}>
         <button className="search-button" onClick={() => setSearchOpen(!searchOpen)}>
-          🔍
+          <img src={lupaIcon} alt="Buscar" className="lupa-icon" />
         </button>
         {searchOpen && (
           <input
             type="text"
-            className="search-input"
+            className="search-input search-input-animated"
             placeholder="Buscar asignaturas..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         )}
       </div>
@@ -134,7 +183,6 @@ export default function Semesters() {
                 </button>
                 {expandedSemesters[semester] && (
                   <div className="semester-content">
-                    {/* Mostrar solo asignaturas que coincidan con la búsqueda si hay término activo */}
                     {(searchTerm.trim() === ""
                       ? asignaturasPorSemestre[semester]
                       : asignaturasPorSemestre[semester].filter(matchesSearch)
@@ -149,7 +197,7 @@ export default function Semesters() {
                           <div
                             key={asignatura.id}
                             className="course-card"
-                            onClick={() => handleCursoClick(asignatura)}
+                            onClick={(e) => handleCursoClick(e, asignatura)}
                           >
                             <h3 className="course-name">{asignatura.nombre}</h3>
                             <span className="course-code">{asignatura.codigo}</span>

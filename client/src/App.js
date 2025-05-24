@@ -4,12 +4,17 @@ import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import HomeContent from './components/home';
 import Navbar from './components/navbar';
-import EmailVerification from './components/EmailVerification'; // Importa el nuevo componente
-import VisualizarSemestres from './components/VisualizarSemestres'; // Importa el nuevo componente
-// Componente que decide si mostrar Navbar o no basado en la ruta
+import EmailVerification from './components/EmailVerification';
+import VerificarCorreo from './components/VerificarCorreo';
+import VisualizarSemestres from './components/VisualizarSemestres';
+import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
+
+import { AuthProvider } from './context/AuthContext';
+import Profile from './components/Profile';
+
 function AppContent() {
   const location = useLocation();
-  const hideNavbarPaths = ['/login', '/register', '/email-verification']; // Añade la nueva ruta aquí
+  const hideNavbarPaths = ['/login', '/register', '/email-verification', '/verificar-correo'];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
@@ -20,8 +25,11 @@ function AppContent() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/home" element={<HomeContent />} />
+        <Route path="/perfil" element={<Profile />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
-        <Route path="/email-verification" element={<EmailVerification />} /> {/* Añade esta nueva ruta */}
+        <Route path="/email-verification" element={<EmailVerification />} />
+        <Route path="/verificar-correo" element={<VerificarCorreo />} />
+        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> 
       </Routes>
     </div>
   );
@@ -30,7 +38,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

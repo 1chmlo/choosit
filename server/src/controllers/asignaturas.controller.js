@@ -12,7 +12,7 @@ export const get_all_subjects = async (req, res) => { // Obtiene todas las asign
 };
 
 export const add_subject = async (req, res) => { //Añade la asignatura
-  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
+  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {}; //<---- VER LO DE VALIDATION
 
   const Asignatura_existe = await pool.query(
     'SELECT * FROM asignaturas WHERE codigo = $1',
@@ -26,10 +26,10 @@ export const add_subject = async (req, res) => { //Añade la asignatura
   }
 
   const Nuevo_Ramo = await pool.query( // Crear asignatura
-    'INSERT INTO asignaturas (id, codigo, nombre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-    [codigo, nombre, descripcion, lab, controles, proyecto, cfg]
+    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+    [codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg]
   );
-
+  
   const {id} = Nuevo_Ramo.rows[0]; // Obtener el id del nuevo ramo
 
   if (Nuevo_Ramo.rowCount === 0) { // manejo de errores
@@ -40,15 +40,15 @@ export const add_subject = async (req, res) => { //Añade la asignatura
 
   res.status(201).json({ // Creacion correcta
     message: 'Ramo creado correctamente',
-    ramo: { id, codigo, nombre, descripcion, lab, controles, proyecto, cfg },
+    ramo: { id, codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg },
   });
 };
 
 export const modify_subject = async (req, res) => {
   const { id } = req.params;
-  const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
+  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
 
-  const datos_a_cambiar = { codigo, nombre, descripcion, lab, controles, proyecto, cfg };
+  const datos_a_cambiar = { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg };
   const campo_con_datos = [];
   const Valores = [];
   let posicion = 1;
@@ -97,3 +97,29 @@ export const search_subject = async (req, res) => {
   }
 
 };
+
+export const subject_all = async (req, res) => {
+  const { codigo } = req.params;
+  try {
+    const asignaturaQuery = await pool.query(
+      `SELECT id, codigo, descripcion, nombre, n_encuestas, lab, controles, proyecto, cfg
+      FROM asignaturas WHERE codigo = $1`,
+      [codigo]
+    );
+    if(asignaturaQuery.rows.length === 0) return res.status(404).json({ok: false, message: "Asignatura no encontrada bajo tal codigo"});
+    const asignatura = asignaturaQuery.rows[0];
+    const id = asignatura.id;
+    const comentariosQuery = await pool.query(
+      `SELECT u.nombre, u.apellido, c.fecha, c.reputacion, c.texto
+      FROM comentarios AS c
+      JOIN usuarios AS u ON c.id_usuario = u.id
+      WHERE c.id_asignatura = $1`,
+      [id]
+    );
+    asignatura.comentarios = comentariosQuery.rows;
+    res.status(200).json({ok: true, asignatura});
+  } catch (error){
+    console.error('Error al buscar asignatura', error);
+    res.status(500).json({error: 'Error interno del servidor.'});
+  }
+}

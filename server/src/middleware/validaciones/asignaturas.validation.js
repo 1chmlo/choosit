@@ -16,12 +16,19 @@ export const ValidateCreateAsignatura = [
     .withMessage('La Nombre es requerida')
     .isLength({ min: 8, max: 50 }) // Verifica que la longitud mínima sea 8 y maxima 50
     .withMessage('el nombre debe tener 8 y 50 caracteres'),
+    
+    body('semestre')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+    .notEmpty()
+    .withMessage('el semestre es requerida')
+    .isInt({min: 1, max:10})
+    .withMessage('el semestre debe ser un valor entero entre 1 y 10'),
 
   body('descripcion')
     .trim()
     .notEmpty()
     .withMessage('La asignatura debe tener descripcion')
-    .isLength({ max: 250 })
+    .isLength({ max: 500 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')
@@ -76,10 +83,16 @@ export const ValidateUpdateAsignatura = [
     .isLength({ min: 8, max: 50 }) // Verifica que la longitud mínima sea 8 y maxima 50
     .withMessage('el nombre debe tener 8 y 50 caracteres'),
 
+    body('semestre')
+    .optional()
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+    .isInt({min: 1, max:10})
+    .withMessage('el semestre debe ser un valor entero entre 1 y 10'),
+
   body('descripcion')
     .optional()
     .trim()
-    .isLength({ max: 250 })
+    .isLength({ max: 500 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
   body('lab')

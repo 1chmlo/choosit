@@ -238,3 +238,30 @@ html, body {
         font-size: 0.8rem;
     }
 }
+
+/* Animación para el input al aparecer */
+.search-input-animated {
+    animation: slideFadeIn 0.4s ease forwards;
+}
+
+@keyframes slideFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.lupa-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.search-button:hover .lupa-icon {
+  transform: scale(1.1);
+}

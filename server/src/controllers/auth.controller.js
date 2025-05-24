@@ -2,38 +2,43 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
-import { transport, sendMail, sendVerificationEmail } from '../libs/mailer.js';
-import { BACKEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
+import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail } from '../libs/mailer.js';
+import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
-
-
-export const isAuthUserContent = (req, res) => {
-  //console.log(req.userId, req.userUsername, req.userActivo, req.userVerificado);
-  return res.status(200).json({ message: "Ruta protegida", userId: req.userId, userUsername: req.userUsername, userActivo: req.userActivo, userVerificado: req.userVerificado });
-}
 
 
 export const register = async (req, res) => {
   try{
-
-  
   // Aca no se realizan validaciones de los campos, porque el middleware de express-validator se encarga de eso
   // Se asume que el body ya fue validado y sanitizado por express-validator
 
   // "id", "reputacion", "activo", "verificado" se crean y manejan desde acá. No se reciben desde el front
   const {nombre, apellido, username, email, contrasena, anio_ingreso } = req.body;
-  
+
   //Validar que el usuario no exista
-  const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1 or username = $2', [email, username]);
+
   if (usuarioExistente.rows.length > 0) {
-    return res.status(400).json({ message: 'El usuario ya existe' });
-  }
+
+    const usuario = usuarioExistente.rows[0];
+
+    const isVerified = usuario.verificado; 
+
+    const isMenorQueUnDia = new Date(usuario.created_at) > new Date(Date.now() -  60 * 1000);
+
+    //Si el usuario existe, verificar si está verificado
+    if (isVerified || isMenorQueUnDia) return res.status(400).json({ message: 'El usuario ya existe' }); //protege el registro actual
+
+    // Si el usuario existe, no está verificado y ya pasaron 24hrs, eliminar el registro antiguo (para permitir al dueño real registrarse)
+    const usuario_eliminado = await pool.query('DELETE FROM usuarios WHERE id = $1 RETURNING *', [usuario.id]);
+    const { id, nombre, apellido, username, email, contrasena, anio_ingreso } = usuario_eliminado.rows[0];
+    console.log(`Usuario no verificado antiguo eliminado: ${id, nombre, apellido, username, email, contrasena, anio_ingreso}`);
+}
 
   //hashear contraseña
   const contrasena_hasheada = await bcrypt.hash(contrasena, 10);
 
-  //asignar id, reputacion, activo, verificado
-  //const id = uuidv4();
+  //asignar reputacion, activo, verificado
   const reputacion = 0;
   const activo = true;
   const verificado = false;
@@ -41,26 +46,22 @@ export const register = async (req, res) => {
   //insertar usuario en la base de datos
   const nuevoUsuario = await pool.query('INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [nombre, apellido, username, email, contrasena_hasheada, anio_ingreso, reputacion, activo, verificado]);
   
-  if (nuevoUsuario.rowCount === 0) {
-    return res.status(400).json({ message: 'Error al crear el usuario' });
-  }
+  if (nuevoUsuario.rowCount === 0) return res.status(400).json({ message: 'Error al crear el usuario' });
 
   // Obtener el id del nuevo usuario
-  const { id } = nuevoUsuario.rows[0];
+  const { id, created_at} = nuevoUsuario.rows[0];
 
-
-
-   // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
-   const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
+  // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
+  const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
 
   // Enviar correo de verificación
   // TODO: Validar que el email sea enviado y recibido de forma correcta
-  const mail = await sendVerificationEmail(email, username, token, `${BACKEND_URL}/api/auth/verify`)
+  const mail = await sendVerificationEmail(email, username, token, `${FRONTEND_URL}/verificar-correo`)
   console.log(mail); 
   
-  return res.status(201).json({ message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado }});
-  }
-  catch (error) {
+  return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
+  
+  } catch (error) {
     console.error('Error al registrar usuario:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
@@ -108,6 +109,7 @@ export const login = async (req, res) => {
 });
 
 return res.status(200).json({
+      ok: true,
       message: "Login exitoso",
       user: {
         id: usuarioExistente.id,
@@ -115,7 +117,8 @@ return res.status(200).json({
         email: usuarioExistente.email,
         activo: usuarioExistente.activo,
         verificado: usuarioExistente.verificado
-      }
+      },
+      token
     });
 
 }
@@ -136,8 +139,13 @@ export const verify = async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const { id } = decoded;
     // Actualizar el estado de verificación del usuario en la base de datos
-    await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
+    const result = await pool.query('UPDATE usuarios SET verificado = $1 WHERE id = $2', [true, id]);
     
+    // Verificar si se actualizó alguna fila
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
@@ -157,7 +165,7 @@ export const logout = async (req, res) => {
     // Eliminar la cookie que contiene el token
     res.clearCookie('token', {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
       path: '/'
     });
@@ -168,6 +176,107 @@ export const logout = async (req, res) => {
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
+
+
+export const resendEmail = async (req, res) => {
+
+  try{
+  
+  const userMail = req.body.email;
+
+  const user = await pool.query('SELECT * FROM usuarios WHERE email = $1', [userMail]);
+
+  if (user.rows.length === 0) return res.status(400).json({ ok:false, message: 'El usuario no existe' })
+  
+  const { id, username, activo, verificado } = user.rows[0];
+
+  if(verificado) return res.status(409).json({ok: false, message: 'El usuario ya está verificado'})
+  
+  // Crear token de acceso, no se asigna a la cookie hasta que el usuario verifique su cuenta
+  const token = createAccessToken({id, username, activo, verificado, "rol": "usuario"});
+  
+  const mail = await resendVerificationEmail(userMail, username, token, `${FRONTEND_URL}/verificar-correo`)
+  
+  return res.status(200).json({ ok: true, message: 'Correo de verificación enviado correctamente'});
+
+  }catch (error) {
+    console.error('Error al reenviar correo de verificación:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+}
+
+
+/**
+ * 
+ * Recibe email en req.body y retorna un correo de restablecimiento de contraseña al usuario.
+ * Crea un token de acceso especial solo para restablecimiento de contraseña. (no da acceso a nada más)
+ */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validar que el usuario exista
+    const user = await pool.query('SELECT id, username FROM usuarios WHERE email = $1', [email]);
+
+    if (user.rows.length === 0) return res.status(400).json({ ok: false, message: 'El usuario no existe' });
+
+    const { id, username } = user.rows[0];
+
+    // Crear token de acceso para restablecimiento de contraseña
+    const token = createAccessToken({ id, username, "tipo": "reset-password" });
+    console.log("id", id) 
+
+    // Enviar correo de restablecimiento de contraseña
+    const emailResult = await sendResetPasswordEmail(
+      email,
+      username,
+      token,
+      `${FRONTEND_URL}/restablecer-contrasena`
+    );
+    
+    // Verificar si el correo se envió correctamente
+    if (!emailResult) {
+      return res.status(500).json({ ok: false, message: 'Error al enviar el correo de restablecimiento de contraseña' });
+    }
+    
+    // Verificar rejected array para asegurarse de que el correo no fue rechazado
+    if (emailResult.rejected && emailResult.rejected.length > 0) {
+      return res.status(500).json({ 
+        ok: false, 
+        message: 'El correo fue rechazado por el servidor de correo electrónico'
+      });
+    }
+    return res.status(200).json({ ok: true, message: 'Correo de restablecimiento de contraseña enviado correctamente' });
+  } catch (error) {
+    console.error('Error en forgotPassword:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  try {
+    const id = req.userId;
+    const { contrasena } = req.body;
+
+    // Hashear la nueva contraseña
+    const contrasenaHasheada = await bcrypt.hash(contrasena, 10);
+
+    // Actualizar la contraseña en la base de datos
+    const result = await pool.query('UPDATE usuarios SET contrasena = $1 WHERE id = $2', [contrasenaHasheada, id]);
+
+    // Verificar si se actualizó alguna fila
+    if (result.rowCount === 0) return res.status(404).json({ ok: false, message: 'Usuario no encontrado' });
+
+    return res.status(200).json({ ok: true, message: 'Contraseña restablecida correctamente' });
+
+  } catch (error) {
+    console.error('Error al restablecer la contraseña:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+}
+
+
+
 
 export const deactivateUser = async (req, res) => {
   try {

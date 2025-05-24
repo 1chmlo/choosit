@@ -46,6 +46,8 @@
   gap: 1rem;
 }
 
+
+
 .btn-outline,
 .btn-primary {
   padding: 0.5rem 1rem;
@@ -56,6 +58,7 @@
   transition: all 0.2s ease-in-out;
   min-width: 120px;
   text-align: center;
+  cursor: pointer;
 }
 
 .btn-outline {
@@ -89,6 +92,10 @@
   color: #ef4444;
 }
 
+.menu-toggle-icon {
+  font-size: 1.5rem;
+}
+
 /* Mobile menu links */
 .nav-links-mobile {
   display: none;
@@ -96,6 +103,17 @@
   background-color: white;
   padding: 1rem 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.nav-links-mobile .user-welcome {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 .nav-links-mobile .btn-outline,
@@ -117,4 +135,28 @@
   .nav-links-mobile {
     display: flex;
   }
+  
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+  
+  .logo-image {
+    height: 40px;
+  }
+}
+
+/* Active state for menu items */
+.btn-outline.active, 
+.btn-primary.active {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+/* Animation for mobile menu */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-links-mobile {
+  animation: slideDown 0.2s ease-out;
 }
