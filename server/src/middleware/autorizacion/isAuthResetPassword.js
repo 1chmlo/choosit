@@ -10,7 +10,7 @@ import { JWT_SECRET } from "../../config.js";
 
 export const isAuthResetPassword = (req, res, next) => {
     const token = req.cookies.token;
-    if (!token) return res.status(400).json({ ok: false, message: "No se ha proporcionado un token, inicia sesion"});
+    if (!token) return res.status(400).json({ ok: false, message: "No se recibió un token de autorización" });
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     //return res.json({decoded});

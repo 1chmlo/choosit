@@ -155,7 +155,8 @@ return res.status(200).json({
         email: usuarioExistente.email,
         activo: usuarioExistente.activo,
         verificado: usuarioExistente.verificado
-      }
+      },
+      token
     });
 
 }
@@ -235,7 +236,7 @@ export const resendEmail = async (req, res) => {
   const mail = await resendVerificationEmail(userMail, username, token, `${FRONTEND_URL}/verificar-correo`)
   
   return res.status(200).json({ ok: true, message: 'Correo de verificación enviado correctamente'});
-  
+
   }catch (error) {
     console.error('Error al reenviar correo de verificación:', error);
     return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
@@ -260,7 +261,8 @@ export const forgotPassword = async (req, res) => {
     const { id, username } = user.rows[0];
 
     // Crear token de acceso para restablecimiento de contraseña
-    const token = createAccessToken({ id, username, "type": "reset-password" });
+    const token = createAccessToken({ id, username, "tipo": "reset-password" });
+    console.log("id", id) 
 
     // Enviar correo de restablecimiento de contraseña
     const emailResult = await sendResetPasswordEmail(
@@ -285,6 +287,28 @@ export const forgotPassword = async (req, res) => {
     return res.status(200).json({ ok: true, message: 'Correo de restablecimiento de contraseña enviado correctamente' });
   } catch (error) {
     console.error('Error en forgotPassword:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  try {
+    const id = req.userId;
+    const { contrasena } = req.body;
+
+    // Hashear la nueva contraseña
+    const contrasenaHasheada = await bcrypt.hash(contrasena, 10);
+
+    // Actualizar la contraseña en la base de datos
+    const result = await pool.query('UPDATE usuarios SET contrasena = $1 WHERE id = $2', [contrasenaHasheada, id]);
+
+    // Verificar si se actualizó alguna fila
+    if (result.rowCount === 0) return res.status(404).json({ ok: false, message: 'Usuario no encontrado' });
+
+    return res.status(200).json({ ok: true, message: 'Contraseña restablecida correctamente' });
+
+  } catch (error) {
+    console.error('Error al restablecer la contraseña:', error);
     return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
   }
 }
