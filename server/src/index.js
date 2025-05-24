@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import authRoutes from "./routes/auth.routes.js";
 import asignaturasRoutes from "./routes/asignaturas.routes.js";
 import comentariosRoutes from "./routes/comentarios.routes.js";
+import usersRoutes from "./routes/users.routes.js";
 
 import coockieParser from 'cookie-parser';
 import cors from 'cors';
@@ -36,6 +37,7 @@ app.get('/', (req, res) => { res.json({  message: "BIENVENIDO", BACKEND_URL, FRO
 app.use('/api/auth', authRoutes);
 app.use('/api/asignaturas', asignaturasRoutes);
 app.use('/api/comentarios', comentariosRoutes);
+app.use('/api/users', usersRoutes);
 
 //Descomentar cuando ya existan las rutas de asignaturas
 //app.use('/api/asignaturas', asignaturasRoutes);

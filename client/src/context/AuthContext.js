@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       // axios will automatically send cookies with the request
-      const { data } = await axios.get(`${REACT_APP_BACKEND_URL}/api/auth/me`, { 
+      const { data } = await axios.get(`${REACT_APP_BACKEND_URL}/api/users/me`, { 
         withCredentials: true 
       });
       
