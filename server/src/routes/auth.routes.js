@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { me, login, register, verify, logout, resendEmail } from '../controllers/auth.controller.js';
-import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail } from '../middleware/validaciones/auth.validation.js';
+import { me, login, register, verify, logout, resendEmail, forgotPassword } from '../controllers/auth.controller.js';
+import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail, validateForgotPassword } from '../middleware/validaciones/auth.validation.js';
 import { isAuthUser } from '../middleware/autorizacion/isAuthUser.js';
+import { isAuthResetPassword } from '../middleware/autorizacion/isAuthResetPassword.js';
 
 
 const router = Router();
@@ -9,6 +10,8 @@ const router = Router();
 router.post('/register', validateRegister,register);
 
 router.post('/resend-verification-email', validateResendEmail, resendEmail);
+
+router.post('/forgot-password', validateForgotPassword, forgotPassword);
 
 router.get('/verify', validateVerifyEmail, verify)
 

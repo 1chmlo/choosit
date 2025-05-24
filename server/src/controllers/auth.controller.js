@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
-import { transport, sendMail, sendVerificationEmail, resendVerificationEmail } from '../libs/mailer.js';
+import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail } from '../libs/mailer.js';
 import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 
@@ -233,4 +233,34 @@ export const resendEmail = async (req, res) => {
   const mail = await resendVerificationEmail(userMail, username, token, `${FRONTEND_URL}/verificar-correo`)
   
   return res.status(200).json({ ok: true, message: 'Correo de verificación enviado correctamente'});
+}
+
+
+/**
+ * 
+ * Recibe email en req.body y retorna un correo de restablecimiento de contraseña al usuario.
+ * Crea un token de acceso especial solo para restablecimiento de contraseña. (no da acceso a nada más)
+ */
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  // Validar que el usuario exista
+  const user = await pool.query('SELECT id, username FROM usuarios WHERE email = $1', [email]);
+
+  if (user.rows.length === 0) return res.status(400).json({ ok: false, message: 'El usuario no existe' });
+
+  const { id, username } = user.rows[0];
+
+  // Crear token de acceso para restablecimiento de contraseña
+  const token = createAccessToken({ id, username, "type": "reset-password" });
+
+  // Enviar correo de restablecimiento de contraseña
+  const sended_email = sendResetPasswordEmail(
+    email,
+    username,
+    token,
+    `${FRONTEND_URL}/restablecer-contrasena`
+  );
+
+  return res.status(200).json({ ok: true, message: 'Correo de restablecimiento de contraseña enviado correctamente' });
 }

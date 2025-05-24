@@ -221,3 +221,34 @@ export const validateVerifyEmail = [
   }
 ];
 
+/**
+ * Middleware para validar campos de reenvio de email
+ * @body('email') - email del usuario
+ **/
+export const validateForgotPassword = [
+  body('email')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
+    .notEmpty()
+    .withMessage('El email es requerido')
+
+    .isEmail()
+    .withMessage('Ingrese un email válido')
+
+    .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
+
+    .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
+    
+    .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
+
+    
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
