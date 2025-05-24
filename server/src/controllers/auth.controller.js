@@ -216,6 +216,8 @@ export const logout = async (req, res) => {
 
 
 export const resendEmail = async (req, res) => {
+
+  try{
   
   const userMail = req.body.email;
 
@@ -233,6 +235,11 @@ export const resendEmail = async (req, res) => {
   const mail = await resendVerificationEmail(userMail, username, token, `${FRONTEND_URL}/verificar-correo`)
   
   return res.status(200).json({ ok: true, message: 'Correo de verificación enviado correctamente'});
+  
+  }catch (error) {
+    console.error('Error al reenviar correo de verificación:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
 }
 
 
@@ -242,25 +249,42 @@ export const resendEmail = async (req, res) => {
  * Crea un token de acceso especial solo para restablecimiento de contraseña. (no da acceso a nada más)
  */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  // Validar que el usuario exista
-  const user = await pool.query('SELECT id, username FROM usuarios WHERE email = $1', [email]);
+    // Validar que el usuario exista
+    const user = await pool.query('SELECT id, username FROM usuarios WHERE email = $1', [email]);
 
-  if (user.rows.length === 0) return res.status(400).json({ ok: false, message: 'El usuario no existe' });
+    if (user.rows.length === 0) return res.status(400).json({ ok: false, message: 'El usuario no existe' });
 
-  const { id, username } = user.rows[0];
+    const { id, username } = user.rows[0];
 
-  // Crear token de acceso para restablecimiento de contraseña
-  const token = createAccessToken({ id, username, "type": "reset-password" });
+    // Crear token de acceso para restablecimiento de contraseña
+    const token = createAccessToken({ id, username, "type": "reset-password" });
 
-  // Enviar correo de restablecimiento de contraseña
-  const sended_email = sendResetPasswordEmail(
-    email,
-    username,
-    token,
-    `${FRONTEND_URL}/restablecer-contrasena`
-  );
-
-  return res.status(200).json({ ok: true, message: 'Correo de restablecimiento de contraseña enviado correctamente' });
+    // Enviar correo de restablecimiento de contraseña
+    const emailResult = await sendResetPasswordEmail(
+      email,
+      username,
+      token,
+      `${FRONTEND_URL}/restablecer-contrasena`
+    );
+    
+    // Verificar si el correo se envió correctamente
+    if (!emailResult) {
+      return res.status(500).json({ ok: false, message: 'Error al enviar el correo de restablecimiento de contraseña' });
+    }
+    
+    // Verificar rejected array para asegurarse de que el correo no fue rechazado
+    if (emailResult.rejected && emailResult.rejected.length > 0) {
+      return res.status(500).json({ 
+        ok: false, 
+        message: 'El correo fue rechazado por el servidor de correo electrónico'
+      });
+    }
+    return res.status(200).json({ ok: true, message: 'Correo de restablecimiento de contraseña enviado correctamente' });
+  } catch (error) {
+    console.error('Error en forgotPassword:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
 }
