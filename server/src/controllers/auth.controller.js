@@ -275,40 +275,4 @@ export const resetPassword = async (req, res) => {
   }
 }
 
-export const Changedata = async (req, res) => {
-  try{
-  const userId = req.userId; //Obtiene el id del usuario para trabajar con el
-
-  const {nombre, apellido,anio_ingreso, contrasena} = req.body || {};
-  const datos_a_cambiar = {nombre, apellido,anio_ingreso, contrasena};
-
-  if (datos_a_cambiar.contrasena !== undefined) {
-      datos_a_cambiar.contrasena = await bcrypt.hash(datos_a_cambiar.contrasena, 10);
-    }
-
-  const campo_con_datos = [];
-  const Valores = [];
-  let posicion = 1;
-
-  for (const llave in datos_a_cambiar) { // Verifica si hay datos en la consulta para armar una query dinamica
-    if (datos_a_cambiar[llave] !== undefined) {
-      campo_con_datos.push(`${llave} = $${posicion}`);
-      Valores.push(datos_a_cambiar[llave]);
-      posicion++;
-    }
-  }
-  Valores.push(userId); 
-  const query = `UPDATE usuarios SET ${campo_con_datos.join(', ')} WHERE id = $${posicion}`;
-
-  await pool.query(query, Valores);
-
-  if (result.rowCount === 0) return res.status(404).json({ ok: false, message: 'Usuario no encontrado' });
-
-  return res.status(200).json({ ok: true, message: 'Datos cambiados correctamente' });
-
-  } catch (error) {
-    console.error("Error al actualizar datos del usuario:", error);
-    res.status(500).json({ message: "Error interno del servidor." });
-  }
-}
 
