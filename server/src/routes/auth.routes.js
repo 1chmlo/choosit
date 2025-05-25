@@ -21,7 +21,6 @@ router.post('/login', validateLogin, login);
 
 router.post('/logout', isAuthUser, logout);
 
-<<<<<<< HEAD
 router.post('/deactivate', isAuthUser, deactivateUser); 
 
 export default router;
