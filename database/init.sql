@@ -31,7 +31,7 @@ CREATE TABLE asignaturas (
 );
 
 CREATE TABLE tipo_pregunta (
-  id uuid PRIMARY KEY NOT NULL,
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
   tipo varchar(50) NOT NULL
 );
 

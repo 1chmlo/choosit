@@ -1,7 +1,7 @@
 import { param, body,query, validationResult } from 'express-validator';
 
 export const validate_question_type = [
-  query('tipo_pregunta')
+  body('tipo_pregunta')
   .trim()
   .notEmpty()
   .withMessage('La el tipo de pregunta es requerido')
