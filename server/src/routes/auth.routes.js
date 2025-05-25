@@ -24,9 +24,4 @@ router.post('/logout', isAuthUser, logout);
 <<<<<<< HEAD
 router.post('/deactivate', isAuthUser, deactivateUser); 
 
-router.get('/rutaprotegida', isAuthUser, isAuthUserContent);
-=======
-
->>>>>>> b8b3c086152605ad25581153bda6905a268ff4c2
-
 export default router;

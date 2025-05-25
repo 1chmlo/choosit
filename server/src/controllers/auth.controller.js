@@ -275,9 +275,6 @@ export const resetPassword = async (req, res) => {
   }
 }
 
-
-
-
 export const deactivateUser = async (req, res) => {
   try {
     // Obtener el ID del usuario desde el token
