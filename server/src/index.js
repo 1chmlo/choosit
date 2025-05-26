@@ -41,9 +41,6 @@ app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/preguntas', preguntasRoutes);
 
-//Descomentar cuando ya existan las rutas de asignaturas
-//app.use('/api/asignaturas', asignaturasRoutes);
-
 app.listen(puerto)
 
 

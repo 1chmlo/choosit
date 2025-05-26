@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import {create_question_type } from '../controllers/preguntas.controller.js';
-import {validate_question_type} from '../middleware/validaciones/preguntas.validation.js';
+import {create_question, create_question_type, get_question_types, get_questions } from '../controllers/preguntas.controller.js';
+import {validateCreateQuestion, validateCreateQuestionType} from '../middleware/validaciones/preguntas.validation.js';
 
 const router = Router();
-router.post('/creartipopregunta',validate_question_type,create_question_type);
+router.post('/tipos',validateCreateQuestionType,create_question_type);
+router.get('/tipos', get_question_types);
+
+router.post('/', validateCreateQuestion, create_question);
+router.get('/', get_questions); 
 
 export default router;
