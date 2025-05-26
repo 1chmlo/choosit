@@ -86,13 +86,17 @@ export const login = async (req, res) => {
   //Validar contraseña
   const contrasenaValida = await bcrypt.compare(contrasena, contrasena_hasheada);
   if (!contrasenaValida) {
-    return res.status(400).json({ message: 'Contraseña incorrecta' });
+    return res.status(400).json({ ok:false, message: 'Contraseña incorrecta' });
   }
 
   //Validar que el usuario esté verificado
   if (!verificado) {
-    return res.status(400).json({ message: 'El usuario no está verificado' });
+    return res.status(400).json({ ok:false, message: 'El usuario no está verificado' });
   }
+
+  //Validar que el usuario esté activo
+  if (!usuarioExistente.activo) return res.status(403).json({ ok:false ,message: 'Cuenta desactivada' });
+
   const token = createAccessToken({
     id: usuarioExistente.id,
     username: usuarioExistente.username,
