@@ -1,9 +1,14 @@
 import { Router } from 'express';
-import { create_comment, get_all_comments } from '../controllers/comentarios.controller.js';
+import { create_comment, get_all_comments, get_all_reports, report_comment } from '../controllers/comentarios.controller.js';
+import { isAuthUser } from '../middleware/autorizacion/isAuthUser.js';
+import { validateReportComment } from '../middleware/validaciones/comentarios.validation.js';
 
 
 const router = Router();
 router.get('/', get_all_comments)
-router.post('/', create_comment)
+router.post('/', isAuthUser, create_comment)
+
+router.post('/reporte', isAuthUser, validateReportComment, report_comment);
+router.get('/reportes', get_all_reports)
 
 export default router;
