@@ -8,6 +8,7 @@ import asignaturasRoutes from "./routes/asignaturas.routes.js";
 import comentariosRoutes from "./routes/comentarios.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import preguntasRoutes from "./routes/preguntas.routes.js";
+import encuestasRoutes from "./routes/encuestas.routes.js";
 
 import coockieParser from 'cookie-parser';
 import cors from 'cors';
@@ -40,6 +41,7 @@ app.use('/api/asignaturas', asignaturasRoutes);
 app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/preguntas', preguntasRoutes);
+app.use('/api/encuestas', encuestasRoutes);
 
 app.listen(puerto)
 
