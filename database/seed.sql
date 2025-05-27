@@ -67,7 +67,27 @@ INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, 
   --created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 --);
 INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso) VALUES
-('Juan', 'Pérez', 'juan.perez', 'juanperez99@mail.udp.cl', 'juanperez99', 2022);
+('Juan', 'Pérez', 'juan.perez', 'juan.perez99@mail.udp.cl', 'juan.perez99', 2022),
+('Ana', 'Gómez', 'ana.gomez', 'ana.gomez@mail.udp.cl', 'ana.gomez123', 2021),
+('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', 'luis.martinez456', 2020);
+
+-- Crear tipos de preguntas
+INSERT INTO tipo_pregunta (tipo) VALUES
+('Proyecto'),
+('Controles'),
+('Solemnes'),
+('Laboratorio'),
+('Electivo');
+
+-- Insertar preguntas
+INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
+((SELECT id FROM tipo_pregunta WHERE tipo = 'Proyecto'), '¿Cómo calificarías la carga de trabajo del proyecto?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'Controles'), '¿Los controles fueron justos y bien distribuidos?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'Solemnes'), '¿Qué tan claros fueron los objetivos de los solemnes?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'Laboratorio'), '¿El laboratorio fue útil para entender los conceptos?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'Electivo'), '¿Recomendarías este curso como electivo?');
+
+
 
 -- Insertar comentarios usando SELECTs para obtener los UUIDs
 INSERT INTO comentarios (id_usuario, id_asignatura, texto) VALUES
