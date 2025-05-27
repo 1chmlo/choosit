@@ -1,8 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
-
-
-
 CREATE TABLE usuarios (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
   nombre varchar(20) NOT NULL,
@@ -110,10 +107,10 @@ CREATE TABLE reportes_comentarios (
 );
 
 CREATE TABLE respuestas_ponderadas (
-  id uuid PRIMARY KEY NOT NULL,
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
   id_asignatura uuid NOT NULL,
   id_pregunta uuid NOT NULL,
-  respuesta_calculada int NOT NULL,
+  respuesta_calculada numeric NOT NULL,
   CONSTRAINT FK_respuestas_ponderadas_id_asignatura
     FOREIGN KEY (id_asignatura)
       REFERENCES asignaturas(id)
@@ -121,5 +118,37 @@ CREATE TABLE respuestas_ponderadas (
   CONSTRAINT FK_respuestas_ponderadas_id_pregunta
     FOREIGN KEY (id_pregunta)
       REFERENCES preguntas(id)
-      ON DELETE CASCADE
+      ON DELETE CASCADE,
+  CONSTRAINT uniq_asig_preg
+    UNIQUE (id_asignatura, id_pregunta)
 );
+
+--  Funcion para trigger
+CREATE OR REPLACE FUNCTION recalcular_ponderaciones()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  new_promedio numeric;
+BEGIN
+  --  Se calcula nuevo promedio
+  SELECT COALESCE(AVG(e.respuesta), 0) INTO new_promedio
+  FROM evaluacion e
+  WHERE e.id_asignatura = NEW.id_asignatura
+  AND e.id_pregunta = NEW.id_pregunta;
+  --  Inserta en respuestas ponderadas, en caso de ya existir se actualiza
+  INSERT INTO respuestas_ponderadas(id_asignatura, id_pregunta, respuesta_calculada)
+  VALUES (NEW.id_asignatura, NEW.id_pregunta, new_promedio)
+  ON CONFLICT (id_asignatura, id_pregunta)
+  DO UPDATE
+    SET respuesta_calculada = EXCLUDED.respuesta_calculada;
+  
+  RETURN NEW;
+END;
+$$;
+--  Trigger
+CREATE TRIGGER tr_recalcular_ponderaciones
+AFTER INSERT OR UPDATE
+ON evaluacion
+FOR EACH ROW
+EXECUTE FUNCTION recalcular_ponderaciones();
