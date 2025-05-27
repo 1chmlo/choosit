@@ -8,6 +8,8 @@ import EmailVerification from './components/EmailVerification';
 import VerificarCorreo from './components/VerificarCorreo';
 import VisualizarSemestres from './components/VisualizarSemestres';
 import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
+import OlvideContrasena from './components/OlvideContrasena';
+import ReestablecerContrasena from './components/ReestablecerContrasena';
 
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
@@ -30,6 +32,8 @@ function AppContent() {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/verificar-correo" element={<VerificarCorreo />} />
         <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> 
+        <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 
+        <Route path="/restablecer-contrasena" element={<ReestablecerContrasena />} /> 
       </Routes>
     </div>
   );

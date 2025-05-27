@@ -1,0 +1,169 @@
+.forgot-password-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 20px;
+}
+
+.forgot-password-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  text-align: center;
+}
+
+/* Iconos */
+.lock-icon,
+.email-icon {
+  margin: 0 auto 24px;
+  width: 80px;
+  height: 80px;
+  background-color: #fee2e2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Títulos y textos */
+.forgot-title,
+.confirmation-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.forgot-subtitle,
+.confirmation-message {
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Formulario */
+.forgot-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.form-label {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+/* Botones */
+.submit-button,
+.resend-button {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover,
+.resend-button:hover {
+  background-color: #dc2626;
+}
+
+.back-button {
+  background-color: white;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: #fee2e2;
+}
+
+/* Información del email */
+.email-info {
+  background-color: #f9fafb;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+}
+
+.email-info p {
+  margin: 0;
+  color: #4b5563;
+}
+
+/* Acciones */
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.back-to-login {
+  text-align: center;
+}
+
+.login-link {
+  color: #4b5563;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  display: inline-block;
+}
+
+.login-link:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .forgot-password-card {
+    padding: 24px;
+  }
+
+  .forgot-title,
+  .confirmation-title {
+    font-size: 20px;
+  }
+
+  .forgot-subtitle,
+  .confirmation-message {
+    font-size: 14px;
+  }
+}

@@ -52,3 +52,32 @@ INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, 
 ('CIT-3203','Proyecto TICS II',10,'Curso en el que desarrollarás un proyecto real de tecnología de la información y comunicaciones. Aprenderás a planificar, gestionar y evaluar proyectos TI, considerando riesgos, calidad y contratos. Se fomentará el trabajo en equipo y la comunicación efectiva.',0 , false, true, false, false);
 --11vo semestre
 
+
+--CREATE TABLE usuarios (
+--  id UUID DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
+  --nombre varchar(20) NOT NULL,
+  --apellido varchar(20) NOT NULL,
+  --username varchar(20) UNIQUE NOT NULL,
+  --email varchar(100) UNIQUE NOT NULL,
+  --contrasena varchar(100) NOT NULL,
+  --reputacion int NOT NULL DEFAULT 0,
+  --activo bool NOT NULL DEFAULT true,
+  --verificado bool NOT NULL DEFAULT false,
+  --anio_ingreso int NOT NULL,
+  --created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+--);
+INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso) VALUES
+('Juan', 'Pérez', 'juan.perez', 'juanperez99@mail.udp.cl', 'juanperez99', 2022);
+
+-- Insertar comentarios usando SELECTs para obtener los UUIDs
+INSERT INTO comentarios (id_usuario, id_asignatura, texto) VALUES
+(
+  (SELECT id FROM usuarios WHERE username = 'juan.perez'),
+  (SELECT id FROM asignaturas WHERE codigo = 'CBQ-1000'),
+  'El profesor explica muy bien.'
+),
+(
+  (SELECT id FROM usuarios WHERE username = 'juan.perez'),
+  (SELECT id FROM asignaturas WHERE codigo = 'CIT-1000'),
+  'Demasiado material en poco tiempo.'
+);

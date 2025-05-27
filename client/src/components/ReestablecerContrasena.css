@@ -1,0 +1,255 @@
+.reset-password-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 20px;
+}
+
+.reset-password-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  text-align: center;
+}
+
+/* Iconos */
+.lock-icon,
+.success-icon {
+  margin: 0 auto 24px;
+  width: 80px;
+  height: 80px;
+  background-color: #fee2e2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-icon {
+  background-color: #d1fae5;
+}
+
+/* Títulos y textos */
+.reset-title,
+.success-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.reset-subtitle,
+.success-message {
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Formulario */
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.form-label {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+.input-error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Contenedor de contraseña */
+.password-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Indicador de fortaleza de contraseña */
+.password-strength {
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.password-strength.weak {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.password-strength.medium {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.password-strength.strong {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+/* Requisitos de contraseña */
+.password-requirements {
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.password-requirements h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.password-requirements ul {
+  margin: 0;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.password-requirements li {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.password-requirements li::before {
+  content: "✗";
+  color: #ef4444;
+  margin-right: 8px;
+}
+
+.password-requirements li.valid {
+  color: #10b981;
+}
+
+.password-requirements li.valid::before {
+  content: "✓";
+  color: #10b981;
+}
+
+/* Botones */
+.submit-button {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.submit-button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.login-button {
+  background-color: #ef4444;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-size: 16px;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #dc2626;
+}
+
+/* Acciones */
+.success-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.back-to-login {
+  text-align: center;
+}
+
+.login-link {
+  color: #4b5563;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  display: inline-block;
+}
+
+.login-link:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .reset-password-card {
+    padding: 24px;
+  }
+
+  .reset-title,
+  .success-title {
+    font-size: 20px;
+  }
+
+  .reset-subtitle,
+  .success-message {
+    font-size: 14px;
+  }
+}

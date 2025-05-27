@@ -93,7 +93,7 @@ export const ValidateUpdateAsignatura = [
     .optional()
     .trim()
     .isLength({ max: 500 })
-    .withMessage('Maximo 250 caractares de descripcion'),
+    .withMessage('Maximo 500 caractares de descripcion'),
 
   body('lab')
     .optional()

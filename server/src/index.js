@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.routes.js";
 import asignaturasRoutes from "./routes/asignaturas.routes.js";
 import comentariosRoutes from "./routes/comentarios.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import preguntasRoutes from "./routes/preguntas.routes.js";
+import encuestasRoutes from "./routes/encuestas.routes.js";
 
 import coockieParser from 'cookie-parser';
 import cors from 'cors';
@@ -38,9 +40,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/asignaturas', asignaturasRoutes);
 app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/users', usersRoutes);
-
-//Descomentar cuando ya existan las rutas de asignaturas
-//app.use('/api/asignaturas', asignaturasRoutes);
+app.use('/api/preguntas', preguntasRoutes);
+app.use('/api/encuestas', encuestasRoutes);
 
 app.listen(puerto)
 

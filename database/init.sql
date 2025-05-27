@@ -31,16 +31,16 @@ CREATE TABLE asignaturas (
 );
 
 CREATE TABLE tipo_pregunta (
-  id uuid PRIMARY KEY NOT NULL,
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
   tipo varchar(50) NOT NULL
 );
 
 CREATE TABLE preguntas (
   id uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-  id_tipo uuid NOT NULL,
-  pregunta varchar(20) NOT NULL,
+  id_tipo_pregunta uuid NOT NULL,
+  pregunta varchar(500) NOT NULL,
   CONSTRAINT FK_pregunta_id_tipo
-    FOREIGN KEY (id_tipo)
+    FOREIGN KEY (id_tipo_pregunta)
       REFERENCES tipo_pregunta(id)
       ON DELETE CASCADE
 );
@@ -85,6 +85,22 @@ CREATE TABLE comentarios (
   CONSTRAINT FK_comentario_id_asignatura
     FOREIGN KEY (id_asignatura)
       REFERENCES asignaturas(id)
+      ON DELETE CASCADE
+);
+
+CREATE TABLE reportes_comentarios (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
+  id_comentario uuid NOT NULL,
+  id_usuario uuid NOT NULL,
+  fecha TIMESTAMPTZ DEFAULT now() NOT NULL,
+  motivo varchar(500) NOT NULL,
+  CONSTRAINT FK_reporte_id_comentario
+    FOREIGN KEY (id_comentario)
+      REFERENCES comentarios(id)
+      ON DELETE CASCADE,
+  CONSTRAINT FK_reporte_id_usuario
+    FOREIGN KEY (id_usuario)
+      REFERENCES usuarios(id)
       ON DELETE CASCADE
 );
 

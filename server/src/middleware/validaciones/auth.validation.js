@@ -17,8 +17,8 @@ export const validateLogin = [
 
     .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
 
-    .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
-    .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[@mail.udp.cl, _letra@mail.udp.cl o numero@mail.udp.cl]')
     
     .isLength({ max: 100 }), // Verifica que la longitud mínima sea 10 y máxima 50
    
@@ -62,8 +62,8 @@ export const validateRegister = [
 
     .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
 
-    .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
-    .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[@mail.udp.cl, _letra@mail.udp.cl o numero@mail.udp.cl]')
     
     .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
 
@@ -116,8 +116,8 @@ export const validateRegister = [
     
     .customSanitizer(value => value.toLowerCase()) // Transforma el username a minúsculas
 
-    .matches(/^[a-z]+\.[a-z]+(\d+)?$/)
-    .withMessage('El username debe seguir el formato nombre.apellido[numero]')
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?$/)
+    .withMessage('El username debe seguir el formato nombre.apellido[, _letra o numero]')
 
     .isLength({ min: 3, max: 41 }) // 41 porque nombre es 20, apellido es 20 y el punto es 1
     .withMessage('El username debe tener entre 2 y 41 caracteres')
@@ -183,8 +183,8 @@ export const validateResendEmail = [
 
     .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
 
-    .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
-    .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[@mail.udp.cl, _letra@mail.udp.cl o numero@mail.udp.cl]')
     
     .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
 
@@ -237,8 +237,8 @@ export const validateForgotPassword = [
 
     .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
 
-    .matches(/^[a-z]+\.[a-z]+(\d+)?@mail\.udp\.cl$/)
-    .withMessage('El email debe seguir el formato nombre.apellido[numero]@mail.udp.cl')
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[@mail.udp.cl, _letra@mail.udp.cl o numero@mail.udp.cl]')
     
     .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
 
