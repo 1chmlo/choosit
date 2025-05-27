@@ -60,6 +60,7 @@ CREATE TABLE encuestas (
 CREATE TABLE evaluacion (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
   id_pregunta uuid NOT NULL,
+  id_asignatura uuid NOT NULL,
   id_usuario uuid NOT NULL,
   respuesta int NOT NULL,
   CONSTRAINT FK_respuestas_id_pregunta
@@ -69,6 +70,10 @@ CREATE TABLE evaluacion (
   CONSTRAINT FK_respuestas_id_usuario
     FOREIGN KEY (id_usuario)
       REFERENCES usuarios(id)
+
+  CONSTRAINT FK_respuestas_id_asignatura
+    FOREIGN KEY (id_asignatura)
+      REFERENCES asignaturas(id)
 );
 
 CREATE TABLE comentarios (
