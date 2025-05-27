@@ -25,6 +25,25 @@ export const create_comment = async (req, res) => {
       });
     }
     
+    // Lista de palabras prohibidas
+    const palabrasProhibidas = ['ql', 'puta', 'mierda', 'weon', 'ctm', 'maraco', 'csm', 'hueon', 'hueona', 'caca', 'pajero', 'pajera', 'pendejo', 'pendeja'];
+    
+   // Crear expresiones regulares para cada palabra
+const regexPalabrasProhibidas = palabrasProhibidas.map(palabra => 
+  new RegExp(`${palabra.split('').join('[\\s\\W_]*')}`, 'i')
+);
+
+// Verificar si contiene palabras prohibidas
+const contieneProhibida = regexPalabrasProhibidas.some(regex => 
+  regex.test(texto)
+);
+
+if (contieneProhibida) {
+  return res.status(400).json({
+    message: 'El comentario contiene lenguaje inapropiado'
+  });
+}
+
     // Establecer valores iniciales
     const reputacion = 0;
     const fecha = new Date();

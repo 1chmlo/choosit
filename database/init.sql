@@ -69,7 +69,7 @@ CREATE TABLE evaluacion (
       
   CONSTRAINT FK_respuestas_id_usuario
     FOREIGN KEY (id_usuario)
-      REFERENCES usuarios(id)
+      REFERENCES usuarios(id),
 
   CONSTRAINT FK_respuestas_id_asignatura
     FOREIGN KEY (id_asignatura)
