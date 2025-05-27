@@ -106,7 +106,7 @@ export default function LoginForm() {
           </div>
 
           <div className="forgot-contrasena">
-            <Link to="/reset-contrasena" className="forgot-link">
+            <Link to="/olvide-contrasena" className="forgot-link">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
