@@ -1,6 +1,6 @@
 import { param, body,query, validationResult } from 'express-validator';
 
-export const Validatedelete_encuesta = [
+export const ValidateDeleteEncuesta = [
     param('id_evaluacion')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .notEmpty()
