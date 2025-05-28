@@ -70,7 +70,10 @@ CREATE TABLE evaluacion (
 
   CONSTRAINT FK_respuestas_id_asignatura
     FOREIGN KEY (id_asignatura)
-      REFERENCES asignaturas(id)
+      REFERENCES asignaturas(id),
+  
+  CONSTRAINT respuesta_unica
+    UNIQUE (id_pregunta, id_asignatura, id_usuario)
 );
 
 CREATE TABLE comentarios (
