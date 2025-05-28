@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";  // importa auth context, useAuth para acceder a isLoggedin y logout
+import { useAuth } from "../context/AuthContext";
 import "./navbar.css";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  const handleLogout = () => {
-    logout();
-    setMenuOpen(false);
-    navigate("/login"); // redirige a login...
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      setMenuOpen(false);
+      navigate("/visualizar-semestres");
+    }
   };
 
   return (
@@ -31,10 +33,18 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="nav-links-desktop">
-          {isLoggedIn ? (
-            <button className="btn-primary" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
+          {isAuthenticated ? (
+            <>
+              <Link to="/visualizar-semestres" className="btn-outline">
+                Ver Asignaturas
+              </Link>
+              <Link to="/perfil" className="btn-outline">
+                Mi Perfil
+              </Link>
+              <button className="btn-primary" onClick={handleLogout}>
+                Cerrar Sesión
+              </button>
+            </>
           ) : (
             <>
               <Link to="/login" className="btn-outline">
@@ -56,16 +66,24 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="nav-links-mobile">
-          {isLoggedIn ? (
-            <button
-              className="btn-primary"
-              onClick={() => {
-                handleLogout();
-                setMenuOpen(false);
-              }}
-            >
-              Cerrar Sesión
-            </button>
+          {isAuthenticated ? (
+            <>
+              <Link to="/visualizar-semestres" className="btn-outline" onClick={toggleMenu}>
+                Ver Asignaturas
+              </Link>
+              <Link to="/perfil" className="btn-outline" onClick={toggleMenu}>
+                Mi Perfil
+              </Link>
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
+              >
+                Cerrar Sesión
+              </button>
+            </>
           ) : (
             <>
               <Link to="/login" className="btn-outline" onClick={toggleMenu}>

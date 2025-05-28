@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url('https://i.imgur.com/PTkEgwK.jpeg'); /*fondo udp*/
+  background-image: url('../../public/fondo_choosit.jpeg'); /*fondo udp*/
   background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
   background-position: center 40px;
   background-repeat: no-repeat;
@@ -10,6 +10,70 @@ body {
 }
 
 
+
+.about-list {
+  margin: 1.5rem 0;
+  padding-left: 1rem; /* Reducido de 2rem */
+  list-style-type: none; /* Elimina los puntos negros predeterminados */
+}
+
+.about-list li {
+  margin-bottom: 0.75rem;
+  color: #4b5563;
+  position: relative;
+  padding-left: 1.5em; /* Espacio para el marcador personalizado */
+}
+
+.about-list li::before {
+  content: "•";
+  color: #ef4444;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  width: 1em;
+  display: inline-block;
+  margin-left: 0; /* Eliminado el margen negativo */
+}
+
+/* Para solucionar la barra blanca al final */
+.home-container {
+  padding-top: 80px; /* Espacio para la barra de navegación */
+  padding-bottom: 0; /* Elimina cualquier padding inferior */
+  margin-bottom: 0; /* Elimina cualquier margen inferior */
+}
+
+.about-section {
+  margin-top: 4rem;
+  margin-bottom: 0; /* Elimina el margen inferior */
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Añade un padding inferior a about-content para que haya espacio al final de la página */
+.about-content {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0 0 8px 8px;
+  padding: 2.5rem;
+  padding-bottom: 3rem; /* Aumenta el padding inferior */
+  max-width: 100%;
+  margin: 0 auto;
+  line-height: 1.6;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Asegúrate de que el body ocupe todo el viewport */
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url('https://i.imgur.com/PTkEgwK.jpeg'); /*fondo udp*/
+  background-size: cover;
+  background-position: center 40px;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden; /* Previene scroll horizontal */
+}
 
 .home-container {
     padding-top: 80px; /* Espacio para la barra de navegación */
