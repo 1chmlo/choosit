@@ -25,7 +25,8 @@ function AppContent() {
         <Route path="/home" element={<HomeContent />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
         <Route path="/email-verification" element={<EmailVerification />} />
-        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} /> 
+        <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} />
+        <Route path="/perfil" element={<VisualizarPerfil />} /> 
       </Routes>
     </div>
   );
