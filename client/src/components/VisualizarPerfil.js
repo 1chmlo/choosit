@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import './VisualizarPerfil.css';
 
 const VisualizarPerfil = () => {
-    const { user, isAuthenticated, loading: authLoading, error: authError } = useAuth();
+    const { user, isAuthenticated, loading: authLoading, error: authError, logout } = useAuth();
     const [modal, setModal] = useState({
         show: false,
         title: '',
