@@ -10,6 +10,7 @@ import VisualizarSemestres from './components/VisualizarSemestres';
 import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
 import OlvideContrasena from './components/OlvideContrasena';
 import ReestablecerContrasena from './components/ReestablecerContrasena';
+import VisualizarPerfil from './components/VisualizarPerfil';
 
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
