@@ -198,3 +198,91 @@ export const update_comment = async (req, res) => {
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
+/**
+ * Función para dar/quitar like a un comentario
+ */
+/**
+ * Da o quita like a un comentario
+ * @param {Object} req - Request con id de comentario en params
+ * @param {Object} res - Response
+ * @returns {Object} Mensaje de éxito o error
+ */
+export const like_comment = async (req, res) => {
+  try {
+    // Obtener ID del comentario y usuario autenticado
+    const { id } = req.params;
+    const id_usuario = req.userId;
+    
+    // Verificar que el comentario existe
+    const commentResult = await pool.query(
+      'SELECT id_usuario, likes_usuarios FROM comentarios WHERE id = $1', 
+      [id]
+    );
+    
+    if (commentResult.rows.length === 0) {
+      return res.status(404).json({ 
+        message: 'Comentario no encontrado' 
+      });
+    }
+    
+    const autor_id = commentResult.rows[0].id_usuario;
+    
+    // Iniciar transacción
+    await pool.query('BEGIN');
+    
+    try {
+      // Verificar si el usuario ya dio like
+      const usuarioYaLiked = await pool.query(
+        'SELECT $1 = ANY(likes_usuarios) as ya_liked FROM comentarios WHERE id = $2',
+        [id_usuario, id]
+      );
+      
+      if (usuarioYaLiked.rows[0].ya_liked) {
+        // Quitar like
+        await pool.query(
+          'UPDATE comentarios SET likes_usuarios = array_remove(likes_usuarios, $1), reputacion = reputacion - 1 WHERE id = $2',
+          [id_usuario, id]
+        );
+        
+        // Actualizar reputación del autor (suma de todos sus comentarios)
+        await pool.query(
+          'UPDATE usuarios SET reputacion = (SELECT COALESCE(SUM(reputacion), 0) FROM comentarios WHERE id_usuario = $1) WHERE id = $1',
+          [autor_id]
+        );
+        
+        await pool.query('COMMIT');
+        
+        return res.status(200).json({
+          message: 'Like removido correctamente',
+          liked: false
+        });
+      } else {
+        // Añadir like
+        await pool.query(
+          'UPDATE comentarios SET likes_usuarios = array_append(likes_usuarios, $1), reputacion = reputacion + 1 WHERE id = $2',
+          [id_usuario, id]
+        );
+        
+        // Actualizar reputación del autor (suma de todos sus comentarios)
+        await pool.query(
+          'UPDATE usuarios SET reputacion = (SELECT COALESCE(SUM(reputacion), 0) FROM comentarios WHERE id_usuario = $1) WHERE id = $1',
+          [autor_id]
+        );
+        
+        await pool.query('COMMIT');
+        
+        return res.status(200).json({
+          message: 'Like agregado correctamente',
+          liked: true
+        });
+      }
+    } catch (error) {
+      await pool.query('ROLLBACK');
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error al dar like al comentario:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};

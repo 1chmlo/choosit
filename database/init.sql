@@ -83,6 +83,7 @@ CREATE TABLE comentarios (
   reputacion int NOT NULL DEFAULT 0,
   fecha TIMESTAMPTZ DEFAULT now() NOT NULL,
   texto varchar(250) NOT NULL,
+  likes_usuarios UUID[] DEFAULT '{}',
   CONSTRAINT FK_comentario_id_usuario
     FOREIGN KEY (id_usuario)
       REFERENCES usuarios(id)

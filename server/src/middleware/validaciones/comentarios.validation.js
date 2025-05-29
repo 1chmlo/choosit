@@ -25,3 +25,21 @@ export const validateReportComment = [
         next();
     }
     ];
+
+
+    export const validateLikeComment = [
+    param('id')
+        .trim()
+        .notEmpty()
+        .withMessage('El id del comentario es requerido')
+        .isUUID(4)
+        .withMessage('El id del comentario debe ser un UUID v4 válido'),
+    
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        next();
+    }
+];
