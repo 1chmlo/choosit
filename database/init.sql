@@ -156,3 +156,47 @@ AFTER INSERT OR UPDATE
 ON evaluacion
 FOR EACH ROW
 EXECUTE FUNCTION recalcular_ponderaciones();
+
+CREATE OR REPLACE FUNCTION insertar_encuestas()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  tipo_dato TEXT;
+  tipo_id UUID;
+BEGIN
+  --insertar encuesta para tipo 'general'
+  SELECT id INTO tipo_id
+  FROM tipo_pregunta
+  WHERE unaccent(lower(tipo)) = 'general'
+  LIMIT 1;
+
+  IF tipo_id IS NOT NULL THEN
+    INSERT INTO encuestas (id_asignatura, id_tipo_pregunta)
+    VALUES (NEW.id, tipo_id);
+  END IF;
+
+  -- Para tipos booleanos (basados en tipo_dato booleanas)
+  FOR tipo_dato IN SELECT unnest(ARRAY['lab', 'controles', 'proyecto', 'cfg']) LOOP
+    IF (NEW.*)::jsonb ->> tipo_dato = 'true' THEN
+      -- Buscar tipo_pregunta que coincida con el nombre del campo
+      SELECT id INTO tipo_id
+      FROM tipo_pregunta
+      WHERE unaccent(lower(tipo)) = unaccent(lower(tipo_dato))
+      LIMIT 1;
+
+      IF tipo_id IS NOT NULL THEN
+        INSERT INTO encuestas (id_asignatura, id_tipo_pregunta)
+        VALUES (NEW.id, tipo_id);
+      END IF;
+    END IF;
+  END LOOP;
+
+  RETURN NEW;
+END;
+$$;
+--trigger
+CREATE TRIGGER tr_insertar_encuestas
+AFTER INSERT ON asignaturas
+FOR EACH ROW
+EXECUTE FUNCTION insertar_encuestas;
