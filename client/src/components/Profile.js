@@ -130,10 +130,12 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="profile-container">
-        <div className="profile-loading">
-          <h2>Cargando perfil...</h2>
-          <div className="loader"></div>
+      <div className="profile-wrapper">
+        <div className="profile-container">
+          <div className="profile-loading">
+            <h2>Cargando perfil...</h2>
+            <div className="loader"></div>
+          </div>
         </div>
       </div>
     );
@@ -141,10 +143,12 @@ const Profile = () => {
 
   if (error) {
     return (
-      <div className="profile-container">
-        <div className="profile-error">
-          <h2>Error al cargar el perfil</h2>
-          <p>{error}</p>
+      <div className="profile-wrapper">
+        <div className="profile-container">
+          <div className="profile-error">
+            <h2>Error al cargar el perfil</h2>
+            <p>{error}</p>
+          </div>
         </div>
       </div>
     );
@@ -152,10 +156,12 @@ const Profile = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="profile-container">
-        <div className="profile-unauthenticated">
-          <h2>No has iniciado sesión</h2>
-          <p>Por favor, inicia sesión para ver tu perfil</p>
+      <div className="profile-wrapper">
+        <div className="profile-container">
+          <div className="profile-unauthenticated">
+            <h2>No has iniciado sesión</h2>
+            <p>Por favor, inicia sesión para ver tu perfil</p>
+          </div>
         </div>
       </div>
     );
@@ -172,112 +178,122 @@ const Profile = () => {
   const initials = `${user.nombre?.charAt(0) || ''}${user.apellido?.charAt(0) || ''}`;
 
   return (
-    <div className="profile-container">
-      {modal.show && (
-        <div className="profile-modal">
-          <div className="modal-content">
-            <h3>{modal.title}</h3>
-            <p>{modal.message}</p>
-            
-            {modal.showInput && (
-              <input
-                type={modal.title.includes('contraseña') ? 'password' : 'text'}
-                value={modal.inputValue}
-                onChange={(e) => setModal({...modal, inputValue: e.target.value})}
-                autoFocus
-              />
-            )}
-            
-            <div className="modal-actions">
-              <button onClick={() => closeModal(false)}>Cancelar</button>
-              <button 
-                onClick={() => closeModal(true)}
-                disabled={actionLoading}
-              >
-                {actionLoading ? 'Procesando...' : 'Aceptar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="profile-header">
-        <div className="profile-avatar">
-          {initials}
-        </div>
-        <div className="profile-info">
-          <h1>{user.nombre} {user.apellido}</h1>
-          <p>@{user.username}</p>
-          <div className="reputation">
-            <span>Reputación: {user.reputacion || 0}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="profile-details">
-        <div className="detail-section">
-          <h2>Información personal</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span>Email:</span>
-              <span>{user.email}</span>
-            </div>
-            <div className="detail-item">
-              <span>Año de ingreso:</span>
-              <span>{user.anio_ingreso || '-'}</span>
-            </div>
-            <div className="detail-item">
-              <span>Estado:</span>
-              <span>{user.activo ? 'Activo' : 'Inactivo'}</span>
-            </div>
-            <div className="detail-item">
-              <span>Verificado:</span>
-              <span>{user.verificado ? 'Sí' : 'No'}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="detail-section">
-          <h2>Seguridad</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span>Contraseña:</span>
-              <div className="password-action">
-                <span>••••••••</span>
+    <div className="profile-wrapper">
+      <div className="profile-container">
+        {modal.show && (
+          <div className="profile-modal">
+            <div className="modal-content">
+              <h3>{modal.title}</h3>
+              <p>{modal.message}</p>
+              
+              {modal.showInput && (
+                <input
+                  type={modal.title.includes('contraseña') ? 'password' : 'text'}
+                  value={modal.inputValue}
+                  onChange={(e) => setModal({...modal, inputValue: e.target.value})}
+                  autoFocus
+                  className="modal-input"
+                />
+              )}
+              
+              <div className="modal-actions">
+                <button onClick={() => closeModal(false)}>Cancelar</button>
                 <button 
-                  onClick={handleChangePassword}
+                  onClick={() => closeModal(true)}
                   disabled={actionLoading}
                 >
-                  Cambiar
+                  {actionLoading ? 'Procesando...' : 'Aceptar'}
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="profile-header">
+          <div className="profile-avatar avatar-placeholder">
+            {initials}
+          </div>
+          <div className="profile-info">
+            <h1>{user.nombre} {user.apellido}</h1>
+            <p>@{user.username}</p>
+            <div className="reputation-container">
+              <span className="reputation-value">{user.reputacion || 0}</span>
+              <span>reputación</span>
+              <div className="reputation-info">
+                <div className="reputation-tooltip">
+                  La reputación refleja la calidad de tus contribuciones a la comunidad.
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="detail-section">
-          <h2>Cuenta</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span>Miembro desde:</span>
-              <span>{formatDate(user.created_at)}</span>
+        <div className="profile-details">
+          <div className="detail-section">
+            <h2>Información personal</h2>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Email:</span>
+                <span className="detail-value">{user.email}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Año de ingreso:</span>
+                <span className="detail-value">{user.anio_ingreso || '-'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Estado:</span>
+                <span className="detail-value">{user.activo ? 'Activo' : 'Inactivo'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Verificado:</span>
+                <span className="detail-value">{user.verificado ? 'Sí' : 'No'}</span>
+              </div>
             </div>
-            <div className="detail-item">
-              <span>Última actualización:</span>
-              <span>{formatDate(user.updated_at)}</span>
+          </div>
+
+          <div className="detail-section">
+            <h2>Seguridad</h2>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Contraseña:</span>
+                <div className="password-action">
+                  <span className="detail-value">••••••••</span>
+                  <button 
+                    className="edit-password-btn"
+                    onClick={handleChangePassword}
+                    disabled={actionLoading}
+                  >
+                    Cambiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="detail-section">
+            <h2>Cuenta</h2>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Miembro desde:</span>
+                <span className="detail-value">{formatDate(user.created_at)}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Última actualización:</span>
+                <span className="detail-value">{formatDate(user.updated_at)}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="profile-actions">
-        <button 
-          className="danger-button"
-          onClick={handleDeactivateAccount}
-          disabled={actionLoading}
-        >
-          Desactivar cuenta
-        </button>
+        <div className="profile-actions">
+          <button 
+            className="danger-button"
+            onClick={handleDeactivateAccount}
+            disabled={actionLoading}
+          >
+            Desactivar cuenta
+          </button>
+        </div>
       </div>
     </div>
   );
