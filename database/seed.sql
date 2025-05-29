@@ -66,10 +66,10 @@ INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, 
   --anio_ingreso int NOT NULL,
   --created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 --);
-INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso) VALUES
-('Juan', 'Pérez', 'juan.perez', 'juan.perez99@mail.udp.cl', 'juan.perez99', 2022),
-('Ana', 'Gómez', 'ana.gomez', 'ana.gomez@mail.udp.cl', 'ana.gomez123', 2021),
-('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', 'luis.martinez456', 2020);
+INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingreso, verificado) VALUES
+('Juan', 'Pérez', 'juan.perez', 'juan.perez99@mail.udp.cl', '$2b$10$NU69LPp/A57JL/A.U5Brhuae7nhl6184a4EcVByfFE4Z/qJBJzkuS', 2022, true),
+('Ana', 'Gómez', 'ana.gomez', 'ana.gomez@mail.udp.cl', 'ana.gomez123', 2021, true),
+('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', 'luis.martinez456', 2020, true);
 
 -- Crear tipos de preguntas
 INSERT INTO tipo_pregunta (tipo) VALUES
