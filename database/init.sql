@@ -162,10 +162,10 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  tipo_dato TEXT;
+  col TEXT;
   tipo_id UUID;
 BEGIN
-  --insertar encuesta para tipo 'general'
+  -- Siempre insertar encuesta para tipo 'general'
   SELECT id INTO tipo_id
   FROM tipo_pregunta
   WHERE unaccent(lower(tipo)) = 'general'
@@ -176,13 +176,13 @@ BEGIN
     VALUES (NEW.id, tipo_id);
   END IF;
 
-  -- Para tipos booleanos (basados en tipo_dato booleanas)
-  FOR tipo_dato IN SELECT unnest(ARRAY['lab', 'controles', 'proyecto', 'cfg']) LOOP
-    IF (NEW.*)::jsonb ->> tipo_dato = 'true' THEN
+  -- Para tipos condicionales (basados en columnas booleanas)
+  FOR col IN SELECT unnest(ARRAY['lab', 'controles', 'proyecto', 'cfg']) LOOP
+    IF to_jsonb(NEW) ->> col = 'true' THEN
       -- Buscar tipo_pregunta que coincida con el nombre del campo
       SELECT id INTO tipo_id
       FROM tipo_pregunta
-      WHERE unaccent(lower(tipo)) = unaccent(lower(tipo_dato))
+      WHERE unaccent(lower(tipo)) = unaccent(lower(col))
       LIMIT 1;
 
       IF tipo_id IS NOT NULL THEN
@@ -195,8 +195,9 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
 --trigger
 CREATE TRIGGER tr_insertar_encuestas
 AFTER INSERT ON asignaturas
 FOR EACH ROW
-EXECUTE FUNCTION insertar_encuestas;
+EXECUTE FUNCTION insertar_encuestas();

@@ -1,7 +1,16 @@
+-- Crear tipos de preguntas
+INSERT INTO tipo_pregunta (tipo) VALUES
+('Proyecto'),
+('Controles'),
+('Solemnes'),
+('Lab'),
+('General'),
+('Electivo');
+
 -- Insertar asignaturas
 --1er semestre
 INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, controles, proyecto, cfg) VALUES
-('CBQ-1000','Química',1,'Curso que entrega entendimiento de cómo la química modela los fenómenos más importantes de transformaciones de la materia en la naturaleza y la ingeniería, cómo está confirmada la materia a nivel cuántico, y las implicancias de la química en diversos fenómenos como el efecto invernadero, su influencia en la sociedad, entro otros casos reales.',0 , false, true, false, false),
+('CBQ-1000','Química',1,'Curso que entrega entendimiento de cómo la química modela los fenómenos más importantes de transformaciones de la materia en la naturaleza y la ingeniería, cómo está confirmada la materia a nivel cuántico, y las implicancias de la química en diversos fenómenos como el efecto invernadero, su influencia en la sociedad, entro otros casos reales.',0 , true, true, true, false),
 ('CBM-1001','Cálculo I',1,'Curso que entrega fundamentos matemáticos para futuros cursos de ingeniería. Aborda funciones, derivadas y aplicaciones en ingeniería y ciencias. Al finalizar podrás resolver inecuaciones, aplicar funciones, analizar límites y continuidad, comprender la derivada y sus aplicaciones, contenidos fundamentales para cuantificar una gran variedad de fenómenos naturales y en ingeniería.',0 , false, true, false, false),
 ('CIT-1000','Programación',1,'Curso que entrega las herramientas básicas de programación, y desarrollo de los primeros programas. Además, aborda el diseño de soluciones para problemas ingenieriles simples, implementar algoritmos en C++, procesar datos básicos y trabajar en proyectos de procesamiento de datos, documentando sus soluciones.',0 , false, true, false, false),
 ('CBM-1000','Álgebra y Geometría',1,'Curso en el que se aprende sobre álgebra, geometría y números complejos. Se entregan herramientas para resolver problemas matemáticos aplicados y desarrollar habilidades lógicas y de demostración. Se incluye lógica proposicional, inducción matemática, sumatorias, trigonometría, geometría analítica y números complejos.',0 , false, true, false, false),
@@ -73,14 +82,6 @@ INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingres
 ('Ana', 'Gómez', 'ana.gomez', 'ana.gomez@mail.udp.cl', '$2b$10$CPKV7v.Wqn8NaCth1xRfreEYMy.LHUPxPV.ggVSqL7USblbBfikH2', 2021, true),
 --contrasena = luis.martinez456
 ('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', '$2b$10$bjyGA8bXGuJKvLzFvrFWvebSJ/Gb7xu3guvPlKHeQJ/BsUZSItcVC', 2020, true);
-
--- Crear tipos de preguntas
-INSERT INTO tipo_pregunta (tipo) VALUES
-('Proyecto'),
-('Controles'),
-('Solemnes'),
-('Laboratorio'),
-('Electivo');
 
 -- Insertar preguntas
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
