@@ -13,8 +13,6 @@ export default function RegisterForm() {
   const [passwordMatch, setPasswordMatch] = useState(true)
   const [emailError, setEmailError] = useState("")
   // Nuevos estados para errores
-  const [nombreError, setNombreError] = useState("")
-  const [apellidoError, setApellidoError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   // Estado para mensajes de error del servidor
   const [serverError, setServerError] = useState("")
@@ -23,8 +21,6 @@ export default function RegisterForm() {
 
   const emailInputRef = useRef(null)
   const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
     username: "",
     email: "@mail.udp.cl",
     password: "",
@@ -40,13 +36,6 @@ export default function RegisterForm() {
     const udpPattern = /@mail\.udp\.cl$/
     if (!email) return true // No mostrar error si está vacío
     return udpPattern.test(email)
-  }
-
-  // Nueva función para validar nombre y apellido (permite tildes y ñ)
-  const validateName = (name) => {
-    const namePattern = /^[a-zA-ZáéíóúüÁÉÍÓÚÜñÑ]{2,20}$/
-    if (!name) return true // No mostrar error si está vacío
-    return namePattern.test(name)
   }
 
   // Nueva función para validar contraseña (8-40 caracteres)
@@ -131,18 +120,6 @@ export default function RegisterForm() {
       return
     }
     
-    // Manejo especial para nombre
-    if (name === "nombre") {
-      const isValidName = validateName(value)
-      setNombreError(isValidName || value === "" ? "" : "El nombre debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
-    }
-    
-    // Manejo especial para apellido
-    if (name === "apellido") {
-      const isValidName = validateName(value)
-      setApellidoError(isValidName || value === "" ? "" : "El apellido debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
-    }
-    
     // Manejo especial para password
     if (name === "password") {
       const isValidPassword = validatePassword(value)
@@ -174,16 +151,6 @@ export default function RegisterForm() {
       return
     }
 
-    if (!validateName(formData.nombre)) {
-      setNombreError("El nombre debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
-      return
-    }
-
-    if (!validateName(formData.apellido)) {
-      setApellidoError("El apellido debe tener entre 2 y 20 caracteres (puede incluir tildes y ñ)")
-      return
-    }
-
     if (!validatePassword(formData.password)) {
       setPasswordError("La contraseña debe tener entre 8 y 40 caracteres")
       return
@@ -199,8 +166,6 @@ export default function RegisterForm() {
 
       console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
       const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
         email: formData.email,
         contrasena: formData.password,
         username: formData.username,
@@ -267,39 +232,8 @@ export default function RegisterForm() {
         )}
 
         <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-group">
-            <label htmlFor="nombre" className="form-label">
-              Nombre
-            </label>
-            <input
-              id="nombre"
-              name="nombre"
-              type="text"
-              placeholder="Tu nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-              className={`form-input ${nombreError ? "input-error" : ""}`}
-            />
-            {nombreError && <p className="error-message">{nombreError}</p>}
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="apellido" className="form-label">
-              Apellido
-            </label>
-            <input
-              id="apellido"
-              name="apellido"
-              type="text"
-              placeholder="Tu apellido"
-              value={formData.apellido}
-              onChange={handleChange}
-              required
-              className={`form-input ${apellidoError ? "input-error" : ""}`}
-            />
-            {apellidoError && <p className="error-message">{apellidoError}</p>}
-          </div>
+
 
           <div className="form-group">
             <label htmlFor="email" className="form-label">

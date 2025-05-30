@@ -1,31 +1,6 @@
 import { body, query, validationResult } from 'express-validator';
 
-export const validateChangedata = [
-  body('nombre')
-    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
-    .optional()
-    
-    .customSanitizer(value => value.toLowerCase()) // Transforma el nombre a minúsculas
-
-    .isAlpha('es-ES') // Verifica que el nombre contenga solo letras sin espacios en blanco
-    .withMessage('El nombre solo puede contener letras sin espacios')
-
-    .isLength({ min: 2, max: 20 })
-    .withMessage('El nombre debe tener entre 2 y 20 caracteres'),
-
-
-  body('apellido')
-    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
-    .optional()
-    
-    .customSanitizer(value => value.toLowerCase()) // Transforma el nombre a minúsculas
-
-    .isAlpha('es-ES') // Verifica que el nombre contenga solo letras sin espacios en blanco
-    .withMessage('El apellido solo puede contener letras sin espacios')
-
-    .isLength({ min: 2, max: 20 })
-    .withMessage('El apellido debe tener entre 2 y 20 caracteres'),    
-
+export const validateChangedata = [   
   body('anio_ingreso')
     .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
     .optional()

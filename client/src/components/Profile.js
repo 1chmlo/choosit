@@ -16,6 +16,13 @@ const Profile = () => {
   });
   const [actionLoading, setActionLoading] = useState(false);
 
+  const getNombreLegible = (username) => {
+  if (!username) return '';
+  return username
+    .split('.')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
 
   const showModal = ({ title, message, showInput = false }) => {
     return new Promise((resolve) => {
@@ -175,7 +182,12 @@ const Profile = () => {
   };
 
 
-  const initials = `${user.nombre?.charAt(0) || ''}${user.apellido?.charAt(0) || ''}`;
+  const initials = user.username
+  ? user.username
+      .split('.')
+      .map(p => p.charAt(0).toUpperCase())
+      .join('')
+  : '';
 
   return (
     <div className="profile-wrapper">
@@ -214,7 +226,7 @@ const Profile = () => {
             {initials}
           </div>
           <div className="profile-info">
-            <h1>{user.nombre} {user.apellido}</h1>
+            <h1>{getNombreLegible(user.username)}</h1>
             <p>@{user.username}</p>
             <div className="reputation-container">
               <span className="reputation-value">{user.reputacion || 0}</span>
