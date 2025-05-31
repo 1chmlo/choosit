@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Profile.css';
+import questionMark from './question-mark.png';
 
 const Profile = () => {
   const { user, loading, error, isAuthenticated, logout } = useAuth();
@@ -17,12 +18,12 @@ const Profile = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   const getNombreLegible = (username) => {
-  if (!username) return '';
-  return username
-    .split('.')
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-};
+    if (!username) return '';
+    return username
+      .split('.')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  };
 
   const showModal = ({ title, message, showInput = false }) => {
     return new Promise((resolve) => {
@@ -43,7 +44,6 @@ const Profile = () => {
     }
     setModal({ ...modal, show: false });
   };
-
 
   const handleChangePassword = async () => {
     try {
@@ -95,7 +95,6 @@ const Profile = () => {
     }
   };
 
-
   const handleDeactivateAccount = async () => {
     const confirmed = await showModal({
       title: "Desactivar cuenta",
@@ -133,7 +132,6 @@ const Profile = () => {
       setActionLoading(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -174,30 +172,29 @@ const Profile = () => {
     );
   }
 
-
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
 
-
   const initials = user.username
-  ? user.username
-      .split('.')
-      .map(p => p.charAt(0).toUpperCase())
-      .join('')
-  : '';
+    ? user.username
+        .split('.')
+        .map(p => p.charAt(0).toUpperCase())
+        .join('')
+    : '';
 
   return (
     <div className="profile-wrapper">
       <div className="profile-container">
+
         {modal.show && (
           <div className="profile-modal">
             <div className="modal-content">
               <h3>{modal.title}</h3>
               <p>{modal.message}</p>
-              
+
               {modal.showInput && (
                 <input
                   type={modal.title.includes('contraseña') ? 'password' : 'text'}
@@ -207,10 +204,10 @@ const Profile = () => {
                   className="modal-input"
                 />
               )}
-              
+
               <div className="modal-actions">
                 <button onClick={() => closeModal(false)}>Cancelar</button>
-                <button 
+                <button
                   onClick={() => closeModal(true)}
                   disabled={actionLoading}
                 >
@@ -229,9 +226,15 @@ const Profile = () => {
             <h1>{getNombreLegible(user.username)}</h1>
             <p>@{user.username}</p>
             <div className="reputation-container">
+              <span>Reputación:</span>
               <span className="reputation-value">{user.reputacion || 0}</span>
-              <span>reputación</span>
               <div className="reputation-info">
+                <img
+                  src={questionMark}
+                  alt="Información"
+                  className="reputation-icon"
+                  style={{ width: '16px', height: '16px', marginLeft: '5px' }}
+                />
                 <div className="reputation-tooltip">
                   La reputación refleja la calidad de tus contribuciones a la comunidad.
                 </div>
@@ -240,7 +243,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="profile-details">
+        <div className="profile-details separated-container">
           <div className="detail-section">
             <h2>Información personal</h2>
             <div className="detail-grid">
@@ -253,16 +256,14 @@ const Profile = () => {
                 <span className="detail-value">{user.anio_ingreso || '-'}</span>
               </div>
               <div className="detail-item">
-                <span className="detail-label">Estado:</span>
-                <span className="detail-value">{user.activo ? 'Activo' : 'Inactivo'}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Verificado:</span>
-                <span className="detail-value">{user.verificado ? 'Sí' : 'No'}</span>
+                <span className="detail-label">Miembro desde:</span>
+                <span className="detail-value">{formatDate(user.created_at)}</span>
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="profile-details separated-container">
           <div className="detail-section">
             <h2>Seguridad</h2>
             <div className="detail-grid">
@@ -270,7 +271,7 @@ const Profile = () => {
                 <span className="detail-label">Contraseña:</span>
                 <div className="password-action">
                   <span className="detail-value">••••••••</span>
-                  <button 
+                  <button
                     className="edit-password-btn"
                     onClick={handleChangePassword}
                     disabled={actionLoading}
@@ -279,33 +280,19 @@ const Profile = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="detail-section">
-            <h2>Cuenta</h2>
-            <div className="detail-grid">
-              <div className="detail-item">
-                <span className="detail-label">Miembro desde:</span>
-                <span className="detail-value">{formatDate(user.created_at)}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Última actualización:</span>
-                <span className="detail-value">{formatDate(user.updated_at)}</span>
+              <div className="detail-item deactivate-btn-container">
+                <button
+                  className="danger-button deactivate-btn"
+                  onClick={handleDeactivateAccount}
+                  disabled={actionLoading}
+                >
+                  Desactivar cuenta
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="profile-actions">
-          <button 
-            className="danger-button"
-            onClick={handleDeactivateAccount}
-            disabled={actionLoading}
-          >
-            Desactivar cuenta
-          </button>
-        </div>
       </div>
     </div>
   );
