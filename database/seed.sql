@@ -3,7 +3,7 @@ INSERT INTO tipo_pregunta (tipo) VALUES
 ('Proyecto'),
 ('Controles'),
 ('Solemnes'),
-('Lab'),
+('Laboratorio'),
 ('General'),
 ('Electivo');
 
