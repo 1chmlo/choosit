@@ -290,3 +290,28 @@ h2 {
 #asignatura-descripcion {
   text-align: justify;
 }
+
+.encuesta-formulario {
+  margin-top: 30px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+.pregunta-item {
+  margin-bottom: 15px;
+}
+
+.btn-enviar-encuesta {
+  background-color: #e53935;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-enviar-encuesta:hover {
+  background-color: #c62828;
+}

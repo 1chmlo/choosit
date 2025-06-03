@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
+import StarRating from './StarRating'; // Asegúrate de tener este componente
 
 const VisualizacionAsignatura = () => {
   const [asignatura, setAsignatura] = useState(null);
   const [error, setError] = useState('');
+  const [respuestas, setRespuestas] = useState({});
+  const [preguntas, setPreguntas] = useState([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -21,8 +24,10 @@ const VisualizacionAsignatura = () => {
         return res.json();
       })
       .then((data) => {
-        if (data.ok) setAsignatura(data.asignatura);
-        else throw new Error();
+        if (data.ok) {
+          setAsignatura(data.asignatura);
+          setPreguntas(data.preguntas || []);
+        } else throw new Error();
       })
       .catch(() => {
         setError('Error al cargar los datos de la asignatura');
@@ -64,6 +69,42 @@ const VisualizacionAsignatura = () => {
         </div>
       </div>
     );
+  };
+
+  const handleRating = (idPregunta, rating) => {
+    setRespuestas((prev) => ({ ...prev, [idPregunta]: rating }));
+  };
+
+  const enviarEncuesta = async () => {
+    if (Object.keys(respuestas).length !== preguntas.length) {
+      alert("Debes responder todas las preguntas antes de enviar.");
+      return;
+    }
+
+    const payload = {
+      id_asignatura: asignatura.id,
+      respuestas: Object.entries(respuestas).map(([id_pregunta, respuesta]) => ({
+        id_pregunta,
+        respuesta,
+      })),
+    };
+
+    try {
+      const res = await fetch(`${REACT_APP_BACKEND_URL}/api/encuestas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      alert(data.message || "Encuesta enviada");
+    } catch (error) {
+      console.error("Error al enviar encuesta:", error);
+      alert("Error al enviar la encuesta");
+    }
   };
 
   if (error) {
@@ -115,6 +156,25 @@ const VisualizacionAsignatura = () => {
             <div className="encuestas-info">
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
             </div>
+
+            {/* NUEVA SECCIÓN: Encuesta del usuario */}
+            {preguntas.length > 0 && (
+              <div className="encuesta-formulario">
+                <h3>Responde la encuesta</h3>
+                {preguntas.map((pregunta) => (
+                  <div key={pregunta.id} className="pregunta-item">
+                    <p>{pregunta.pregunta}</p>
+                    <StarRating
+                      rating={respuestas[pregunta.id] || 0}
+                      onRate={(rating) => handleRating(pregunta.id, rating)}
+                    />
+                  </div>
+                ))}
+                <button className="btn-enviar-encuesta" onClick={enviarEncuesta}>
+                  Enviar Encuesta
+                </button>
+              </div>
+            )}
           </section>
 
           <section className="comentarios">

@@ -17,13 +17,14 @@ const Profile = () => {
   });
   const [actionLoading, setActionLoading] = useState(false);
 
-  const getNombreLegible = (username) => {
-    if (!username) return '';
-    return username
-      .split('.')
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' ');
-  };
+const getNombreLegible = (username) => {
+  if (!username) return '';
+  return username
+    .replace(/[0-9]+$/, '') // Elimina número(s) al final
+    .split('.')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
 
   const showModal = ({ title, message, showInput = false }) => {
     return new Promise((resolve) => {
