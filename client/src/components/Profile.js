@@ -48,13 +48,18 @@ const getNombreLegible = (username) => {
 
   const handleChangePassword = async () => {
     try {
-      const newPassword = await showModal({
+      const contrasena = await showModal({
+        title: "Ingresa tu contraseña",
+        message: "Ingresa tu contraseña actual:",
+        showInput: true
+      });
+      const nueva_contrasena = await showModal({
         title: "Cambiar contraseña",
         message: "Ingresa tu nueva contraseña:",
         showInput: true
       });
       
-      if (!newPassword) return;
+      if (!nueva_contrasena) return;
 
       const confirmPassword = await showModal({
         title: "Confirmar contraseña",
@@ -62,7 +67,7 @@ const getNombreLegible = (username) => {
         showInput: true
       });
 
-      if (newPassword !== confirmPassword) {
+      if (nueva_contrasena !== confirmPassword) {
         await showModal({
           title: "Error",
           message: "Las contraseñas no coinciden"
@@ -73,9 +78,14 @@ const getNombreLegible = (username) => {
       setActionLoading(true);
       
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/auth/changepassword`,
-        { newPassword },
-        { withCredentials: true }
+        `http://localhost:3000/api/users/changepassword`, // Cambiar
+        {
+          contrasena,
+          nueva_contrasena
+        },
+        {
+          withCredentials: true
+        }
       );
 
       if (response.data.ok) {
@@ -108,7 +118,7 @@ const getNombreLegible = (username) => {
       setActionLoading(true);
       
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/auth/deactivate`,
+        `http://localhost:3000/api/auth/deactivate`, // Cambiar
         {},
         { withCredentials: true }
       );
