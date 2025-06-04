@@ -119,13 +119,6 @@ export const get_all_reports = async (req, res) => { // Obtiene todos los report
     }
 }
 
-/**
- * Edita un comentario existente
- * Solo el autor del comentario puede editarlo
- * @param req.params.id - ID del comentario a editar
- * @param req.body.texto - Nuevo texto del comentario
- * @returns {Object} - Comentario actualizado
- */
 export const update_comment = async (req, res) => {
   try {
     // Obtener el ID del comentario de los parámetros
@@ -136,13 +129,6 @@ export const update_comment = async (req, res) => {
     
     // Obtener el ID del usuario autenticado (añadido por middleware isAuthUser)
     const id_usuario = req.userId;
-
-    // Validar que se proporcionó el nuevo texto
-    if (!texto) {
-      return res.status(400).json({ 
-        message: 'Se requiere el texto para editar el comentario' 
-      });
-    }
 
     // Verificar si el comentario existe y pertenece al usuario
     const comentario = await pool.query(
@@ -157,32 +143,12 @@ export const update_comment = async (req, res) => {
       });
     }
 
-    // Si el comentario no pertenece al usuario (corregido para comparar UUIDs correctamente)
+    // Si el comentario no pertenece al usuario
     if (comentario.rows[0].id_usuario.toString() !== id_usuario.toString()) {
       return res.status(403).json({ 
         message: 'No tienes permiso para editar este comentario' 
       });
     }
-
-    // Lista de palabras prohibidas (misma que en create_comment)
-    const palabrasProhibidas = ['ql', 'puta', 'mierda', 'weon', 'ctm', 'maraco', 'csm', 'hueon', 'hueona', 'caca', 'pajero', 'pajera', 'pendejo', 'pendeja'];
-    
-    // Crear expresiones regulares para cada palabra
-    const regexPalabrasProhibidas = palabrasProhibidas.map(palabra => 
-      new RegExp(`${palabra.split('').join('[\\s\\W_]*')}`, 'i')
-    );
-
-    // Verificar si contiene palabras prohibidas
-    const contieneProhibida = regexPalabrasProhibidas.some(regex => 
-      regex.test(texto)
-    );
-
-    if (contieneProhibida) {
-      return res.status(400).json({
-        message: 'El comentario contiene lenguaje inapropiado'
-      });
-    }
-
     // Actualizar el comentario y resetear su reputación a 0
     const result = await pool.query(
       'UPDATE comentarios SET texto = $1, reputacion = 0 WHERE id = $2 RETURNING *',
