@@ -15,16 +15,41 @@ const Profile = () => {
     inputValue: '',
     onConfirm: null
   });
+  
+  // Nuevo estado para el modal de cambio de contraseña
+  const [passwordModal, setPasswordModal] = useState({
+    show: false,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    errors: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    },
+    showPasswords: {
+      currentPassword: false,
+      newPassword: false,
+      confirmPassword: false
+    }
+  });
+  
   const [actionLoading, setActionLoading] = useState(false);
 
-const getNombreLegible = (username) => {
-  if (!username) return '';
-  return username
-    .replace(/[0-9]+$/, '') // Elimina número(s) al final
-    .split('.')
-    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-};
+  const getNombreLegible = (username) => {
+    if (!username) return '';
+    return username
+      .replace(/[0-9]+$/, '') // Elimina número(s) al final
+      .split('.')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  };
+
+  // Función para validar contraseña (8-40 caracteres)
+  const validatePassword = (password) => {
+    if (!password) return false;
+    return password.length >= 8 && password.length <= 40;
+  };
 
   const showModal = ({ title, message, showInput = false }) => {
     return new Promise((resolve) => {
@@ -46,42 +71,117 @@ const getNombreLegible = (username) => {
     setModal({ ...modal, show: false });
   };
 
-  const handleChangePassword = async () => {
-    try {
-      const contrasena = await showModal({
-        title: "Ingresa tu contraseña",
-        message: "Ingresa tu contraseña actual:",
-        showInput: true
-      });
-      const nueva_contrasena = await showModal({
-        title: "Cambiar contraseña",
-        message: "Ingresa tu nueva contraseña:",
-        showInput: true
-      });
-      
-      if (!nueva_contrasena) return;
-
-      const confirmPassword = await showModal({
-        title: "Confirmar contraseña",
-        message: "Vuelve a ingresar tu nueva contraseña:",
-        showInput: true
-      });
-
-      if (nueva_contrasena !== confirmPassword) {
-        await showModal({
-          title: "Error",
-          message: "Las contraseñas no coinciden"
-        });
-        return;
+  // Nueva función para mostrar el modal de cambio de contraseña
+  const showPasswordModal = () => {
+    setPasswordModal({
+      show: true,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      errors: {
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
+      showPasswords: {
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false
       }
+    });
+  };
 
+  // Función para cerrar el modal de contraseña
+  const closePasswordModal = () => {
+    setPasswordModal({
+      show: false,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      errors: {
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
+      showPasswords: {
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false
+      }
+    });
+  };
+
+  // Función para alternar la visibilidad de las contraseñas
+  const togglePasswordVisibility = (field) => {
+    setPasswordModal(prev => ({
+      ...prev,
+      showPasswords: {
+        ...prev.showPasswords,
+        [field]: !prev.showPasswords[field]
+      }
+    }));
+  };
+  const handlePasswordModalChange = (field, value) => {
+    setPasswordModal(prev => ({
+      ...prev,
+      [field]: value,
+      errors: {
+        ...prev.errors,
+        [field]: ''
+      }
+    }));
+  };
+
+  // Función para validar el formulario de cambio de contraseña
+  const validatePasswordForm = () => {
+    const errors = {};
+    let isValid = true;
+
+    // Validar contraseña actual
+    if (!passwordModal.currentPassword) {
+      errors.currentPassword = 'La contraseña actual es requerida';
+      isValid = false;
+    }
+
+    // Validar nueva contraseña
+    if (!passwordModal.newPassword) {
+      errors.newPassword = 'La nueva contraseña es requerida';
+      isValid = false;
+    } else if (!validatePassword(passwordModal.newPassword)) {
+      errors.newPassword = 'La contraseña debe tener entre 8 y 40 caracteres';
+      isValid = false;
+    }
+
+    // Validar confirmación de contraseña
+    if (!passwordModal.confirmPassword) {
+      errors.confirmPassword = 'Debes confirmar la nueva contraseña';
+      isValid = false;
+    } else if (passwordModal.newPassword !== passwordModal.confirmPassword) {
+      errors.confirmPassword = 'Las contraseñas no coinciden';
+      isValid = false;
+    }
+
+    setPasswordModal(prev => ({
+      ...prev,
+      errors
+    }));
+
+    return isValid;
+  };
+
+  const handleChangePassword = async () => {
+    if (!validatePasswordForm()) {
+      return;
+    }
+
+    try {
       setActionLoading(true);
       
       const response = await axios.post(
-        `http://localhost:3000/api/users/changepassword`, // Cambiar
+        `http://localhost:3000/api/users/changepassword`,
         {
-          contrasena,
-          nueva_contrasena
+          contrasena: passwordModal.currentPassword,
+          nueva_contrasena: passwordModal.newPassword
         },
         {
           withCredentials: true
@@ -89,6 +189,8 @@ const getNombreLegible = (username) => {
       );
 
       if (response.data.ok) {
+        closePasswordModal(); // Cerrar primero
+        setActionLoading(false);
         await showModal({
           title: "Éxito",
           message: "Contraseña cambiada correctamente"
@@ -97,12 +199,12 @@ const getNombreLegible = (username) => {
         throw new Error(response.data.message || "Error al cambiar la contraseña");
       }
     } catch (error) {
+      closePasswordModal(); // CERRAR EL MODAL DE CONTRASEÑAS PRIMERO
+      setActionLoading(false);
       await showModal({
         title: "Error",
         message: error.response?.data?.message || error.message || "Error al cambiar la contraseña"
       });
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -118,12 +220,13 @@ const getNombreLegible = (username) => {
       setActionLoading(true);
       
       const response = await axios.post(
-        `http://localhost:3000/api/auth/deactivate`, // Cambiar
+        `http://localhost:3000/api/auth/deactivate`,
         {},
         { withCredentials: true }
       );
 
       if (response.data.ok) {
+        setActionLoading(false);
         await showModal({
           title: "Cuenta desactivada",
           message: "Tu cuenta ha sido desactivada. Serás redirigido."
@@ -135,12 +238,11 @@ const getNombreLegible = (username) => {
         throw new Error(response.data.message || "Error al desactivar la cuenta");
       }
     } catch (error) {
+      setActionLoading(false);
       await showModal({
         title: "Error",
         message: error.response?.data?.message || error.message || "Error al desactivar la cuenta"
       });
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -200,6 +302,7 @@ const getNombreLegible = (username) => {
     <div className="profile-wrapper">
       <div className="profile-container">
 
+        {/* Modal original para mensajes simples */}
         {modal.show && (
           <div className="profile-modal">
             <div className="modal-content">
@@ -217,12 +320,109 @@ const getNombreLegible = (username) => {
               )}
 
               <div className="modal-actions">
-                <button onClick={() => closeModal(false)}>Cancelar</button>
+                {/* Solo mostrar Cancelar si showInput es true (para modales de confirmación) */}
+                {modal.showInput && (
+                  <button onClick={() => closeModal(false)}>Cancelar</button>
+                )}
                 <button
                   onClick={() => closeModal(true)}
                   disabled={actionLoading}
+                  className={modal.showInput ? "" : "primary-button"}
                 >
                   {actionLoading ? 'Procesando...' : 'Aceptar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Nuevo modal para cambio de contraseña */}
+        {passwordModal.show && (
+          <div className="profile-modal">
+            <div className="modal-content password-modal-content">
+              <h3>Cambiar contraseña</h3>
+              
+              <div className="password-form">
+                <div className="form-group">
+                  <label>Contraseña actual:</label>
+                  <div className="password-container">
+                    <input
+                      type={passwordModal.showPasswords.currentPassword ? "text" : "password"}
+                      value={passwordModal.currentPassword}
+                      onChange={(e) => handlePasswordModalChange('currentPassword', e.target.value)}
+                      className={`modal-input ${passwordModal.errors.currentPassword ? 'input-error' : ''}`}
+                      placeholder="Ingresa tu contraseña actual"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility('currentPassword')}
+                      className="toggle-password"
+                    >
+                      {passwordModal.showPasswords.currentPassword ? "Ocultar" : "Mostrar"}
+                    </button>
+                  </div>
+                  {passwordModal.errors.currentPassword && (
+                    <span className="error-message">{passwordModal.errors.currentPassword}</span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Nueva contraseña:</label>
+                  <div className="password-container">
+                    <input
+                      type={passwordModal.showPasswords.newPassword ? "text" : "password"}
+                      value={passwordModal.newPassword}
+                      onChange={(e) => handlePasswordModalChange('newPassword', e.target.value)}
+                      className={`modal-input ${passwordModal.errors.newPassword ? 'input-error' : ''}`}
+                      placeholder="Ingresa tu nueva contraseña (8-40 caracteres)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility('newPassword')}
+                      className="toggle-password"
+                    >
+                      {passwordModal.showPasswords.newPassword ? "Ocultar" : "Mostrar"}
+                    </button>
+                  </div>
+                  {passwordModal.errors.newPassword && (
+                    <span className="error-message">{passwordModal.errors.newPassword}</span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Confirmar nueva contraseña:</label>
+                  <div className="password-container">
+                    <input
+                      type={passwordModal.showPasswords.confirmPassword ? "text" : "password"}
+                      value={passwordModal.confirmPassword}
+                      onChange={(e) => handlePasswordModalChange('confirmPassword', e.target.value)}
+                      className={`modal-input ${passwordModal.errors.confirmPassword ? 'input-error' : ''}`}
+                      placeholder="Confirma tu nueva contraseña"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility('confirmPassword')}
+                      className="toggle-password"
+                    >
+                      {passwordModal.showPasswords.confirmPassword ? "Ocultar" : "Mostrar"}
+                    </button>
+                  </div>
+                  {passwordModal.errors.confirmPassword && (
+                    <span className="error-message">{passwordModal.errors.confirmPassword}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button onClick={closePasswordModal} disabled={actionLoading}>
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleChangePassword}
+                  disabled={actionLoading}
+                  className="primary-button"
+                >
+                  {actionLoading ? 'Procesando...' : 'Cambiar contraseña'}
                 </button>
               </div>
             </div>
@@ -284,7 +484,7 @@ const getNombreLegible = (username) => {
                   <span className="detail-value">••••••••</span>
                   <button
                     className="edit-password-btn"
-                    onClick={handleChangePassword}
+                    onClick={showPasswordModal}
                     disabled={actionLoading}
                   >
                     Cambiar

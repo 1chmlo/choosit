@@ -182,6 +182,13 @@ const VisualizacionAsignatura = () => {
             <div className="comentarios-container" id="comentarios-container">
               {asignatura.comentarios?.length ? (
                 asignatura.comentarios.map((comentario, index) => {
+                  
+                  // DEBUG:
+                  console.log('Comentario completo:', comentario);
+                  console.log('Nombre:', comentario.nombre);
+                  console.log('Apellido:', comentario.apellido);
+                  console.log('Activo:', comentario.activo);
+                  
                   const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
                     year: 'numeric', month: 'long', day: 'numeric'
                   });
