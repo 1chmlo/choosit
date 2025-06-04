@@ -4,6 +4,7 @@ import { REACT_APP_BACKEND_URL } from '../config';
 import StarRating from './StarRating'; // Asegúrate de tener este componente
 
 const VisualizacionAsignatura = () => {
+  const { user, isAuthenticated } = useAuth();
   const [asignatura, setAsignatura] = useState(null);
   const [error, setError] = useState('');
   const [respuestas, setRespuestas] = useState({});
@@ -179,12 +180,32 @@ const VisualizacionAsignatura = () => {
 
           <section className="comentarios">
             <h2>Comentarios</h2>
+            
+            {mensajeExito && <div className="mensaje-exito">{mensajeExito}</div>}
+            
+            {isAuthenticated && (
+              <form onSubmit={handleSubmitComentario} className="comentario-form">
+                <textarea
+                  value={comentarioNuevo}
+                  onChange={(e) => setComentarioNuevo(e.target.value)}
+                  placeholder="Escribe tu comentario..."
+                  rows="3"
+                  required
+                />
+                <button type="submit">Publicar comentario</button>
+              </form>
+            )}
+
             <div className="comentarios-container" id="comentarios-container">
               {asignatura.comentarios?.length ? (
                 asignatura.comentarios.map((comentario, index) => {
                   const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
                     year: 'numeric', month: 'long', day: 'numeric'
                   });
+                  
+                  const esAutor = user && comentario.id_usuario === user.id;
+                  const yaDioLike = user && comentario.likes_usuarios?.includes(user.id);
+
                   return (
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
@@ -195,14 +216,54 @@ const VisualizacionAsignatura = () => {
                           <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
                           <span className="comment-date">{fecha}</span>
                         </div>
-                        <span className="user-reputation">
-                          Puntuación:
-                          <span className="user-stars">
-                            {'★'.repeat(comentario.reputacion)}{'☆'.repeat(5 - comentario.reputacion)}
+                          <span className="user-reputation">
+                            Reputación: <span className="reputacion-valor">{comentario.reputacion}</span>
                           </span>
-                        </span>
+                        </div>
+                      
+                      {editandoComentario?.id === comentario.id ? (
+                        <div className="editar-comentario">
+                          <textarea
+                            value={textoEditado}
+                            onChange={(e) => setTextoEditado(e.target.value)}
+                            rows="3"
+                          />
+                          <div className="editar-comentario-botones">
+                            <button onClick={handleEditarComentario}>Guardar</button>
+                            <button onClick={() => setEditandoComentario(null)}>Cancelar</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="comentario-texto">{comentario.texto}</div>
+                      )}
+                      
+                      <div className="comentario-acciones">
+                        {user && (
+                          <>
+                            <button 
+                              onClick={() => handleLikeComentario(comentario.id)}
+                              className={yaDioLike ? 'liked' : ''}
+                            >
+                              <i className="fas fa-thumbs-up"></i> ({comentario.likes_usuarios?.length || 0})
+                            </button>
+                            
+                            {esAutor && (
+                              <button onClick={() => {
+                                setEditandoComentario(comentario);
+                                setTextoEditado(comentario.texto);
+                              }}>
+                                <i className="fas fa-edit"></i> Editar
+                              </button>
+                            )}
+                            
+                            {!esAutor && user && (
+                              <button onClick={() => handleReportarComentario(comentario.id)}>
+                                <i className="fas fa-flag"></i> Reportar
+                              </button>
+                            )}
+                          </>
+                        )}
                       </div>
-                      <div className="comentario-texto">{comentario.texto}</div>
                     </div>
                   );
                 })
