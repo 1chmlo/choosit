@@ -4,7 +4,6 @@ import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import HomeContent from './components/home';
 import Navbar from './components/navbar';
-import EmailVerification from './components/EmailVerification';
 import VerificarCorreo from './components/VerificarCorreo';
 import VisualizarSemestres from './components/VisualizarSemestres';
 import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
@@ -29,7 +28,6 @@ function AppContent() {
         <Route path="/home" element={<HomeContent />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/visualizar-semestres" element={<VisualizarSemestres />} />
-        <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/verificar-correo" element={<VerificarCorreo />} />
         <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} />
         <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 

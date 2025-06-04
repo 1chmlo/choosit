@@ -1,22 +1,22 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import axios from "axios"
 import "./RegisterForm.css"
+//mport "./EmailVerification.css"
 import { REACT_APP_BACKEND_URL } from "../config"
 
 export default function RegisterForm() {
-  const navigate = useNavigate()
+  const [step, setStep] = useState("form") // "form" o "verification"
+  const [registeredEmail, setRegisteredEmail] = useState("")
+
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordMatch, setPasswordMatch] = useState(true)
   const [emailError, setEmailError] = useState("")
-  // Nuevos estados para errores
   const [passwordError, setPasswordError] = useState("")
-  // Estado para mensajes de error del servidor
   const [serverError, setServerError] = useState("")
-
   const [isLoading, setIsLoading] = useState(false)
 
   const emailInputRef = useRef(null)
@@ -28,49 +28,39 @@ export default function RegisterForm() {
     anioIngreso: ""
   })
 
-  // Validar el formato de correo electrónico UDP
   const validateEmail = (email) => {
-    // Verificar que no tenga espacios
     if (email.includes(' ')) return false;
-    
     const udpPattern = /@mail\.udp\.cl$/
-    if (!email) return true // No mostrar error si está vacío
+    if (!email) return true
     return udpPattern.test(email)
   }
 
-  // Nueva función para validar contraseña (8-40 caracteres)
   const validatePassword = (password) => {
-    if (!password) return true // No mostrar error si está vacío
+    if (!password) return true
     return password.length >= 8 && password.length <= 40
   }
 
-  // Función para posicionar el cursor antes de @mail.udp.cl - versión corregida
   const focusEmailInput = () => {
     if (emailInputRef.current) {
       try {
-        emailInputRef.current.focus();
-        
-        // Coloca el cursor al principio
-        const value = emailInputRef.current.value || "";
-        const position = value.indexOf('@') !== -1 ? value.indexOf('@') : 0;
-        
-        // Usar setTimeout para asegurar que el focus haya sucedido
+        emailInputRef.current.focus()
+        const value = emailInputRef.current.value || ""
+        const position = value.indexOf('@') !== -1 ? value.indexOf('@') : 0
         setTimeout(() => {
           try {
             if (emailInputRef.current && emailInputRef.current.setSelectionRange) {
-              emailInputRef.current.setSelectionRange(0, position);
+              emailInputRef.current.setSelectionRange(0, position)
             }
           } catch (error) {
-            console.log("No se pudo establecer la posición del cursor");
+            console.log("No se pudo establecer la posición del cursor")
           }
-        }, 10);
+        }, 10)
       } catch (error) {
-        console.log("Error al manipular el input de correo electrónico", error);
+        console.log("Error al manipular el input de correo electrónico", error)
       }
     }
-  };
+  }
 
-  // Extraer username del email automáticamente
   useEffect(() => {
     if (formData.email && formData.email.includes("@")) {
       const username = formData.email.split("@")[0]
@@ -83,26 +73,16 @@ export default function RegisterForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    
-    // Limpiar errores del servidor cuando el usuario empieza a escribir
-    if (serverError) {
-      setServerError("");
-    }
-    
-    // Manejo especial para el email
+    if (serverError) setServerError("")
+
     if (name === "email") {
-      // Eliminar espacios y asegurarse de que siempre termine con @mail.udp.cl
       let newEmail = value.replace(/\s+/g, '')
-      
       if (!newEmail.endsWith('@mail.udp.cl')) {
         const username = newEmail.split('@')[0] || ''
         newEmail = `${username}@mail.udp.cl`
       }
-      
       const isValidEmail = validateEmail(newEmail)
       setEmailError(isValidEmail ? "" : "El correo debe tener el formato usuario@mail.udp.cl sin espacios")
-      
-      // Si cambia el email y es válido, actualizar el username
       if (isValidEmail && newEmail.includes("@")) {
         const username = newEmail.split("@")[0]
         setFormData(prev => ({
@@ -112,26 +92,23 @@ export default function RegisterForm() {
         }))
         return
       }
-      
       setFormData(prev => ({
         ...prev,
         email: newEmail
       }))
       return
     }
-    
-    // Manejo especial para password
+
     if (name === "password") {
       const isValidPassword = validatePassword(value)
       setPasswordError(isValidPassword || value === "" ? "" : "La contraseña debe tener entre 8 y 40 caracteres")
     }
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }))
 
-    // Verificar si las contraseñas coinciden
     if (name === "confirmPassword" || name === "password") {
       const password = name === "password" ? value : formData.password
       const confirmPassword = name === "confirmPassword" ? value : formData.confirmPassword
@@ -141,11 +118,8 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    // Limpiar cualquier error del servidor anterior
-    setServerError("");
+    setServerError("")
 
-    // Verificaciones de validación
     if (!validateEmail(formData.email)) {
       setEmailError("El correo debe tener el formato usuario@mail.udp.cl sin espacios")
       return
@@ -164,67 +138,99 @@ export default function RegisterForm() {
     try {
       setIsLoading(true)
 
-      console.log('URL de la API:', `${REACT_APP_BACKEND_URL}/api/auth/register`)
       const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/register`, {
         email: formData.email,
         contrasena: formData.password,
         username: formData.username,
         anio_ingreso: formData.anioIngreso
-      });
-      
-      console.log('Registro exitoso:', response.data);
-      
-      // Redirigir al usuario a la página de verificación de email
-      navigate('/email-verification', { 
-        state: { 
-          email: formData.email 
-        } 
-      });
-      
+      })
+
+      console.log('Registro exitoso:', response.data)
+      setRegisteredEmail(formData.email)
+      setStep("verification")
+
     } catch (error) {
-      console.error('Error en el registro:', error);
-      
-      // Mostrar mensaje de error del servidor
+      console.error('Error en el registro:', error)
       if (error.response && error.response.data) {
-        // Mostrar directamente el mensaje de error desde la respuesta
         if (error.response.data.message) {
-          setServerError(error.response.data.message);
-        } else if (error.response.data.errors && error.response.data.errors.length > 0) {
-          setServerError(error.response.data.errors[0].msg);
+          setServerError(error.response.data.message)
+        } else if (error.response.data.errors?.length > 0) {
+          setServerError(error.response.data.errors[0].msg)
         } else {
-          // Si hay datos pero no en el formato esperado, convertirlos a string
-          setServerError(JSON.stringify(error.response.data));
+          setServerError(JSON.stringify(error.response.data))
         }
       } else {
-        setServerError("Ocurrió un error en el registro. Inténtalo de nuevo más tarde.");
+        setServerError("Ocurrió un error en el registro. Inténtalo de nuevo más tarde.")
       }
-      
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Generar opciones para el año de ingreso (solo entre 1989 y 2025)
-  const years = Array.from(
-    { length: 2025 - 1989 + 1 }, 
-    (_, i) => 2025 - i
-  )
+  const handleResendEmail = () => {
+    console.log("HACER LOGICA DE REENVIO DE CORREO", registeredEmail)
+    alert("Correo de verificación NO reenviado porque todavía no está hecha la ruta.")
+  }
+
+  const years = Array.from({ length: 2025 - 1989 + 1 }, (_, i) => 2025 - i)
+
+  if (step === "verification") {
+    return (
+      <div className="verification-container">
+        <div className="verification-card">
+          <div className="email-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+          </div>
+
+          <h1 className="verification-title">¡Verifica tu correo electrónico!</h1>
+
+          <p className="verification-message">
+            Te enviamos un correo para verificar tu cuenta. Revisa tu bandeja de entrada o spam y confirma el correo.
+          </p>
+
+          <div className="email-info">
+            <p>Enviado a: <strong>{registeredEmail}</strong></p>
+          </div>
+
+          <div className="verification-actions">
+            <button onClick={handleResendEmail} className="resend-button">
+              Reenviar correo
+            </button>
+            <a href="/" className="home-link">
+              Volver al inicio
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="register-container">
       <div className="register-card">
-        {/* Espacio para el logo */}
         <Link to="/">
-            <img
-              src="https://i.imgur.com/EXI0FXm.png" 
-              alt="Logo de Choosit" 
-              className="logo-image" 
-            />
-          </Link>
+          <img
+            src="https://i.imgur.com/EXI0FXm.png"
+            alt="Logo de Choosit"
+            className="logo-image"
+          />
+        </Link>
 
         <h1 className="register-title">Crear Cuenta</h1>
-        
-        {/* Mostrar mensaje de error del servidor si existe */}
+
         {serverError && (
           <div className="server-error-message">
             {serverError}
@@ -233,12 +239,8 @@ export default function RegisterForm() {
 
         <form onSubmit={handleSubmit} className="register-form">
 
-
-
           <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Correo electrónico UDP
-            </label>
+            <label htmlFor="email" className="form-label">Correo electrónico UDP</label>
             <input
               id="email"
               name="email"
@@ -270,9 +272,7 @@ export default function RegisterForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Contraseña
-            </label>
+            <label htmlFor="password" className="form-label">Contraseña</label>
             <div className="password-container">
               <input
                 id="password"
@@ -292,9 +292,7 @@ export default function RegisterForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">
-              Confirmar contraseña
-            </label>
+            <label htmlFor="confirmPassword" className="form-label">Confirmar contraseña</label>
             <div className="password-container">
               <input
                 id="confirmPassword"
@@ -318,9 +316,7 @@ export default function RegisterForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="anioIngreso" className="form-label">
-              Año de ingreso
-            </label>
+            <label htmlFor="anioIngreso" className="form-label">Año de ingreso</label>
             <select
               id="anioIngreso"
               name="anioIngreso"
@@ -331,9 +327,7 @@ export default function RegisterForm() {
             >
               <option value="">Seleccionar año</option>
               {years.map(year => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
+                <option key={year} value={year}>{year}</option>
               ))}
             </select>
           </div>
@@ -342,14 +336,12 @@ export default function RegisterForm() {
             <input type="checkbox" id="terms" required className="terms-checkbox" />
             <label htmlFor="terms" className="terms-label">
               Acepto los{" "}
-              <Link to="/terms" className="terms-link">
-                términos y condiciones
-              </Link>
+              <Link to="/terms" className="terms-link">términos y condiciones</Link>
             </label>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className={`register-button ${isLoading ? "loading" : ""}`}
             disabled={isLoading}
           >
@@ -359,11 +351,9 @@ export default function RegisterForm() {
 
         <div className="login-prompt">
           <span>¿Ya tienes una cuenta?</span>{" "}
-          <Link to="/login" className="login-link">
-            Iniciar sesión
-          </Link>
+          <Link to="/login" className="login-link">Iniciar sesión</Link>
         </div>
       </div>
     </div>
   )
-} 
+}
