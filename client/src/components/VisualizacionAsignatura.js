@@ -302,7 +302,7 @@ const VisualizacionAsignatura = () => {
       <div className="fondo-blanco">
         <div className="container">
           <div className="error-message">
-            <img src="/icons/warning.png" alt="advertencia" className="icono" />
+            <img src="warning.png" alt="advertencia" className="icono" />
             <h2>{error}</h2>
             <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
           </div>
@@ -397,7 +397,7 @@ const VisualizacionAsignatura = () => {
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
                         <div className="user-avatar">
-                          <img src="/icons/user.png" alt="usuario" className="icono" />
+                          <img src="user.png" alt="usuario" className="icono" />
                         </div>
                         <div className="user-info">
                           <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
@@ -431,7 +431,7 @@ const VisualizacionAsignatura = () => {
                               onClick={() => handleLikeComentario(comentario.id)}
                               className={yaDioLike ? 'liked' : ''}
                             >
-                              <img src="/icons/thumbs-up.png" alt="like" className="icono" />({comentario.likes_usuarios?.length || 0})
+                              <img src="thumbs-up.png" alt="like" className="icono" />({comentario.likes_usuarios?.length || 0})
                             </button>
                             
                             {esAutor && (
@@ -439,13 +439,13 @@ const VisualizacionAsignatura = () => {
                                 setEditandoComentario(comentario);
                                 setTextoEditado(comentario.texto);
                               }}>
-                                <img src="/icons/edit.png" alt="editar" className="icono" /> Editar
+                                <img src="edit.png" alt="editar" className="icono" /> Editar
                               </button>
                             )}
                             
                             {!esAutor && user && (
                               <button onClick={() => handleReportarComentario(comentario.id)}>
-                                <img src="/icons/flag.png" alt="reportar" className="icono" /> Reportar
+                                <img src="flag.png" alt="reportar" className="icono" /> Reportar
                               </button>
                             )}
                           </>
