@@ -3,6 +3,7 @@ import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
 import StarRating from './StarRating';
+import axios from 'axios';
 import edit from "./edit.png"; 
 import warning from "./warning.png"; 
 import thumbsUp from "./thumbsUp.png";
@@ -54,15 +55,11 @@ const VisualizacionAsignatura = () => {
       return;
     }
 
-    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+    axios.get(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`, {
+      withCredentials: true
     })
-    .then(async (response) => {
-      const data = await response.json();
+    .then((response) => {
+      const data = response.data;
       if (data.ok) {
         setAsignatura(data.asignatura);
         setPreguntas(data.preguntas || []); 
@@ -122,16 +119,11 @@ const VisualizacionAsignatura = () => {
     };
 
     try {
-      const res = await fetch(`${REACT_APP_BACKEND_URL}/api/encuestas`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(payload),
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/encuestas`, payload, {
+        withCredentials: true
       });
 
-      const data = await res.json();
+      const data = response.data;
       alert(data.message || "Encuesta enviada");
     } catch (error) {
       console.error("Error al enviar encuesta:", error);
@@ -144,34 +136,25 @@ const VisualizacionAsignatura = () => {
     if (!comentarioNuevo.trim()) return;
 
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          id_asignatura: asignatura.codigo,
-          texto: comentarioNuevo
-        }),
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/comentarios`, {
+        id_asignatura: asignatura.id,
+        texto: comentarioNuevo
+      }, {
+        withCredentials: true
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.ok) {
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
-        const asignaturaResponse = await fetch(
+        const asignaturaResponse = await axios.get(
           `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
           {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true
           }
         );
-        const asignaturaData = await asignaturaResponse.json();
+        const asignaturaData = asignaturaResponse.data;
         
         setAsignatura(asignaturaData.asignatura);
         setComentarioNuevo('');
@@ -181,7 +164,7 @@ const VisualizacionAsignatura = () => {
         throw new Error(data.message || 'Error al crear comentario');
       }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
 
@@ -196,19 +179,14 @@ const VisualizacionAsignatura = () => {
     if (!motivo) return;
 
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/reporte`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          id_comentario: reportModal.idComentario,
-          motivo: motivo,
-        }),
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/comentarios/reporte`, {
+        id_comentario: reportModal.idComentario,
+        motivo: motivo,
+      }, {
+        withCredentials: true
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.ok) {
         alert('Comentario reportado exitosamente');
         setReportModal({ isOpen: false, idComentario: null });
@@ -216,7 +194,7 @@ const VisualizacionAsignatura = () => {
         throw new Error(data.error || 'Error al reportar comentario');
       }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
 
@@ -224,33 +202,24 @@ const VisualizacionAsignatura = () => {
     if (!textoEditado.trim()) return;
 
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/${editandoComentario.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          texto: textoEditado
-        }),
+      const response = await axios.patch(`${REACT_APP_BACKEND_URL}/api/comentarios/${editandoComentario.id}`, {
+        texto: textoEditado
+      }, {
+        withCredentials: true
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.ok) {
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
-        const asignaturaResponse = await fetch(
+        const asignaturaResponse = await axios.get(
           `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
           {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true
           }
         );
-        const asignaturaData = await asignaturaResponse.json();
+        const asignaturaData = asignaturaResponse.data;
         
         setAsignatura(asignaturaData.asignatura);
         setEditandoComentario(null);
@@ -261,44 +230,35 @@ const VisualizacionAsignatura = () => {
         throw new Error(data.message || 'Error al editar comentario');
       }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
 
   const handleLikeComentario = async (idComentario) => {
     try {
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/${idComentario}/like`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({}),
+      const response = await axios.patch(`${REACT_APP_BACKEND_URL}/api/comentarios/${idComentario}/like`, {}, {
+        withCredentials: true
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.ok) {
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
-        const asignaturaResponse = await fetch(
+        const asignaturaResponse = await axios.get(
           `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
           {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+            withCredentials: true
           }
         );
-        const asignaturaData = await asignaturaResponse.json();
+        const asignaturaData = asignaturaResponse.data;
         
         setAsignatura(asignaturaData.asignatura);
       } else {
         throw new Error(data.message || 'Error al dar like al comentario');
       }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
 
