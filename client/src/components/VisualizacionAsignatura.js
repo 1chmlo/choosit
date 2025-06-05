@@ -352,9 +352,23 @@ const VisualizacionAsignatura = () => {
                 <p>No hay evaluaciones disponibles aún.</p>
               )}
             </div>
-            <div className="encuestas-info">
+            
+
+
+
+              {/* QUITAR DISPLAY NONE CUANDO EXISTA LA FUNCIONALIDAD */}
+            <div className="encuestas-info" style={{ display: 'none' }}>
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
             </div>
+
+
+
+
+
+
+
+
+
             {preguntas.length > 0 && isAuthenticated && (
               <div className="encuesta-formulario">
                 <h3>Responde la encuesta</h3>
