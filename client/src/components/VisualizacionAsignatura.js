@@ -406,7 +406,7 @@ const VisualizacionAsignatura = () => {
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
                         <div className="user-avatar">
-                          <div className="avatar-placeholder">
+                          <div className="iniciales-usuario">
                             {comentario.nombre.charAt(0).toUpperCase()}
                             {comentario.apellido.charAt(0).toUpperCase()}
                           </div>
