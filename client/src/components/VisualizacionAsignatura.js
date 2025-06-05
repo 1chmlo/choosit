@@ -3,6 +3,8 @@ import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
 import StarRating from './StarRating'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle, faUserCircle, faThumbsUp, faEdit, faFlag} from '@fortawesome/free-solid-svg-icons';
 
 const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   const [motivo, setMotivo] = useState("");
@@ -302,7 +304,7 @@ const VisualizacionAsignatura = () => {
       <div className="fondo-blanco">
         <div className="container">
           <div className="error-message">
-            <i className="fas fa-exclamation-triangle"></i>
+            <FontAwesomeIcon icon={faExclamationTriangle} />
             <h2>{error}</h2>
             <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
           </div>
@@ -397,7 +399,7 @@ const VisualizacionAsignatura = () => {
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
                         <div className="user-avatar">
-                          <i className="fas fa-user-circle"></i>
+                          <FontAwesomeIcon icon={faUserCircle} />
                         </div>
                         <div className="user-info">
                           <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
@@ -408,7 +410,7 @@ const VisualizacionAsignatura = () => {
                           </span>
                         </div>
                       
-                      {editandoComentario?.id === comentario.id ? (
+                      {editandoComentario?.id === comentario.id && esAutor ? (
                         <div className="editar-comentario">
                           <textarea
                             value={textoEditado}
@@ -431,7 +433,7 @@ const VisualizacionAsignatura = () => {
                               onClick={() => handleLikeComentario(comentario.id)}
                               className={yaDioLike ? 'liked' : ''}
                             >
-                              <i className="fas fa-thumbs-up"></i> ({comentario.likes_usuarios?.length || 0})
+                              <FontAwesomeIcon icon={faThumbsUp} /> ({comentario.likes_usuarios?.length || 0})
                             </button>
                             
                             {esAutor && (
@@ -439,13 +441,13 @@ const VisualizacionAsignatura = () => {
                                 setEditandoComentario(comentario);
                                 setTextoEditado(comentario.texto);
                               }}>
-                                <i className="fas fa-edit"></i> Editar
+                                <FontAwesomeIcon icon={faEdit} /> Editar
                               </button>
                             )}
                             
                             {!esAutor && user && (
                               <button onClick={() => handleReportarComentario(comentario.id)}>
-                                <i className="fas fa-flag"></i> Reportar
+                                <FontAwesomeIcon icon={faFlag} /> Reportar
                               </button>
                             )}
                           </>
