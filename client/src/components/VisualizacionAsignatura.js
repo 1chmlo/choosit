@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
-import StarRating from './StarRating'; 
+import StarRating from './StarRating';
+import edit from "./edit.png"; 
+import warning from "./warning.png"; 
+import thumbsUp from "./thumbsUp.png";
+import flag from "./flag.png";
+
 
 const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   const [motivo, setMotivo] = useState("");
@@ -302,7 +307,11 @@ const VisualizacionAsignatura = () => {
       <div className="fondo-blanco">
         <div className="container">
           <div className="error-message">
-            <img src="warning.png" alt="advertencia" className="icono" />
+            <img
+              src={warning}
+              alt="Advertencia"
+              className="icono"
+            />
             <h2>{error}</h2>
             <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
           </div>
@@ -397,7 +406,10 @@ const VisualizacionAsignatura = () => {
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
                         <div className="user-avatar">
-                          <img src="user.png" alt="usuario" className="icono" />
+                          <div className="avatar-placeholder">
+                            {comentario.nombre.charAt(0).toUpperCase()}
+                            {comentario.apellido.charAt(0).toUpperCase()}
+                          </div>
                         </div>
                         <div className="user-info">
                           <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
@@ -431,7 +443,11 @@ const VisualizacionAsignatura = () => {
                               onClick={() => handleLikeComentario(comentario.id)}
                               className={yaDioLike ? 'liked' : ''}
                             >
-                              <img src="thumbs-up.png" alt="like" className="icono" />({comentario.likes_usuarios?.length || 0})
+                              <img
+                                  src={thumbsUp}
+                                  alt="Like"
+                                  className="icono"
+                                /> ({comentario.likes_usuarios?.length || 0})
                             </button>
                             
                             {esAutor && (
@@ -439,13 +455,21 @@ const VisualizacionAsignatura = () => {
                                 setEditandoComentario(comentario);
                                 setTextoEditado(comentario.texto);
                               }}>
-                                <img src="edit.png" alt="editar" className="icono" /> Editar
+                                <img
+                                  src={edit}
+                                  alt="Editar"
+                                  className="icono"
+                                /> Editar
                               </button>
                             )}
                             
                             {!esAutor && user && (
                               <button onClick={() => handleReportarComentario(comentario.id)}>
-                                <img src="flag.png" alt="reportar" className="icono" /> Reportar
+                                <img
+                                  src={flag}
+                                  alt="Reportar"
+                                  className="icono"
+                                /> Reportar
                               </button>
                             )}
                           </>

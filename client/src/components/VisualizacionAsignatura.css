@@ -236,7 +236,7 @@ h2 {
 }
 
 .user-avatar i {
-  font-size: 2rem;
+  font-size: 1rem;
   color: var(--wine-red);
 }
 
@@ -561,4 +561,22 @@ h2 {
 .like-count {
   font-size: 14px;
   color: #666;
+}
+.icono {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--wine-red);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 10px;
 }
