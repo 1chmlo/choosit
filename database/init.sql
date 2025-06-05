@@ -21,10 +21,10 @@ CREATE TABLE asignaturas (
   semestre int NOT NULL,
   descripcion varchar(500) NOT NULL,
   n_encuestas int NOT NULL DEFAULT 0,
-  lab bool NOT NULL,
+  laboratorio bool NOT NULL,
   controles bool NOT NULL,
   proyecto bool NOT NULL,
-  cfg bool NOT NULL
+  electivo bool NOT NULL
 );
 
 CREATE TABLE tipo_pregunta (
@@ -177,7 +177,7 @@ BEGIN
   END IF;
 
   -- Para tipos condicionales (basados en columnas booleanas)
-  FOR col IN SELECT unnest(ARRAY['lab', 'controles', 'proyecto', 'cfg']) LOOP
+  FOR col IN SELECT unnest(ARRAY['solemnes','laboratorio', 'controles', 'proyecto', 'electivo', 'cfg']) LOOP
     IF to_jsonb(NEW) ->> col = 'true' THEN
       -- Buscar tipo_pregunta que coincida con el nombre del campo
       SELECT id INTO tipo_id

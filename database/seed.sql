@@ -1,17 +1,17 @@
 -- Crear tipos de preguntas
 INSERT INTO tipo_pregunta (tipo) VALUES
-('Proyecto'),
-('Controles'),
-('Solemnes'),
-('Laboratorio'),
-('General'),
-('Electivo');
+('proyecto'),
+('controles'),
+('solemnes'),
+('laboratorio'),
+('general'),
+('electivo');
 
 -- Insertar asignaturas
 --1er semestre
-INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, lab, controles, proyecto, cfg) VALUES
+INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, laboratorio, controles, proyecto, electivo) VALUES
 ('CBQ-1000','Química',1,'Curso que entrega entendimiento de cómo la química modela los fenómenos más importantes de transformaciones de la materia en la naturaleza y la ingeniería, cómo está confirmada la materia a nivel cuántico, y las implicancias de la química en diversos fenómenos como el efecto invernadero, su influencia en la sociedad, entro otros casos reales.',0 , true, true, true, false),
-('CBM-1001','Cálculo I',1,'Curso que entrega fundamentos matemáticos para futuros cursos de ingeniería. Aborda funciones, derivadas y aplicaciones en ingeniería y ciencias. Al finalizar podrás resolver inecuaciones, aplicar funciones, analizar límites y continuidad, comprender la derivada y sus aplicaciones, contenidos fundamentales para cuantificar una gran variedad de fenómenos naturales y en ingeniería.',0 , false, true, false, false),
+('CBM-1001','Cálculo I',1,'Curso que entrega fundamentos matemáticos para futuros cursos de ingeniería. Aborda funciones, derivadas y aplicaciones en ingeniería y ciencias. Al finalizar podrás resolver inecuaciones, aplicar funciones, analizar límites y continuidad, comprender la derivada y sus aplicaciones, contenidos fundamentales para cuantificar una gran variedad de fenómenos naturales y en ingeniería.',0 , true, true, true, true),
 ('CIT-1000','Programación',1,'Curso que entrega las herramientas básicas de programación, y desarrollo de los primeros programas. Además, aborda el diseño de soluciones para problemas ingenieriles simples, implementar algoritmos en C++, procesar datos básicos y trabajar en proyectos de procesamiento de datos, documentando sus soluciones.',0 , false, true, false, false),
 ('CBM-1000','Álgebra y Geometría',1,'Curso en el que se aprende sobre álgebra, geometría y números complejos. Se entregan herramientas para resolver problemas matemáticos aplicados y desarrollar habilidades lógicas y de demostración. Se incluye lógica proposicional, inducción matemática, sumatorias, trigonometría, geometría analítica y números complejos.',0 , false, true, false, false),
 ('FIC-1000','Comunicación Para La Ingeniería',1,'Curso que mejora la escritura, comprensión lectora y capacidad de redacción de textos. Esencial para poder comunicar ideas con precisión y fortalecer la formación profesional integral.',0 , false, true, false, false),
@@ -85,11 +85,11 @@ INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingres
 
 -- Insertar preguntas
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
-((SELECT id FROM tipo_pregunta WHERE tipo = 'Proyecto'), '¿Cómo calificarías la carga de trabajo del proyecto?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'Controles'), '¿Los controles fueron justos y bien distribuidos?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'Solemnes'), '¿Qué tan claros fueron los objetivos de los solemnes?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'Laboratorio'), '¿El laboratorio fue útil para entender los conceptos?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'Electivo'), '¿Recomendarías este curso como electivo?');
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Cómo calificarías la carga de trabajo del proyecto?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Los controles fueron justos y bien distribuidos?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'solemnes'), '¿Qué tan claros fueron los objetivos de los solemnes?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿El laboratorio fue útil para entender los conceptos?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'electivo'), '¿Recomendarías este curso como electivo?');
 
 
 

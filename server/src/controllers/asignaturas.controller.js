@@ -11,7 +11,7 @@ export const get_all_subjects = async (req, res) => {
 };
 
 export const add_subject = async (req, res) => {
-  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
+  const { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo } = req.body || {};
 
   const Asignatura_existe = await pool.query(
     'SELECT * FROM asignaturas WHERE codigo = $1',
@@ -25,8 +25,8 @@ export const add_subject = async (req, res) => {
   }
 
   const Nuevo_Ramo = await pool.query(
-    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-    [codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg]
+    'INSERT INTO asignaturas (codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+    [codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo]
   );
 
   const { id } = Nuevo_Ramo.rows[0];
@@ -39,15 +39,15 @@ export const add_subject = async (req, res) => {
 
   res.status(201).json({
     message: 'Ramo creado correctamente',
-    ramo: { id, codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg },
+    ramo: { id, codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo },
   });
 };
 
 export const modify_subject = async (req, res) => {
   const { id } = req.params;
-  const { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg } = req.body || {};
+  const { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo } = req.body || {};
 
-  const datos_a_cambiar = { codigo, nombre, semestre, descripcion, lab, controles, proyecto, cfg };
+  const datos_a_cambiar = { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo };
   const campo_con_datos = [];
   const Valores = [];
   let posicion = 1;
@@ -100,7 +100,7 @@ export const subject_all = async (req, res) => {
   const { codigo } = req.params;
   try {
     const asignaturaQuery = await pool.query(
-      `SELECT id, codigo, descripcion, nombre, n_encuestas, lab, controles, proyecto, cfg
+      `SELECT id, codigo, descripcion, nombre, n_encuestas, laboratorio, controles, proyecto, electivo
        FROM asignaturas WHERE codigo = $1`,
       [codigo]
     );

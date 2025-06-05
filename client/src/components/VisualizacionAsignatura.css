@@ -575,3 +575,32 @@ h2 {
   font-weight: bold;
   margin-right: 10px;
 }
+
+/* Agrega estos estilos a tu archivo VisualizacionAsignatura.css */
+.static-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star {
+  font-size: 18px;
+  color: #ddd;
+  transition: none;
+  cursor: default;
+}
+
+.star.full-star {
+  color: #ffd700;
+}
+
+.star.half-star {
+  background: linear-gradient(90deg, #ffd700 50%, #ddd 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.star.empty-star {
+  color: #ddd;
+}

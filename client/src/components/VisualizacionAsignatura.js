@@ -79,29 +79,58 @@ const VisualizacionAsignatura = () => {
     </span>
   );
 
-  const mostrarRating = (id, label, ratingData) => {
-    if (!ratingData) return null;
-    // Parse the string value to number and ensure it's within 1-5 range
-    const valor = parseFloat(ratingData.respuesta_calculada);
-    const porcentaje = (valor / 5) * 100; // Convert to percentage for progress bar
+ const mostrarRating = (pregunta, ratingData) => {
+  if (!ratingData || !pregunta) return null;
+  
+  // Parse the string value to number and ensure it's within 1-5 range
+  const valor = parseFloat(ratingData.respuesta_calculada);
+  const porcentaje = (valor / 5) * 100; // Convert to percentage for progress bar
+  
+  // Create static stars display
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
     
-    return (
-      <div className="rating-item">
-        <div className="rating-header">
-          <span className="rating-label">{label}</span>
-          <div className="rating-stars-value">
-            <div className="stars-container" id={`${id}-stars`}>
-              <StarRating rating={valor} />
-            </div>
-            <span className="rating-value" id={`${id}-valor`}>{valor.toFixed(1)}</span>
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        // Full star
+        stars.push(
+          <span key={i} className="star full-star">★</span>
+        );
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        // Half star
+        stars.push(
+          <span key={i} className="star half-star">★</span>
+        );
+      } else {
+        // Empty star
+        stars.push(
+          <span key={i} className="star empty-star">☆</span>
+        );
+      }
+    }
+    return stars;
+  };
+  
+  return (
+    <div className="rating-item" key={pregunta.id}>
+      <div className="rating-header">
+        <span className="rating-label">{pregunta.pregunta}</span>
+        <div className="rating-stars-value">
+          <div className="stars-container static-stars">
+            {renderStars(valor)}
           </div>
-        </div>
-        <div className="progress-bar-container">
-          <div className="progress-bar" id={`${id}-bar`} style={{ width: `${porcentaje}%` }}></div>
+          <span className="rating-value">{valor.toFixed(1)}</span>
         </div>
       </div>
-    );
-  };
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${porcentaje}%` }}></div>
+      </div>
+    </div>
+  );
+};
+
 
   const handleRating = (idPregunta, rating) => {
     setRespuestas((prev) => ({ ...prev, [idPregunta]: rating }));
@@ -285,10 +314,13 @@ const VisualizacionAsignatura = () => {
 
   if (!asignatura) return null;
 
-  // Update this to use respuestasPonderadas instead of ratings
+  // Create ratings map from respuestasPonderadas
   const ratingsMap = Object.fromEntries(
     (asignatura.respuestasPonderadas || []).map((r) => [r.id_pregunta, r])
   );
+
+  // Get preguntas that have ratings data
+  const preguntasConRatings = preguntas.filter(pregunta => ratingsMap[pregunta.id]);
 
   return (
     <div className="fondo-blanco">
@@ -302,28 +334,28 @@ const VisualizacionAsignatura = () => {
             <h2>Descripción</h2>
             <p id="asignatura-descripcion">{asignatura.descripcion}</p>
             <div className="metodos-evaluacion">
-              {mostrarMetodo('lab', asignatura.lab)}
+              {mostrarMetodo('laboratorio', asignatura.laboratorio)}
               {mostrarMetodo('controles', asignatura.controles)}
               {mostrarMetodo('proyecto', asignatura.proyecto)}
-              {mostrarMetodo('cfg', asignatura.cfg)}
+              {mostrarMetodo('electivo', asignatura.electivo)}
             </div>
           </section>
 
           <section className="resumen-evaluacion">
             <div className="evaluacion-box">
               <h2 className="evaluacion-titulo">Resumen de Evaluaciones</h2>
-              {/* Use the actual question IDs from your API response */}
-              {ratingsMap['49c139cd-2b0d-42ee-b23c-314dc6b80c78'] && 
-                mostrarRating('proyecto', 'Carga de trabajo del proyecto:', ratingsMap['49c139cd-2b0d-42ee-b23c-314dc6b80c78'])
-              }
-              {ratingsMap['9fdb4612-d8e8-4248-92c0-7536d572350c'] && 
-                mostrarRating('controles', 'Controles justos:', ratingsMap['9fdb4612-d8e8-4248-92c0-7536d572350c'])
-              }
+              {preguntasConRatings.length > 0 ? (
+                preguntasConRatings.map(pregunta => 
+                  mostrarRating(pregunta, ratingsMap[pregunta.id])
+                )
+              ) : (
+                <p>No hay evaluaciones disponibles aún.</p>
+              )}
             </div>
             <div className="encuestas-info">
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
             </div>
-            {preguntas.length > 0 && (
+            {preguntas.length > 0 && isAuthenticated && (
               <div className="encuesta-formulario">
                 <h3>Responde la encuesta</h3>
                 {preguntas.map((pregunta) => (
@@ -332,6 +364,7 @@ const VisualizacionAsignatura = () => {
                     <StarRating
                       rating={respuestas[pregunta.id] || 0}
                       onRate={(rating) => handleRating(pregunta.id, rating)}
+                      readOnly={false}
                     />
                   </div>
                 ))}
