@@ -1,13 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
-import StarRating from './StarRating'; // Asegúrate de tener este componente
+import { useAuth } from '../context/AuthContext';
+import StarRating from './StarRating'; 
+
+const ReportModal = ({ isOpen, onClose, onSubmit }) => {
+  const [motivo, setMotivo] = useState("");
+  
+  return (
+    <div className={`modal ${isOpen ? "open" : ""}`}>
+      <div className="modal-content">
+        <h3>Reportar comentario</h3>
+        <textarea 
+          value={motivo} 
+          onChange={(e) => setMotivo(e.target.value)} 
+          placeholder="Motivo del reporte..."
+        />
+        <div className="modal-buttons">
+          <button className="modal-submit" onClick={() => onSubmit(motivo)}>Enviar</button>
+          <button className="modal-cancel" onClick={onClose}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const VisualizacionAsignatura = () => {
+  const { user, isAuthenticated } = useAuth();
   const [asignatura, setAsignatura] = useState(null);
   const [error, setError] = useState('');
+  const [comentarioNuevo, setComentarioNuevo] = useState('');
+  const [editandoComentario, setEditandoComentario] = useState(null);
+  const [textoEditado, setTextoEditado] = useState('');
+  const [mensajeExito, setMensajeExito] = useState('');
   const [respuestas, setRespuestas] = useState({});
   const [preguntas, setPreguntas] = useState([]);
+  const [reportModal, setReportModal] = useState({
+    isOpen: false,
+    idComentario: null,
+  });
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -18,31 +49,27 @@ const VisualizacionAsignatura = () => {
       return;
     }
 
-    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`) 
-      .then((res) => {
-        if (!res.ok) throw new Error('Asignatura no encontrada');
-        return res.json();
-      })
-      .then((data) => {
-        if (data.ok) {
-          setAsignatura(data.asignatura);
-          setPreguntas(data.preguntas || []);
-        } else throw new Error();
-      })
-      .catch(() => {
-        setError('Error al cargar los datos de la asignatura');
-      });
+    fetch(`${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then(async (response) => {
+      const data = await response.json();
+      if (data.ok) {
+        setAsignatura(data.asignatura);
+        setPreguntas(data.preguntas || []); 
+      } else {
+        throw new Error('Error al obtener datos de la asignatura');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      setError('Error al cargar los datos de la asignatura');
+    });
   }, []);
-
-  const generarEstrellas = (rating) => {
-    const fullWidth = rating * 20;
-    return (
-      <div className="stars-container">
-        <div className="stars-foreground" style={{ width: `${fullWidth}%` }}>★★★★★</div>
-        <div className="stars-background">★★★★★</div>
-      </div>
-    );
-  };
 
   const mostrarMetodo = (id, valor) => (
     <span id={id}>
@@ -59,7 +86,7 @@ const VisualizacionAsignatura = () => {
           <span className="rating-label">{label}</span>
           <div className="rating-stars-value">
             <div className="stars-container" id={`${id}-stars`}>
-              {generarEstrellas(valor)}
+              {StarRating(valor)}
             </div>
             <span className="rating-value" id={`${id}-valor`}>{valor.toFixed(1)}</span>
           </div>
@@ -104,6 +131,169 @@ const VisualizacionAsignatura = () => {
     } catch (error) {
       console.error("Error al enviar encuesta:", error);
       alert("Error al enviar la encuesta");
+    }
+  };
+
+  const handleSubmitComentario = async (e) => {
+    e.preventDefault();
+    if (!comentarioNuevo.trim()) return;
+
+    try {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          id_asignatura: asignatura.codigo,
+          texto: comentarioNuevo
+        }),
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = urlParams.get('id');
+        
+        const asignaturaResponse = await fetch(
+          `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        const asignaturaData = await asignaturaResponse.json();
+        
+        setAsignatura(asignaturaData.asignatura);
+        setComentarioNuevo('');
+        setMensajeExito('Comentario publicado exitosamente');
+        setTimeout(() => setMensajeExito(''), 3000);
+      } else {
+        throw new Error(data.message || 'Error al crear comentario');
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleReportarComentario = (idComentario) => {
+    setReportModal({
+      isOpen: true,
+      idComentario,
+    });
+  };
+
+  const handleSubmitReport = async (motivo) => {
+    if (!motivo) return;
+
+    try {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/reporte`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          id_comentario: reportModal.idComentario,
+          motivo: motivo,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        alert('Comentario reportado exitosamente');
+        setReportModal({ isOpen: false, idComentario: null });
+      } else {
+        throw new Error(data.error || 'Error al reportar comentario');
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleEditarComentario = async () => {
+    if (!textoEditado.trim()) return;
+
+    try {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/${editandoComentario.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          texto: textoEditado
+        }),
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = urlParams.get('id');
+        
+        const asignaturaResponse = await fetch(
+          `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        const asignaturaData = await asignaturaResponse.json();
+        
+        setAsignatura(asignaturaData.asignatura);
+        setEditandoComentario(null);
+        setTextoEditado('');
+        setMensajeExito('Comentario actualizado exitosamente');
+        setTimeout(() => setMensajeExito(''), 3000);
+      } else {
+        throw new Error(data.message || 'Error al editar comentario');
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleLikeComentario = async (idComentario) => {
+    try {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/comentarios/${idComentario}/like`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({}),
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = urlParams.get('id');
+        
+        const asignaturaResponse = await fetch(
+          `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        const asignaturaData = await asignaturaResponse.json();
+        
+        setAsignatura(asignaturaData.asignatura);
+      } else {
+        throw new Error(data.message || 'Error al dar like al comentario');
+      }
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -156,8 +346,6 @@ const VisualizacionAsignatura = () => {
             <div className="encuestas-info">
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
             </div>
-
-            {/* NUEVA SECCIÓN: Encuesta del usuario */}
             {preguntas.length > 0 && (
               <div className="encuesta-formulario">
                 <h3>Responde la encuesta</h3>
@@ -179,25 +367,32 @@ const VisualizacionAsignatura = () => {
 
           <section className="comentarios">
             <h2>Comentarios</h2>
+            
+            {mensajeExito && <div className="mensaje-exito">{mensajeExito}</div>}
+            
+            {isAuthenticated && (
+              <form onSubmit={handleSubmitComentario} className="comentario-form">
+                <textarea
+                  value={comentarioNuevo}
+                  onChange={(e) => setComentarioNuevo(e.target.value)}
+                  placeholder="Escribe tu comentario..."
+                  rows="3"
+                  required
+                />
+                <button type="submit">Publicar comentario</button>
+              </form>
+            )}
+
             <div className="comentarios-container" id="comentarios-container">
               {asignatura.comentarios?.length ? (
                 asignatura.comentarios.map((comentario, index) => {
-                  
-                  // DEBUG:
-                  console.log('Comentario completo:', comentario);
-                  console.log('Nombre:', comentario.nombre);
-                  console.log('Apellido:', comentario.apellido);
-                  console.log('Activo:', comentario.activo);
-                  
                   const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
                     year: 'numeric', month: 'long', day: 'numeric'
                   });
                   
-                  // Determinar el nombre a mostrar basado en el estado activo
-                  const nombreMostrar = comentario.activo 
-                    ? `${comentario.nombre} ${comentario.apellido}`
-                    : 'Usuario desactivado';
-                  
+                  const esAutor = user && comentario.id_usuario === user.id;
+                  const yaDioLike = user && comentario.likes_usuarios?.includes(user.id);
+
                   return (
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
@@ -205,17 +400,57 @@ const VisualizacionAsignatura = () => {
                           <i className="fas fa-user-circle"></i>
                         </div>
                         <div className="user-info">
-                          <span className="user-name">{nombreMostrar}</span>
+                          <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
                           <span className="comment-date">{fecha}</span>
                         </div>
-                        <span className="user-reputation">
-                          Puntuación:
-                          <span className="user-stars">
-                            {'★'.repeat(comentario.reputacion)}{'☆'.repeat(5 - comentario.reputacion)}
+                          <span className="user-reputation">
+                            Reputación: <span className="reputacion-valor">{comentario.reputacion}</span>
                           </span>
-                        </span>
+                        </div>
+                      
+                      {editandoComentario?.id === comentario.id ? (
+                        <div className="editar-comentario">
+                          <textarea
+                            value={textoEditado}
+                            onChange={(e) => setTextoEditado(e.target.value)}
+                            rows="3"
+                          />
+                          <div className="editar-comentario-botones">
+                            <button onClick={handleEditarComentario}>Guardar</button>
+                            <button onClick={() => setEditandoComentario(null)}>Cancelar</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="comentario-texto">{comentario.texto}</div>
+                      )}
+                      
+                      <div className="comentario-acciones">
+                        {user && (
+                          <>
+                            <button 
+                              onClick={() => handleLikeComentario(comentario.id)}
+                              className={yaDioLike ? 'liked' : ''}
+                            >
+                              <i className="fas fa-thumbs-up"></i> ({comentario.likes_usuarios?.length || 0})
+                            </button>
+                            
+                            {esAutor && (
+                              <button onClick={() => {
+                                setEditandoComentario(comentario);
+                                setTextoEditado(comentario.texto);
+                              }}>
+                                <i className="fas fa-edit"></i> Editar
+                              </button>
+                            )}
+                            
+                            {!esAutor && user && (
+                              <button onClick={() => handleReportarComentario(comentario.id)}>
+                                <i className="fas fa-flag"></i> Reportar
+                              </button>
+                            )}
+                          </>
+                        )}
                       </div>
-                      <div className="comentario-texto">{comentario.texto}</div>
                     </div>
                   );
                 })
@@ -226,6 +461,12 @@ const VisualizacionAsignatura = () => {
           </section>
         </main>
       </div>
+
+      <ReportModal
+        isOpen={reportModal.isOpen}
+        onClose={() => setReportModal({ isOpen: false, idComentario: null })}
+        onSubmit={handleSubmitReport}
+      />
     </div>
   );
 };
