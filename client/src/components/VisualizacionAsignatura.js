@@ -81,20 +81,23 @@ const VisualizacionAsignatura = () => {
 
   const mostrarRating = (id, label, ratingData) => {
     if (!ratingData) return null;
-    const valor = ratingData.respuesta_calculada / 20;
+    // Parse the string value to number and ensure it's within 1-5 range
+    const valor = parseFloat(ratingData.respuesta_calculada);
+    const porcentaje = (valor / 5) * 100; // Convert to percentage for progress bar
+    
     return (
       <div className="rating-item">
         <div className="rating-header">
           <span className="rating-label">{label}</span>
           <div className="rating-stars-value">
             <div className="stars-container" id={`${id}-stars`}>
-              {StarRating(valor)}
+              <StarRating rating={valor} />
             </div>
             <span className="rating-value" id={`${id}-valor`}>{valor.toFixed(1)}</span>
           </div>
         </div>
         <div className="progress-bar-container">
-          <div className="progress-bar" id={`${id}-bar`} style={{ width: `${ratingData.respuesta_calculada}%` }}></div>
+          <div className="progress-bar" id={`${id}-bar`} style={{ width: `${porcentaje}%` }}></div>
         </div>
       </div>
     );
@@ -282,8 +285,9 @@ const VisualizacionAsignatura = () => {
 
   if (!asignatura) return null;
 
+  // Update this to use respuestasPonderadas instead of ratings
   const ratingsMap = Object.fromEntries(
-    (asignatura.ratings || []).map((r) => [r.id_pregunta, r])
+    (asignatura.respuestasPonderadas || []).map((r) => [r.id_pregunta, r])
   );
 
   return (
@@ -308,9 +312,13 @@ const VisualizacionAsignatura = () => {
           <section className="resumen-evaluacion">
             <div className="evaluacion-box">
               <h2 className="evaluacion-titulo">Resumen de Evaluaciones</h2>
-              {mostrarRating('dificultad', 'Dificultad:', ratingsMap['ID_PREGUNTA_DIFICULTAD'])}
-              {mostrarRating('tiempo', 'Tiempo requerido:', ratingsMap['ID_PREGUNTA_TIEMPO'])}
-              {mostrarRating('material', 'Calidad del material:', ratingsMap['ID_PREGUNTA_MATERIAL'])}
+              {/* Use the actual question IDs from your API response */}
+              {ratingsMap['49c139cd-2b0d-42ee-b23c-314dc6b80c78'] && 
+                mostrarRating('proyecto', 'Carga de trabajo del proyecto:', ratingsMap['49c139cd-2b0d-42ee-b23c-314dc6b80c78'])
+              }
+              {ratingsMap['9fdb4612-d8e8-4248-92c0-7536d572350c'] && 
+                mostrarRating('controles', 'Controles justos:', ratingsMap['9fdb4612-d8e8-4248-92c0-7536d572350c'])
+              }
             </div>
             <div className="encuestas-info">
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas

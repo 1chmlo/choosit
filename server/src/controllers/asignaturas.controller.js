@@ -127,6 +127,17 @@ export const subject_all = async (req, res) => {
       WHERE e.id_asignatura = $1
     `, [id_asignatura]);
 
+    const respuestasPonderadasQuery = await pool.query(`
+      select *
+      from respuestas_ponderadas
+      where id_asignatura = $1
+    `, [id_asignatura]);
+    if (respuestasPonderadasQuery.rowCount === 0) {
+      respuestasPonderadasQuery.rows = [];
+    }
+
+    asignatura.respuestasPonderadas = respuestasPonderadasQuery.rows;
+
     return res.status(200).json({
       ok: true,
       asignatura,
