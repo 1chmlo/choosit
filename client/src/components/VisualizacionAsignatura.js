@@ -302,7 +302,7 @@ const VisualizacionAsignatura = () => {
       <div className="fondo-blanco">
         <div className="container">
           <div className="error-message">
-            <FontAwesomeIcon icon={faExclamationTriangle} />
+            <img src="/icons/warning.png" alt="advertencia" className="icono" />
             <h2>{error}</h2>
             <p>Por favor, verifica el ID de la asignatura e intenta nuevamente.</p>
           </div>
@@ -397,7 +397,7 @@ const VisualizacionAsignatura = () => {
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
                         <div className="user-avatar">
-                          <FontAwesomeIcon icon={faUserCircle} />
+                          <img src="/icons/user.png" alt="usuario" className="icono" />
                         </div>
                         <div className="user-info">
                           <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
@@ -431,7 +431,7 @@ const VisualizacionAsignatura = () => {
                               onClick={() => handleLikeComentario(comentario.id)}
                               className={yaDioLike ? 'liked' : ''}
                             >
-                              <FontAwesomeIcon icon={faThumbsUp} /> ({comentario.likes_usuarios?.length || 0})
+                              <img src="/icons/thumbs-up.png" alt="like" className="icono" />({comentario.likes_usuarios?.length || 0})
                             </button>
                             
                             {esAutor && (
@@ -439,13 +439,13 @@ const VisualizacionAsignatura = () => {
                                 setEditandoComentario(comentario);
                                 setTextoEditado(comentario.texto);
                               }}>
-                                <FontAwesomeIcon icon={faEdit} /> Editar
+                                <img src="/icons/edit.png" alt="editar" className="icono" /> Editar
                               </button>
                             )}
                             
                             {!esAutor && user && (
                               <button onClick={() => handleReportarComentario(comentario.id)}>
-                                <FontAwesomeIcon icon={faFlag} /> Reportar
+                                <img src="/icons/flag.png" alt="reportar" className="icono" /> Reportar
                               </button>
                             )}
                           </>
