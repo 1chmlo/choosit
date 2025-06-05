@@ -303,7 +303,7 @@ export const deactivateUser = async (req, res) => {
       path: '/'
     });
     
-    return res.status(200).json({ message: 'Usuario desactivado correctamente' });
+    return res.status(200).json({ ok:true, message: 'Usuario desactivado correctamente' });
   } catch (error) {
     console.error('Error al desactivar usuario:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
