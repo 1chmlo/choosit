@@ -6,6 +6,9 @@ export const create_encuesta = async (req, res) => {
     const id_user = req.userId;
     const { id_asignatura, respuestas } = req.body;
     const verificacion = await pool.query(`SELECT id FROM usuarios WHERE id = $1`, [id_user]);
+    const userHaveEvaluacion = await pool.query(`
+      SELECT id FROM evaluacion WHERE id_usuario = $1 AND id_asignatura = $2`, [id_user, id_asignatura]);
+    if(userHaveEvaluacion.rowCount > 0) return res.status(400).json({ok: false, message: 'Ya ha respondido la encuesta'});
     if(verificacion.rowCount === 0) return res.status(404).json({ok: false, message: 'Usuario no existe'});
     const { rows: preguntasEncuesta } = await pool.query(`
       SELECT p.id
