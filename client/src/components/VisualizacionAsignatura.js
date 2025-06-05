@@ -192,6 +192,12 @@ const VisualizacionAsignatura = () => {
                   const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES', {
                     year: 'numeric', month: 'long', day: 'numeric'
                   });
+                  
+                  // Determinar el nombre a mostrar basado en el estado activo
+                  const nombreMostrar = comentario.activo 
+                    ? `${comentario.nombre} ${comentario.apellido}`
+                    : 'Usuario desactivado';
+                  
                   return (
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
@@ -199,7 +205,7 @@ const VisualizacionAsignatura = () => {
                           <i className="fas fa-user-circle"></i>
                         </div>
                         <div className="user-info">
-                          <span className="user-name">{comentario.nombre} {comentario.apellido}</span>
+                          <span className="user-name">{nombreMostrar}</span>
                           <span className="comment-date">{fecha}</span>
                         </div>
                         <span className="user-reputation">
