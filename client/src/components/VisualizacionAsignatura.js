@@ -3,8 +3,6 @@ import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
 import StarRating from './StarRating'; 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faUserCircle, faThumbsUp, faEdit, faFlag} from '@fortawesome/free-solid-svg-icons';
 
 const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   const [motivo, setMotivo] = useState("");
