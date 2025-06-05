@@ -15,6 +15,26 @@ export const register = async (req, res) => {
   // "id", "reputacion", "activo", "verificado" se crean y manejan desde acá. No se reciben desde el front
   const {username, email, contrasena, anio_ingreso } = req.body;
 
+  // Extraer nombre y apellido del username (el punto es obligatorio)
+  const extractNameFromUsername = (username) => {
+    // Remover números y guión bajo + letra al final
+    const cleanUsername = username.replace(/\d+$|_[a-zA-Z]$/, '');
+    
+    // Dividir por el punto (debe existir al menos uno)
+    const dotIndex = cleanUsername.indexOf('.');
+    
+    if (dotIndex === -1) {
+      throw new Error('Username debe tener formato nombre.apellido');
+    }
+    
+    const nombre = cleanUsername.substring(0, dotIndex);
+    const apellido = cleanUsername.substring(dotIndex + 1);
+    
+    return { nombre, apellido };
+  };
+
+  const { nombre, apellido } = extractNameFromUsername(username);
+
   //Validar que el usuario no exista
   const usuarioExistente = await pool.query('SELECT * FROM usuarios WHERE email = $1 or username = $2', [email, username]);
 
@@ -43,8 +63,8 @@ export const register = async (req, res) => {
   const activo = true;
   const verificado = false;
 
-  //insertar usuario en la base de datos
-  const nuevoUsuario = await pool.query('INSERT INTO usuarios (username, email, contrasena, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [username, email, contrasena_hasheada, anio_ingreso, reputacion, activo, verificado]);
+  //insertar usuario en la base de datos (incluyendo nombre y apellido)
+  const nuevoUsuario = await pool.query('INSERT INTO usuarios (username, email, contrasena, nombre, apellido, anio_ingreso, reputacion, activo, verificado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [username, email, contrasena_hasheada, nombre, apellido, anio_ingreso, reputacion, activo, verificado]);
   
   if (nuevoUsuario.rowCount === 0) return res.status(400).json({ message: 'Error al crear el usuario' });
 
@@ -59,7 +79,7 @@ export const register = async (req, res) => {
   const mail = await sendVerificationEmail(email, username, token, `${FRONTEND_URL}/verificar-correo`)
   console.log(mail); 
   
-  return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, username, email, anio_ingreso, reputacion, activo, verificado, created_at }});
+  return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, username, email, nombre, apellido, anio_ingreso, reputacion, activo, verificado, created_at }});
   
   } catch (error) {
     console.error('Error al registrar usuario:', error);
