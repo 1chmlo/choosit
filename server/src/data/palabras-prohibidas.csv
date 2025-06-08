@@ -1,0 +1,123 @@
+palabra,categoria,severidad,descripcion
+ql,chilena,media,Abreviacion de que
+puta,general,alta,Insulto comun
+mierda,general,media,Excremento
+weon,chilena,baja,Persona en Chile
+weona,chilena,baja,Persona femenina en Chile
+ctm,chilena,alta,Concha tu madre
+conchesumadre,chilena,alta,Insulto chileno fuerte
+conchetumare,chilena,alta,Variacion de ctm
+maraco,chilena,alta,Homosexual despectivo
+csm,chilena,alta,Abreviacion ctm
+hueon,chilena,baja,Variacion weon
+hueona,chilena,baja,Variacion weona
+culiao,chilena,media,Persona despreciable
+culiado,chilena,media,Variacion culiao
+culia,chilena,media,Persona femenina despreciable
+aweonao,chilena,media,Persona tonta
+aweonaa,chilena,media,Persona tonta femenina
+flaite,chilena,media,Persona de clase baja
+siutico,chilena,media,Persona pretenciosa
+cuico,chilena,media,Persona de clase alta
+roto,chilena,alta,Persona de clase baja despectivo
+chuchetumare,chilena,alta,Insulto chileno
+pichula,chilena,media,Organo sexual masculino
+tula,chilena,media,Organo sexual masculino
+pico,chilena,baja,Organo sexual masculino
+raja,chilena,media,Organo sexual femenino
+idiota,general,media,Persona sin inteligencia
+imbecil,general,media,Persona tonta
+estupido,general,media,Sin inteligencia
+estupida,general,media,Sin inteligencia femenina
+retrasado,discriminatorio,alta,Discapacidad mental
+retrasada,discriminatorio,alta,Discapacidad mental femenina
+mongologo,discriminatorio,alta,Sindrome de Down
+down,discriminatorio,alta,Sindrome de Down
+autista,discriminatorio,alta,Autismo despectivo
+enfermo,discriminatorio,media,Enfermedad mental
+loco,discriminatorio,baja,Enfermedad mental
+tarado,general,media,Persona tonta
+pelotudo,general,media,Persona tonta
+boludo,general,media,Persona tonta
+gil,general,baja,Persona tonta
+huevon,general,baja,Persona perezosa
+cabron,general,alta,Insulto fuerte
+cabrona,general,alta,Insulto fuerte femenina
+hijo de puta,general,alta,Insulto familiar
+hdp,general,alta,Abreviacion hijo de puta
+hp,general,alta,Abreviacion hijo puta
+bastardo,general,alta,Hijo ilegitimo
+marica,discriminatorio,alta,Homosexual despectivo
+maricon,discriminatorio,alta,Homosexual despectivo
+mariconazo,discriminatorio,alta,Homosexual despectivo fuerte
+tortillera,discriminatorio,alta,Lesbiana despectivo
+machorra,discriminatorio,alta,Mujer masculina
+sidoso,discriminatorio,alta,Enfermedad VIH
+drogadicto,discriminatorio,media,Adiccion drogas
+alcoholico,discriminatorio,media,Adiccion alcohol
+borracho,general,baja,Estado etilico
+curao,chilena,baja,Borracho en Chile
+volao,chilena,media,Drogado en Chile
+zorra,general,alta,Mujer promiscua
+perra,general,alta,Mujer despreciable
+cerdo,general,media,Persona sucia
+cerda,general,media,Mujer sucia
+rata,general,media,Persona despreciable
+cancer,discriminatorio,alta,Enfermedad terminal
+sida,discriminatorio,alta,Enfermedad VIH
+cagar,general,media,Defecar
+cagada,general,media,Error grande
+cagon,general,media,Cobarde
+cagazo,general,media,Miedo grande
+mecago,general,alta,Expresion desprecio
+chupar,sexual,media,Acto sexual oral
+mamar,sexual,media,Acto sexual oral
+coger,sexual,alta,Acto sexual
+follar,sexual,alta,Acto sexual
+jalar,sexual,media,Masturbacion
+pajear,sexual,media,Masturbacion
+masturbar,sexual,media,Acto sexual
+put4,evasion,alta,Puta con numero
+w30n,evasion,baja,Weon con numero
+c7m,evasion,alta,CTM con numero
+m13rd4,evasion,media,Mierda con numero
+p3nd3j0,evasion,media,Pendejo con numero
+cul140,evasion,media,Culiao con numero
+w@on,evasion,baja,Weon con simbolo
+pu+a,evasion,alta,Puta con simbolo
+we0n,evasion,baja,Weon con cero
+p.u.t.a,evasion,alta,Puta con puntos
+m.i.e.r.d.a,evasion,media,Mierda con puntos
+c.t.m,evasion,alta,CTM con puntos
+p u t a,evasion,alta,Puta con espacios
+w e o n,evasion,baja,Weon con espacios
+c t m,evasion,alta,CTM con espacios
+m i e r d a,evasion,media,Mierda con espacios
+i d i o t a,evasion,media,Idiota con espacios
+la concha de tu madre,frase,alta,Insulto familiar completo
+me cago en,frase,alta,Expresion desprecio
+vete a la mierda,frase,alta,Mandato ofensivo
+que te jodan,frase,alta,Mandato sexual
+por el culo,frase,alta,Referencia anal
+chupa pico,frase,alta,Acto sexual oral
+mama huevo,frase,alta,Acto sexual oral
+reconchesumadre,chilena,alta,Intensificador ctm
+ni cagando,chilena,media,Negacion fuerte
+la wea,chilena,baja,La cosa
+que wea,chilena,baja,Que cosa
+pura wea,chilena,media,Solo tonterias
+terrible de,chilena,baja,Muy en Chile
+re culiao,chilena,media,Muy culiao
+super weon,chilena,media,Muy weon
+ctm weon,chilena,alta,Combinacion insultos
+pendejo,general,media,Persona inmadura
+pendeja,general,media,Persona inmadura femenina
+ano,sexual,media,Parte del cuerpo
+cono,sexual,media,Organo femenino
+hostia,general,media,Exclamacion fuerte
+joder,general,media,Molestar
+polla,sexual,media,Organo masculino
+puto,general,alta,Hombre despreciable
+capullo,general,media,Persona tonta
+carajo,general,media,Organo masculino
+cojones,sexual,media,Testiculos

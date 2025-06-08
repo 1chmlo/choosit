@@ -12,37 +12,10 @@ export const get_all_comments = async (req, res) => { // Obtiene todos los comen
 
 export const create_comment = async (req, res) => {
   try {
-    // Obtener información del usuario de la solicitud (añadida por el middleware isAuthUser)
     const id_usuario = req.userId;
-    
-    // Datos del comentario del cuerpo de la solicitud
     const { id_asignatura, texto } = req.body;
-    
-    // Validar que los campos necesarios estén presentes
-    if (!id_asignatura || !texto) {
-      return res.status(400).json({ 
-        message: 'Se requiere id_asignatura y texto para crear un comentario' 
-      });
-    }
-    
-    // Lista de palabras prohibidas
-    const palabrasProhibidas = ['ql', 'puta', 'mierda', 'weon', 'ctm', 'maraco', 'csm', 'hueon', 'hueona', 'caca', 'pajero', 'pajera', 'pendejo', 'pendeja'];
-    
-   // Crear expresiones regulares para cada palabra
-const regexPalabrasProhibidas = palabrasProhibidas.map(palabra => 
-  new RegExp(`${palabra.split('').join('[\\s\\W_]*')}`, 'i')
-);
 
-// Verificar si contiene palabras prohibidas
-const contieneProhibida = regexPalabrasProhibidas.some(regex => 
-  regex.test(texto)
-);
-
-if (contieneProhibida) {
-  return res.status(400).json({
-    message: 'El comentario contiene lenguaje inapropiado'
-  });
-}
+  
 
     // Establecer valores iniciales
     const reputacion = 0;
@@ -54,7 +27,6 @@ if (contieneProhibida) {
       [id_usuario, id_asignatura, reputacion, fecha, texto]
     );
     
-    // Verificar si la inserción fue exitosa
     if (result.rowCount === 0) {
       return res.status(500).json({ message: 'Error al crear el comentario' });
     }
@@ -66,8 +38,7 @@ if (contieneProhibida) {
   } catch (error) {
     console.error('Error al crear comentario:', error);
     
-    // Manejar error específico de clave foránea
-    if (error.code === '23503') { // Violation of foreign key constraint
+    if (error.code === '23503') {
       return res.status(400).json({ 
         message: 'La asignatura especificada no existe' 
       });
