@@ -12,6 +12,7 @@ const Profile = () => {
     title: '',
     message: '',
     showInput: false,
+    showCancel: false,
     inputValue: '',
     onConfirm: null
   });
@@ -51,13 +52,14 @@ const Profile = () => {
     return password.length >= 8 && password.length <= 40;
   };
 
-  const showModal = ({ title, message, showInput = false }) => {
+  const showModal = ({ title, message, showInput = false, showCancel = false }) => {
     return new Promise((resolve) => {
       setModal({
         show: true,
         title,
         message,
         showInput,
+        showCancel,
         inputValue: '',
         onConfirm: resolve
       });
@@ -68,7 +70,7 @@ const Profile = () => {
     if (modal.onConfirm) {
       modal.onConfirm(confirmed ? (modal.showInput ? modal.inputValue : true) : null);
     }
-    setModal({ ...modal, show: false });
+    setModal({ ...modal, show: false, showCancel: false });
   };
 
   // Nueva función para mostrar el modal de cambio de contraseña
@@ -211,7 +213,8 @@ const Profile = () => {
   const handleDeactivateAccount = async () => {
     const confirmed = await showModal({
       title: "Desactivar cuenta",
-      message: "¿Estás seguro que deseas desactivar tu cuenta? Esta acción no se puede deshacer."
+      message: "¿Estás seguro que deseas desactivar tu cuenta? Esta acción no se puede deshacer.",
+      showCancel: true
     });
     
     if (!confirmed) return;
@@ -320,14 +323,14 @@ const Profile = () => {
               )}
 
               <div className="modal-actions">
-                {/* Solo mostrar Cancelar si showInput es true (para modales de confirmación) */}
-                {modal.showInput && (
+                {/* Mostrar Cancelar si showInput o showCancel es true */}
+                {(modal.showInput || modal.showCancel) && (
                   <button onClick={() => closeModal(false)}>Cancelar</button>
                 )}
                 <button
                   onClick={() => closeModal(true)}
                   disabled={actionLoading}
-                  className={modal.showInput ? "" : "primary-button"}
+                  className={(modal.showInput || modal.showCancel) ? "" : "primary-button"}
                 >
                   {actionLoading ? 'Procesando...' : 'Aceptar'}
                 </button>
