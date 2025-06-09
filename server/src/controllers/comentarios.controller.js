@@ -26,7 +26,7 @@ export const create_comment = async (req, res) => {
     }
     
     const commentExist = await pool.query('select id_usuario from comentarios where id_usuario = $1 and id_asignatura = $2', [id_usuario, id_asignatura]);
-    if (commentExist.rows.length > 0) res.status(400).json({
+    if (commentExist.rows.length > 0) return res.status(400).json({
       message: 'Ya existe un comentario para esta asignatura, solo se puede comentar una vez por asignatura'
     });
 
