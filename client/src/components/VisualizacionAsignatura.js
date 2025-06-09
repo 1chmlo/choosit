@@ -462,7 +462,7 @@ const VisualizacionAsignatura = () => {
                                   src={thumbsUp}
                                   alt="Like"
                                   className="icono"
-                                /> ({comentario.likes_usuarios?.length || 0})
+                                /> 
                             </button>
                             
                             {esAutor && (
