@@ -8,6 +8,7 @@ import edit from "./edit.png";
 import warning from "./warning.png"; 
 import thumbsUp from "./thumbsUp.png";
 import flag from "./flag.png";
+import thumbsUpRed from "./thumbsUpRed.png"; 
 
 
 const ReportModal = ({ isOpen, onClose, onSubmit }) => {
@@ -79,58 +80,57 @@ const VisualizacionAsignatura = () => {
     </span>
   );
 
- const mostrarRating = (pregunta, ratingData) => {
-  if (!ratingData || !pregunta) return null;
-  
-  // Parse the string value to number and ensure it's within 1-5 range
-  const valor = parseFloat(ratingData.respuesta_calculada);
-  const porcentaje = (valor / 5) * 100; // Convert to percentage for progress bar
-  
-  // Create static stars display
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+  const mostrarRating = (pregunta, ratingData) => {
+    if (!ratingData || !pregunta) return null;
     
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) {
-        // Full star
-        stars.push(
-          <span key={i} className="star full-star">★</span>
-        );
-      } else if (i === fullStars + 1 && hasHalfStar) {
-        // Half star
-        stars.push(
-          <span key={i} className="star half-star">★</span>
-        );
-      } else {
-        // Empty star
-        stars.push(
-          <span key={i} className="star empty-star">☆</span>
-        );
+    // Parse the string value to number and ensure it's within 1-5 range
+    const valor = parseFloat(ratingData.respuesta_calculada);
+    const porcentaje = (valor / 5) * 100; // Convert to percentage for progress bar
+    
+    // Create static stars display
+    const renderStars = (rating) => {
+      const stars = [];
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 >= 0.5;
+      
+      for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+          // Full star
+          stars.push(
+            <span key={i} className="star full-star">★</span>
+          );
+        } else if (i === fullStars + 1 && hasHalfStar) {
+          // Half star
+          stars.push(
+            <span key={i} className="star half-star">★</span>
+          );
+        } else {
+          // Empty star
+          stars.push(
+            <span key={i} className="star empty-star">☆</span>
+          );
+        }
       }
-    }
-    return stars;
-  };
-  
-  return (
-    <div className="rating-item" key={pregunta.id}>
-      <div className="rating-header">
-        <span className="rating-label">{pregunta.pregunta}</span>
-        <div className="rating-stars-value">
-          <div className="stars-container static-stars">
-            {renderStars(valor)}
+      return stars;
+    };
+    
+    return (
+      <div className="rating-item" key={pregunta.id}>
+        <div className="rating-header">
+          <span className="rating-label">{pregunta.pregunta}</span>
+          <div className="rating-stars-value">
+            <div className="stars-container static-stars">
+              {renderStars(valor)}
+            </div>
+            <span className="rating-value">{valor.toFixed(1)}</span>
           </div>
-          <span className="rating-value">{valor.toFixed(1)}</span>
+        </div>
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${porcentaje}%` }}></div>
         </div>
       </div>
-      <div className="progress-bar-container">
-        <div className="progress-bar" style={{ width: `${porcentaje}%` }}></div>
-      </div>
-    </div>
-  );
-};
-
+    );
+  };
 
   const handleRating = (idPregunta, rating) => {
     setRespuestas((prev) => ({ ...prev, [idPregunta]: rating }));
@@ -155,11 +155,34 @@ const VisualizacionAsignatura = () => {
         withCredentials: true
       });
 
-      const data = response.data;
-      alert(data.message || "Encuesta enviada");
+      if (response.status === 201 || response.status === 200) {
+        // Mostrar mensaje de éxito
+        //alert(response.data.message || "Encuesta enviada con éxito");
+        
+        // Recargar datos para reflejar cambios
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = urlParams.get('id');
+        
+        const asignaturaResponse = await axios.get(
+          `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
+          {
+            withCredentials: true
+          }
+        );
+        
+        if (asignaturaResponse.data.ok) {
+          setAsignatura(asignaturaResponse.data.asignatura);
+          // Resetear respuestas después de enviar
+          setRespuestas({});
+          setMensajeExito('Encuesta enviada exitosamente');
+          setTimeout(() => setMensajeExito(''), 3000);
+        }
+      } else {
+        throw new Error(response.data.message || "Error al enviar encuesta");
+      }
     } catch (error) {
       console.error("Error al enviar encuesta:", error);
-      alert("Error al enviar la encuesta");
+      alert(error.response?.data?.message || "Error al enviar la encuesta");
     }
   };
 
@@ -176,7 +199,7 @@ const VisualizacionAsignatura = () => {
       });
 
       const data = response.data;
-      if (data.ok) {
+      if (response.status === 201) {
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
@@ -188,10 +211,12 @@ const VisualizacionAsignatura = () => {
         );
         const asignaturaData = asignaturaResponse.data;
         
-        setAsignatura(asignaturaData.asignatura);
-        setComentarioNuevo('');
-        setMensajeExito('Comentario publicado exitosamente');
-        setTimeout(() => setMensajeExito(''), 3000);
+        if (asignaturaData.ok) {
+          setAsignatura(asignaturaData.asignatura);
+          setComentarioNuevo('');
+          setMensajeExito('Comentario publicado exitosamente');
+          setTimeout(() => setMensajeExito(''), 3000);
+        }
       } else {
         throw new Error(data.message || 'Error al crear comentario');
       }
@@ -218,12 +243,11 @@ const VisualizacionAsignatura = () => {
         withCredentials: true
       });
 
-      const data = response.data;
-      if (data.ok) {
+      if (response.status === 201) {
         alert('Comentario reportado exitosamente');
         setReportModal({ isOpen: false, idComentario: null });
       } else {
-        throw new Error(data.error || 'Error al reportar comentario');
+        throw new Error(response.data.error || 'Error al reportar comentario');
       }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
@@ -240,8 +264,7 @@ const VisualizacionAsignatura = () => {
         withCredentials: true
       });
 
-      const data = response.data;
-      if (data.ok) {
+      if (response.status === 200) {
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
@@ -251,15 +274,16 @@ const VisualizacionAsignatura = () => {
             withCredentials: true
           }
         );
-        const asignaturaData = asignaturaResponse.data;
         
-        setAsignatura(asignaturaData.asignatura);
-        setEditandoComentario(null);
-        setTextoEditado('');
-        setMensajeExito('Comentario actualizado exitosamente');
-        setTimeout(() => setMensajeExito(''), 3000);
+        if (asignaturaResponse.data.ok) {
+          setAsignatura(asignaturaResponse.data.asignatura);
+          setEditandoComentario(null);
+          setTextoEditado('');
+          setMensajeExito('Comentario actualizado exitosamente');
+          setTimeout(() => setMensajeExito(''), 3000);
+        }
       } else {
-        throw new Error(data.message || 'Error al editar comentario');
+        throw new Error(response.data.message || 'Error al editar comentario');
       }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
@@ -272,8 +296,8 @@ const VisualizacionAsignatura = () => {
         withCredentials: true
       });
 
-      const data = response.data;
-      if (data.ok) {
+      if (response.status === 200) {
+        // Recargar datos para reflejar cambios
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
         
@@ -283,11 +307,12 @@ const VisualizacionAsignatura = () => {
             withCredentials: true
           }
         );
-        const asignaturaData = asignaturaResponse.data;
         
-        setAsignatura(asignaturaData.asignatura);
+        if (asignaturaResponse.data.ok) {
+          setAsignatura(asignaturaResponse.data.asignatura);
+        }
       } else {
-        throw new Error(data.message || 'Error al dar like al comentario');
+        throw new Error(response.data.message || 'Error al dar like al comentario');
       }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
@@ -353,21 +378,10 @@ const VisualizacionAsignatura = () => {
               )}
             </div>
             
-
-
-
-              {/* QUITAR DISPLAY NONE CUANDO EXISTA LA FUNCIONALIDAD */}
+            {/* QUITAR DISPLAY NONE CUANDO EXISTA LA FUNCIONALIDAD */}
             <div className="encuestas-info" style={{ display: 'none' }}>
               Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
             </div>
-
-
-
-
-
-
-
-
 
             {preguntas.length > 0 && isAuthenticated && (
               <div className="encuesta-formulario">
@@ -454,17 +468,17 @@ const VisualizacionAsignatura = () => {
                       <div className="comentario-acciones">
                         {user && (
                           <>
-                            <button 
-                              onClick={() => handleLikeComentario(comentario.id)}
-                              className={yaDioLike ? 'liked' : ''}
-                            >
-                              <img
-                                  src={thumbsUp}
-                                  alt="Like"
-                                  className="icono"
-                                /> 
-                            </button>
-                            
+                       <button 
+                          onClick={() => handleLikeComentario(comentario.id)}
+                          className={`like-button ${yaDioLike ? 'liked' : ''}`}
+                        >
+                          <img
+                            src={yaDioLike ? thumbsUpRed : thumbsUp}
+                            alt="Like"
+                            className="icono"
+                          /> 
+                          {yaDioLike ? 'Ya te gusta' : 'Me gusta'}
+                        </button>                 
                             {esAutor && (
                               <button onClick={() => {
                                 setEditandoComentario(comentario);
