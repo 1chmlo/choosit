@@ -25,8 +25,63 @@ export const create_comment = async (req, res) => {
       });
     }
     
+    const commentExist = await pool.query('select id_usuario from comentarios where id_usuario = $1 and id_asignatura = $2', [id_usuario, id_asignatura]);
+    if (commentExist.rows.length > 0) res.status(400).json({
+      message: 'Ya existe un comentario para esta asignatura, solo se puede comentar una vez por asignatura'
+    });
+
     // Lista de palabras prohibidas
-    const palabrasProhibidas = ['ql', 'puta', 'mierda', 'weon', 'ctm', 'maraco', 'csm', 'hueon', 'hueona', 'caca', 'pajero', 'pajera', 'pendejo', 'pendeja'];
+    const palabrasProhibidas = [
+      // Palabras existentes
+      'ql', 'puta', 'mierda', 'weon', 'ctm', 'maraco', 'csm', 'hueon', 'hueona', 
+      'caca', 'pajero', 'pajera', 'pendejo', 'pendeja',
+      
+      // Insultos chilenos adicionales
+      'flaite', 'siutico', 'aweonao', 'aweonaa', 'conchesumadre', 'reconchesumadre',
+      'cagao', 'cagada', 'conchatumadre', 'ctmare', 'culiao', 'culiada', 'ordinario',
+      'ordinaria', 'roto', 'rotito', 'cuico', 'picao', 'picaa', 'gil',
+      
+      // Mexicanismos
+      'pinche', 'cabron', 'cabrona', 'verga', 'chingar', 'joder', 'culero', 'culera',
+      'mamada', 'mamadas', 'pendejada', 'pendejadas', 'naco', 'nacos', 'guey', 'wey',
+      'buey', 'ojete', 'ojetes', 'puto', 'putos', 'zorra', 'zorras', 'malparido',
+      
+      // Argentinismos
+      'pelotudo', 'pelotuda', 'boludo', 'boluda', 'tarado', 'tarada', 'gil', 'giles',
+      'salame', 'conchudo', 'conchuda', 'chorro', 'chorros', 'turro', 'turra',
+      'gato', 'gatos', 'cheto', 'cheta', 'negro', 'negros', 'cabeza',
+      
+      // Colombianismos
+      'hijueputa', 'malparido', 'malparida', 'gonorrea', 'marica', 'maricas',
+      'sapo', 'sapito', 'lamparon', 'lambe', 'bobo', 'boba', 'bobalicon',
+      'chimba', 'chimbo', 'rolo', 'rolos', 'paisa', 'paisas',
+      
+      // Peruanismos
+      'huevon', 'huevona', 'conchatumadre', 'causa', 'cojudo', 'cojuda',
+      'serrano', 'serranos', 'cholo', 'cholos', 'pituco', 'pitucos',
+      'misio', 'misios', 'jerma', 'jermas',
+      
+      // Venezolanismos
+      'mamagallismo', 'mamagallo', 'coño', 'jaja', 'lacra', 'lacras',
+      'sifrino', 'sifrinos', 'catire', 'catires', 'negro', 'negros',
+      'marico', 'maricos', 'burda', 'arrecho', 'arrechos',
+      
+      // Ecuatorianos
+      'longo', 'longos', 'cholo', 'cholos', 'serrano', 'serranos',
+      'montubia', 'montubios', 'costeño', 'costeños',
+      
+      // Centroamericanos
+      'cerote', 'cerotes', 'baboso', 'babosos', 'maje', 'majes',
+      'cipote', 'cipotes', 'bicho', 'bichos', 'playo', 'playos',
+      
+      // Insultos generales latinos
+      'estupido', 'estupida', 'idiota', 'idiotas', 'imbecil', 'imbeciles',
+      'tonto', 'tonta', 'tontos', 'tontas', 'bruto', 'bruta', 'brutas',
+      'animal', 'animales', 'bestia', 'bestias', 'salvaje', 'salvajes',
+      'cochino', 'cochina', 'cochinos', 'cochinas', 'sucio', 'sucia',
+      'asqueroso', 'asquerosa', 'repugnante', 'repugnantes', 'basura',
+      'escoria', 'rata', 'ratas', 'cucaracha', 'cucarachas'
+    ];
     
    // Crear expresiones regulares para cada palabra
 const regexPalabrasProhibidas = palabrasProhibidas.map(palabra => 
@@ -40,7 +95,7 @@ const contieneProhibida = regexPalabrasProhibidas.some(regex =>
 
 if (contieneProhibida) {
   return res.status(400).json({
-    message: 'El comentario contiene lenguaje inapropiado'
+    message: 'No se permiten palabras ofensivas o inapropiadas en los comentarios.'
   });
 }
 
