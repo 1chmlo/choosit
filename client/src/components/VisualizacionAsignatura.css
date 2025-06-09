@@ -604,3 +604,55 @@ h2 {
 .star.empty-star {
   color: #ddd;
 }
+
+/* Estilos mejorados para el botón de like */
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s ease;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.like-button:hover {
+  background-color: #f0f0f0;
+}
+
+.like-button.liked {
+  color: var(--wine-red);
+  font-weight: bold;
+}
+
+.like-button.liked .icono {
+  filter: invert(14%) sepia(77%) saturate(4252%) hue-rotate(345deg) brightness(95%) contrast(93%);
+}
+
+/* Actualizar la animación del mensaje de éxito para que sea más suave */
+.mensaje-exito {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.like-button.liked {
+  color: var(--wine-red);
+  font-weight: bold;
+  /* Estilos adicionales para hacer más visible el cambio */
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: var(--wine-red);
+}
