@@ -6,7 +6,7 @@ import { ValidateDeleteEncuesta, ValidateInsertEncuesta } from '../middleware/va
 
 const router = Router();
 
-router.delete('/', isAuthUser, ValidateDeleteEncuesta , delete_encuesta);
+router.delete('/:id_asignatura', isAuthUser, ValidateDeleteEncuesta, delete_encuesta);
 
 /*
 metodo para insertar nueva encuesta recibe json con id_asignatura y arreglo con id_pregunta y respuesta

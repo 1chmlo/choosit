@@ -48,7 +48,7 @@ export const delete_encuesta = async (req, res) => {
       const result = await pool.query(`DELETE FROM evaluacion
     WHERE id_usuario = $1
     AND id_asignatura = $2;
-    )
+
     `, [id, id_asignatura]);
 
     if (result.rowCount === 0) {
