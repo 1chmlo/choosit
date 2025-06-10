@@ -218,7 +218,7 @@ BEGIN
     SET respuesta = NEW.respuesta
     WHERE id_pregunta = NEW.id_pregunta
     AND id_asignatura = NEW.id_asignatura
-    AND id_usuario = id_usuario;
+    AND id_usuario = NEW.id_usuario;
 
     RETURN NULL; 
   END IF;
@@ -226,8 +226,9 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
 --  Trigger
-CREATE TRIGGER tr_update_or_insert_evaluation()
+CREATE TRIGGER tr_update_or_insert_evaluation
 BEFORE INSERT ON evaluacion
 FOR EACH ROW
 EXECUTE FUNCTION update_or_insert_evaluation();
