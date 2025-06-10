@@ -2,26 +2,51 @@ import { param, body, query, validationResult } from 'express-validator';
 import { pool } from '../../db.js';
 import { obtenerListaPalabras } from '../../utils/csv-reader.js';
 
+// Obtener la lista de palabras prohibidas
+const palabrasProhibidas = obtenerListaPalabras();
+
 // Función más simple y efectiva
 function detectarVariaciones(texto, palabrasProhibidas) {
   const palabras = texto.toLowerCase().split(/\s+/);
   
   for (const palabraTexto of palabras) {
-    // Limpiar la palabra de caracteres especiales
+    // Crear múltiples versiones de la palabra para verificar
     const palabraLimpia = palabraTexto.replace(/[^a-záéíóúüñ]/gi, '');
+    const palabraConNumeros = palabraTexto.replace(/[^a-záéíóúüñ0-9]/gi, '');
+    const palabraSustituciones = sustituirNumerosPorLetras(palabraTexto);
     
-    if (palabraLimpia.length < 3) continue;
+    if (palabraLimpia.length < 2) continue;
     
     for (const palabraProhibida of palabrasProhibidas) {
-      // Verificación exacta
-      if (palabraLimpia === palabraProhibida.toLowerCase()) {
-        console.log(`Palabra exacta encontrada: "${palabraLimpia}" = "${palabraProhibida}"`);
+      const prohibidaLower = palabraProhibida.toLowerCase();
+      
+      // Verificación exacta con palabra limpia
+      if (palabraLimpia === prohibidaLower) {
+        console.log(`Palabra exacta encontrada: "${palabraLimpia}" = "${prohibidaLower}"`);
         return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
       }
       
-      // Verificación de similitud (algoritmo simple)
-      if (esSimilar(palabraLimpia, palabraProhibida.toLowerCase())) {
-        console.log(`Palabra similar encontrada: "${palabraLimpia}" ≈ "${palabraProhibida}"`);
+      // Verificación con sustituciones numéricas
+      if (palabraSustituciones === prohibidaLower) {
+        console.log(`Palabra con sustituciones encontrada: "${palabraSustituciones}" = "${prohibidaLower}"`);
+        return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
+      }
+      
+      // Verificación de similitud con palabra limpia
+      if (esSimilar(palabraLimpia, prohibidaLower)) {
+        console.log(`Palabra similar encontrada: "${palabraLimpia}" ≈ "${prohibidaLower}"`);
+        return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
+      }
+      
+      // Verificación de similitud con sustituciones
+      if (esSimilar(palabraSustituciones, prohibidaLower)) {
+        console.log(`Palabra con sustituciones similar encontrada: "${palabraSustituciones}" ≈ "${prohibidaLower}"`);
+        return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
+      }
+      
+      // Verificación si contiene la palabra prohibida
+      if (palabraSustituciones.length >= 3 && palabraSustituciones.includes(prohibidaLower)) {
+        console.log(`Palabra contenida encontrada: "${palabraSustituciones}" contiene "${prohibidaLower}"`);
         return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
       }
     }
@@ -66,17 +91,56 @@ function sonCaracteresSimilares(char1, char2) {
     'i': ['1', '!', 'í', 'ì'],
     'o': ['0', 'ó', 'ò'],
     'u': ['ú', 'ù'],
+    't': ['7'],
+    'l': ['1', '|'],
     'c': ['k', 'q'],
     'k': ['c', 'q'],
     'q': ['c', 'k'],
     's': ['z', '$', '5'],
     'z': ['s'],
-    'b': ['v'],
-    'v': ['b']
+    'b': ['v', '6'],
+    'v': ['b'],
+    'g': ['9'],
+    // Agregar equivalencias numéricas inversas
+    '1': ['i', 'l', '!'],
+    '0': ['o'],
+    '3': ['e'],
+    '4': ['a'],
+    '5': ['s'],
+    '6': ['b'],
+    '7': ['t'],
+    '9': ['g']
   };
   
   return equivalencias[char1]?.includes(char2) || 
          equivalencias[char2]?.includes(char1);
+}
+
+// Nueva función para sustituir números por letras
+function sustituirNumerosPorLetras(texto) {
+  const sustituciones = {
+    '1': 'i',
+    '0': 'o',
+    '3': 'e',
+    '4': 'a',
+    '5': 's',
+    '6': 'g',
+    '7': 't',
+    '8': 'b',
+    '9': 'g'
+  };
+  
+  let resultado = texto.toLowerCase();
+  
+  // Sustituir números por letras
+  for (const [numero, letra] of Object.entries(sustituciones)) {
+    resultado = resultado.replace(new RegExp(numero, 'g'), letra);
+  }
+  
+  // Limpiar caracteres especiales
+  resultado = resultado.replace(/[^a-záéíóúüñ]/gi, '');
+  
+  return resultado;
 }
 
 export const validateCreateComment = [
