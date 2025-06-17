@@ -11,6 +11,7 @@ CREATE TABLE usuarios (
   activo bool NOT NULL DEFAULT true,
   verificado bool NOT NULL DEFAULT false,
   anio_ingreso int NOT NULL,
+  is_admin bool NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
@@ -24,7 +25,8 @@ CREATE TABLE asignaturas (
   laboratorio bool NOT NULL,
   controles bool NOT NULL,
   proyecto bool NOT NULL,
-  electivo bool NOT NULL
+  electivo bool NOT NULL,
+  activo bool NOT NULL DEFAULT true
 );
 
 CREATE TABLE tipo_pregunta (
@@ -84,6 +86,7 @@ CREATE TABLE comentarios (
   fecha TIMESTAMPTZ DEFAULT now() NOT NULL,
   texto varchar(250) NOT NULL,
   likes_usuarios UUID[] DEFAULT '{}',
+  activo bool NOT NULL DEFAULT true,
   CONSTRAINT FK_comentario_id_usuario
     FOREIGN KEY (id_usuario)
       REFERENCES usuarios(id)
@@ -100,6 +103,7 @@ CREATE TABLE reportes_comentarios (
   id_usuario uuid NOT NULL,
   fecha TIMESTAMPTZ DEFAULT now() NOT NULL,
   motivo varchar(500) NOT NULL,
+  revisado bool NOT NULL DEFAULT false,
   CONSTRAINT FK_reporte_id_comentario
     FOREIGN KEY (id_comentario)
       REFERENCES comentarios(id)
