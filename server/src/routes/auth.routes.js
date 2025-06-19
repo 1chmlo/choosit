@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { login, register, verify, logout, resendEmail, forgotPassword, resetPassword, deactivateUser} from '../controllers/auth.controller.js';
-import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail, validateForgotPassword} from '../middleware/validaciones/auth.validation.js';
+import { login, register, verify, logout, resendEmail, forgotPassword, resetPassword, deactivateUser, requestActivate, activateAccount} from '../controllers/auth.controller.js';
+import { validateLogin, validateRegister, validateVerifyEmail, validateResendEmail, validateForgotPassword, validateActivateAccount} from '../middleware/validaciones/auth.validation.js';
 import { isAuthUser } from '../middleware/autorizacion/isAuthUser.js';
 import { isAuthResetPassword } from '../middleware/autorizacion/isAuthResetPassword.js';
+import { isAuthActivateAccount } from '../middleware/autorizacion/isAuthActivateAccount.js';
 
 
 const router = Router();
@@ -23,5 +24,9 @@ router.post('/logout', isAuthUser, logout);
 
 
 router.post('/deactivate', isAuthUser, deactivateUser);
+
+router.post('/request-activate', validateActivateAccount, requestActivate);
+
+router.post('/activate-account', isAuthActivateAccount, activateAccount);
 
 export default router;

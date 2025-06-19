@@ -222,3 +222,30 @@ export const validateForgotPassword = [
   }
 ];
 
+export const validateActivateAccount = [
+  body('email')
+    .trim() //Transforma el valor eliminando espacios en blanco al inicio y al final
+
+    .notEmpty()
+    .withMessage('El email es requerido')
+
+    .isEmail()
+    .withMessage('Ingrese un email válido')
+
+    .customSanitizer(value => value.toLowerCase()) // Transforma el email a minúsculas
+
+    .matches(/^[a-z]+\.[a-z]+(_[a-z]|\d+)?@mail\.udp\.cl$/)
+    .withMessage('El email debe seguir el formato nombre.apellido[@mail.udp.cl, _letra@mail.udp.cl o numero@mail.udp.cl]')
+    
+    .isLength({ max: 100 }), // Verifica que la longitud sea maximo 100
+
+    
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+

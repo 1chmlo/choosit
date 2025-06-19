@@ -90,7 +90,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-  console.log(req.body);
+ // console.log(req.body);
  // "id", "reputacion", "activo", "verificado" se manejan desde acá. No se reciben desde el front
   const {email,contrasena} = req.body;
   
@@ -326,6 +326,92 @@ export const deactivateUser = async (req, res) => {
     return res.status(200).json({ ok:true, message: 'Usuario desactivado correctamente' });
   } catch (error) {
     console.error('Error al desactivar usuario:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+}
+
+
+/**
+ * 
+ * Recibe email en req.body y retorna un correo de activar cuenta al usuario.
+ * Crea un token de acceso especial solo para activar cuenta. (no da acceso a nada más)
+ */
+export const requestActivate = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validar que el usuario exista
+    const user = await pool.query('SELECT id, username, activo FROM usuarios WHERE email = $1', [email]);
+
+    if (user.rows.length === 0) return res.status(400).json({ ok: false, message: 'El usuario no existe' });
+
+    const { id, username, activo } = user.rows[0];
+
+    if(activo) return res.status(409).json({ ok: false, message: 'El usuario ya está activo' });
+
+    // Crear token de acceso para activar cuenta
+    const token = createAccessToken({ id, username, "tipo": "activate-account" });
+    console.log("id", id) 
+
+    // Enviar correo de activar cuenta
+    const emailResult = await sendActivateAccountEmail(
+      email,
+      username,
+      token,
+      `${FRONTEND_URL}/activar-cuenta`
+    );
+    
+    // Verificar si el correo se envió correctamente
+    if (!emailResult) {
+      return res.status(500).json({ ok: false, message: 'Error al enviar el correo de activar cuenta' });
+    }
+    
+    // Verificar rejected array para asegurarse de que el correo no fue rechazado
+    if (emailResult.rejected && emailResult.rejected.length > 0) {
+      return res.status(500).json({ 
+        ok: false, 
+        message: 'El correo fue rechazado por el servidor de correo electrónico'
+      });
+    }
+    return res.status(200).json({ ok: true, message: 'Correo de activar cuenta enviado correctamente' });
+  } catch (error) {
+    console.error('Error en requestActivate:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+}
+
+export const activateAccount = async (req, res) => {
+  try {
+    // Obtener el ID del usuario desde el token
+    const userId = req.userId;
+
+    const activoToken = req.userActivo;
+
+    if(activoToken) return res.status(409).json({ ok: false, message: 'El usuario ya está activo' });
+
+    // Verificar que el usuario exista y no esté activo
+    const user = await pool.query('SELECT id, activo FROM usuarios WHERE id = $1', [userId]);
+
+    if (user.rows.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    if (user.rows[0].activo) return res.status(409).json({ message: 'El usuario ya está activo' });
+
+    
+
+    // Actualizar el estado del usuario a activo en la base de datos
+    const result = await pool.query(
+      'UPDATE usuarios SET activo = $1 WHERE id = $2 RETURNING id',
+      [true, userId]
+    );
+    
+    // Verificar si se actualizó correctamente
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Usuario no actualizado' });
+    }
+    
+    return res.status(200).json({ message: 'Cuenta activada correctamente', id: result.rows[0].id });
+  } catch (error) {
+    console.error('Error al activar cuenta:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
