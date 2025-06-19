@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 
 export const get_all_subjects = async (req, res) => {
   try {
-    const resultado = await pool.query('SELECT * FROM asignaturas');
+    const resultado = await pool.query('SELECT * FROM asignaturas where activo = true');
     res.json(resultado.rows);
   } catch (error) {
     console.error('Error al obtener asignaturas:', error);
@@ -101,7 +101,7 @@ export const subject_all = async (req, res) => {
   try {
     const asignaturaQuery = await pool.query(
       `SELECT id, codigo, descripcion, nombre, n_encuestas, laboratorio, controles, proyecto, electivo
-       FROM asignaturas WHERE codigo = $1`,
+       FROM asignaturas WHERE codigo = $1 AND activo = true`,
       [codigo]
     );
 
@@ -155,7 +155,7 @@ export const soft_delete_subject = async (req, res) => {
   try {
 
     const asignaturaQuery = await pool.query('SELECT * FROM asignaturas WHERE id = $1', [id]);
-    
+
     if (asignaturaQuery.rows.length === 0) {
       return res.status(404).json({ error: 'Asignatura no encontrada.' });
     }
