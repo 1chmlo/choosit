@@ -122,7 +122,7 @@ export const login = async (req, res) => {
     username: usuarioExistente.username,
     activo: usuarioExistente.activo,
     verificado: usuarioExistente.verificado,
-    "rol": "usuario"
+    "rol": usuarioExistente.is_admin ? "admin" : "usuario"
   });
   // Establecer cookie con el token
   res.cookie('token', token, {

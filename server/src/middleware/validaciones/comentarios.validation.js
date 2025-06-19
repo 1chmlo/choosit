@@ -202,7 +202,7 @@ export const validateCreateComment = [
 
 // Mantén las otras validaciones existentes sin cambios
 export const validateReportComment = [
-  param('id')
+  body('id_comentario')
     .trim()
     .notEmpty()
     .withMessage('El ID del comentario es requerido')
