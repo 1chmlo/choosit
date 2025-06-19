@@ -148,3 +148,31 @@ export const subject_all = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor.' });
   }
 };
+
+export const soft_delete_subject = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+
+    const asignaturaQuery = await pool.query('SELECT * FROM asignaturas WHERE id = $1', [id]);
+    
+    if (asignaturaQuery.rows.length === 0) {
+      return res.status(404).json({ error: 'Asignatura no encontrada.' });
+    }
+    
+    if( !asignaturaQuery.rows[0].activo ) {
+      return res.status(400).json({ error: 'La asignatura ya está desactivada.' });
+    }
+
+    const resultado = await pool.query('UPDATE asignaturas SET activo=false WHERE id = $1 RETURNING *', [id]);
+
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ error: 'Asignatura no encontrada.' });
+    }
+
+    res.json({ message: 'Asignatura desactivada correctamente.', asignatura: resultado.rows[0] });
+  } catch (error) {
+    console.error('Error al desactivar asignatura:', error);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+};
