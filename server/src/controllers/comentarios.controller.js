@@ -223,3 +223,120 @@ export const like_comment = async (req, res) => {
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
+/**
+ * Elimina un comentario (solo admin) - Aprueba los reportes
+ */
+export const admin_delete_comment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verificar que el comentario existe
+    const comentario = await pool.query(
+      'SELECT * FROM comentarios WHERE id = $1',
+      [id]
+    );
+
+    if (comentario.rows.length === 0) {
+      return res.status(404).json({ 
+        message: 'Comentario no encontrado' 
+      });
+    }
+
+    // Verificar que el comentario no esté ya eliminado
+    if (!comentario.rows[0].activo) {
+      return res.status(400).json({ 
+        message: 'El comentario ya está eliminado' 
+      });
+    }
+
+    // Iniciar transacción
+    await pool.query('BEGIN');
+
+    try {
+      // Marcar comentario como inactivo
+      await pool.query(
+        'UPDATE comentarios SET activo = false WHERE id = $1',
+        [id]
+      );
+
+      // Marcar todos los reportes del comentario como revisados
+      await pool.query(
+        'UPDATE reportes_comentarios SET revisado = true WHERE id_comentario = $1',
+        [id]
+      );
+
+      // Actualizar la reputación del usuario (recalcular solo comentarios activos)
+      const autor_id = comentario.rows[0].id_usuario;
+      await pool.query(
+        'UPDATE usuarios SET reputacion = (SELECT COALESCE(SUM(reputacion), 0) FROM comentarios WHERE id_usuario = $1 AND activo = true) WHERE id = $1',
+        [autor_id]
+      );
+
+      await pool.query('COMMIT');
+
+      return res.status(200).json({
+        message: 'Comentario eliminado exitosamente'
+      });
+
+    } catch (error) {
+      await pool.query('ROLLBACK');
+      throw error;
+    }
+
+  } catch (error) {
+    console.error('Error al eliminar comentario:', error);
+    return res.status(500).json({ 
+      message: 'Error interno del servidor' 
+    });
+  }
+};
+
+/**
+ * Rechaza los reportes de un comentario (solo admin)
+ */
+export const admin_reject_reports = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verificar que el comentario existe
+    const comentario = await pool.query(
+      'SELECT * FROM comentarios WHERE id = $1',
+      [id]
+    );
+
+    if (comentario.rows.length === 0) {
+      return res.status(404).json({ 
+        message: 'Comentario no encontrado' 
+      });
+    }
+
+    // Verificar que hay reportes sin revisar para este comentario
+    const reportesPendientes = await pool.query(
+      'SELECT COUNT(*) as count FROM reportes_comentarios WHERE id_comentario = $1 AND revisado = false',
+      [id]
+    );
+
+    if (parseInt(reportesPendientes.rows[0].count) === 0) {
+      return res.status(400).json({ 
+        message: 'No hay reportes pendientes para este comentario' 
+      });
+    }
+
+    // Marcar todos los reportes del comentario como revisados (rechazados)
+    const result = await pool.query(
+      'UPDATE reportes_comentarios SET revisado = true WHERE id_comentario = $1 AND revisado = false',
+      [id]
+    );
+
+    return res.status(200).json({
+      message: `Reportes rechazados exitosamente. ${result.rowCount} reportes marcados como revisados.`
+    });
+
+  } catch (error) {
+    console.error('Error al rechazar reportes:', error);
+    return res.status(500).json({ 
+      message: 'Error interno del servidor' 
+    });
+  }
+};

@@ -9,7 +9,7 @@ import comentariosRoutes from "./routes/comentarios.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import preguntasRoutes from "./routes/preguntas.routes.js";
 import encuestasRoutes from "./routes/encuestas.routes.js";
-
+import adminRoutes from "./routes/admin.routes.js";
 import coockieParser from 'cookie-parser';
 import cors from 'cors';
 
@@ -42,6 +42,7 @@ app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/preguntas', preguntasRoutes);
 app.use('/api/encuestas', encuestasRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.listen(puerto)
 

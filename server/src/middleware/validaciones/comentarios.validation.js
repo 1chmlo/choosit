@@ -264,3 +264,37 @@ export const validateLikeComment = [
     next();
   }
 ];
+
+export const validateAdminDeleteComment = [
+  param('id')
+    .trim()
+    .notEmpty()
+    .withMessage('El ID del comentario es requerido')
+    .isUUID(4)
+    .withMessage('El ID del comentario debe ser un UUID v4 válido'),
+  
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
+export const validateAdminRejectReports = [
+  param('id')
+    .trim()
+    .notEmpty()
+    .withMessage('El ID del comentario es requerido')
+    .isUUID(4)
+    .withMessage('El ID del comentario debe ser un UUID v4 válido'),
+  
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];

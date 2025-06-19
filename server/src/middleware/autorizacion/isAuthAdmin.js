@@ -1,5 +1,6 @@
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../config.js";
+import jwt from 'jsonwebtoken';
+import { pool } from '../../db.js';
+import { JWT_SECRET } from '../../config.js';
 
 /**
  * Middleware para verificar si el usuario está autenticado
@@ -10,23 +11,34 @@ import { JWT_SECRET } from "../../config.js";
  * Si el token es válido, se decodifica y se pasan los datos al controlador en el request
  */
 
-export const isAuthAdmin = (req, res, next) => {
+export const isAuthAdmin = async (req, res, next) => {
+  try {
     const token = req.cookies.token;
-    if (!token) return res.status(400).json({ ok: false, message: "No se ha proporcionado un token, inicia sesion"});
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    //return res.json({decoded});
-    if (err) return res.status(400).json({message: err.message});
-    if(decoded.rol !== "admin") return res.status(403).json({ok: false, message: "No tienes permisos para acceder a este recurso"});
-    if(decoded.activo === false) return res.status(400).json({ok: false, message: "Usuario no activo"});
-    if(decoded.verificado === false) return res.status(400).json({ok:false, message: "Usuario no verificado"});
+    if (!token) {
+      return res.status(401).json({ message: 'No token, acceso denegado' });
+    }
 
-    // Estos datos se pasan al controlador para que no se tenga que volver a decodificar el token
-    // y se pueda acceder a ellos directamente desde req.userId, req.userUsername, etc.
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Verificar que el usuario existe y es admin
+    const user = await pool.query(
+      'SELECT id, username, is_admin FROM usuarios WHERE id = $1 AND activo = true',
+      [decoded.id]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(401).json({ message: 'Usuario no encontrado' });
+    }
+
+    if (!user.rows[0].is_admin) {
+      return res.status(403).json({ message: 'Acceso denegado: se requieren permisos de administrador' });
+    }
+
     req.userId = decoded.id;
-    req.userUsername = decoded.username;
-    req.userActivo = decoded.activo;
-    req.userVerificado = decoded.verificado;
+    req.username = decoded.username;
     next();
-  });
+  } catch (error) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
 };
