@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 
 export const get_all_comments = async (req, res) => { // Obtiene todos los comentarios
     try {
-        const resultado = await pool.query('SELECT * FROM comentarios');
+        const resultado = await pool.query('SELECT * FROM comentarios WHERE activo');
         res.json(resultado.rows);
     } catch (error) { // Manejo de errores
         console.error('Error al obtener comentarios:', error);
