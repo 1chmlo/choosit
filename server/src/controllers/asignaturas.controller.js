@@ -112,10 +112,11 @@ export const subject_all = async (req, res) => {
     const id_asignatura = asignatura.id;
 
     const comentariosQuery = await pool.query( //* faltaba u.activo, no se mandaba *//
-      `SELECT u.nombre, u.apellido, u.activo, c.id, c.fecha, c.reputacion, c.texto 
+      `SELECT u.nombre, u.apellido, u.activo, c.id, c.fecha, c.reputacion, c.texto,
        FROM comentarios AS c
        JOIN usuarios AS u ON c.id_usuario = u.id
-       WHERE c.id_asignatura = $1`,
+       WHERE c.id_asignatura = $1
+       AND c.activo = true`,
       [id_asignatura]
     );
     asignatura.comentarios = comentariosQuery.rows;
