@@ -9,7 +9,7 @@ export const me = async (req, res) => {
     
     // Query the database for complete user information
     const userResult = await pool.query(
-      'SELECT id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, created_at FROM usuarios WHERE id = $1', 
+      'SELECT id, nombre, apellido, username, email, anio_ingreso, reputacion, activo, verificado, is_admin, created_at FROM usuarios WHERE id = $1', 
       [userId]
     );
     
