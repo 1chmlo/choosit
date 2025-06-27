@@ -100,14 +100,17 @@ export const subject_all = async (req, res) => {
   const { codigo } = req.params;
   try {
     const asignaturaQuery = await pool.query(
-      `SELECT id, codigo, descripcion, nombre, n_encuestas, laboratorio, controles, proyecto, electivo
-       FROM asignaturas WHERE codigo = $1 AND activo = true`,
+      `SELECT id, activo, codigo, descripcion, nombre, n_encuestas, laboratorio, controles, proyecto, electivo
+       FROM asignaturas WHERE codigo = $1`,
       [codigo]
     );
 
+    
     if (asignaturaQuery.rows.length === 0)
       return res.status(404).json({ ok: false, message: "Asignatura no encontrada bajo tal código" });
-
+    
+    if(!asignaturaQuery.rows[0].activo) return res.status(400).json({ ok: false, message: "Asignatura no activa" });
+    
     const asignatura = asignaturaQuery.rows[0];
     const id_asignatura = asignatura.id;
 
