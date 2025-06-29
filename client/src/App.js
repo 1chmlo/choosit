@@ -9,7 +9,7 @@ import VisualizarSemestres from './components/VisualizarSemestres';
 import VisualizacionAsignatura from './components/VisualizacionAsignatura'; 
 import OlvideContrasena from './components/OlvideContrasena';
 import ReestablecerContrasena from './components/ReestablecerContrasena';
-
+import AdminReports from './components/AdminReports';
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
 
@@ -32,6 +32,7 @@ function AppContent() {
         <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} />
         <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 
         <Route path="/restablecer-contrasena" element={<ReestablecerContrasena />} /> 
+         <Route path="/adminreports" element={<AdminReports />} /> 
       </Routes>
     </div>
   );

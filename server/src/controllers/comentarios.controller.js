@@ -82,7 +82,23 @@ export const report_comment = async (req, res) => {
 
 export const get_all_reports = async (req, res) => { // Obtiene todos los reportes de comentarios
     try {
-        const resultado = await pool.query('SELECT * FROM reportes_comentarios');
+        // Consulta con JOIN para obtener datos del comentario junto con el reporte
+        const resultado = await pool.query(`
+            SELECT 
+                rc.*,
+                c.texto AS contenido_comentario,
+                c.fecha AS fecha_comentario,
+                c.id_usuario AS autor_comentario
+            FROM 
+                reportes_comentarios rc
+            LEFT JOIN 
+                comentarios c ON rc.id_comentario = c.id
+            WHERE 
+                rc.revisado = false
+            ORDER BY
+                rc.fecha DESC
+        `);
+        
         res.json(resultado.rows);
     } catch (error) { // Manejo de errores
         console.error('Error al obtener reportes de comentarios:', error);

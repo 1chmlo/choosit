@@ -80,6 +80,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Función para verificar si el usuario actual es administrador
+  const isAdmin = () => {
+    return !!user && user.is_admin === true;
+  };
+
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -92,7 +97,8 @@ export const AuthProvider = ({ children }) => {
       login,
       fetchUserData,
       logout,
-      isAuthenticated: !!user
+      isAuthenticated: !!user,
+      isAdmin // Función para verificar si es administrador
     }}> 
       {children} 
     </AuthContext.Provider>
