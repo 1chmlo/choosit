@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { REACT_APP_BACKEND_URL } from "../config"
 import "./AdminReports.css"
 
 export default function AdminReports() {
@@ -27,8 +28,8 @@ export default function AdminReports() {
       try {
         setLoading(true);
         
-        // Obtener los reportes desde la API
-        const response = await axios.get('http://localhost:3000/api/comentarios/reportes', {
+        // Obtener los reportes desde la API usando REACT_APP_BACKEND_URL
+        const response = await axios.get(`${REACT_APP_BACKEND_URL}/api/comentarios/reportes`, {
           withCredentials: true
         });
         
@@ -101,10 +102,11 @@ export default function AdminReports() {
 
   const handleRejectReports = async (commentId) => {
     try {
-      console.log("Enviando solicitud a:", `http://localhost:3000/api/admin/comentarios/${commentId}/reject-reports`);
+      // Usar REACT_APP_BACKEND_URL en la URL
+      console.log("Enviando solicitud a:", `${REACT_APP_BACKEND_URL}/api/admin/comentarios/${commentId}/reject-reports`);
       
       // Usar fetch nativo en lugar de axios para evitar problemas de configuración
-      const response = await fetch(`http://localhost:3000/api/admin/comentarios/${commentId}/reject-reports`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/admin/comentarios/${commentId}/reject-reports`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -140,10 +142,11 @@ export default function AdminReports() {
     }
 
     try {
-      console.log("Enviando solicitud a:", `http://localhost:3000/api/admin/comentarios/${commentId}`);
+      // Usar REACT_APP_BACKEND_URL en la URL
+      console.log("Enviando solicitud a:", `${REACT_APP_BACKEND_URL}/api/admin/comentarios/${commentId}`);
       
       // Usar fetch nativo en lugar de axios
-      const response = await fetch(`http://localhost:3000/api/admin/comentarios/${commentId}`, {
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/admin/comentarios/${commentId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
