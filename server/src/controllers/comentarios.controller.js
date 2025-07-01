@@ -356,3 +356,50 @@ export const admin_reject_reports = async (req, res) => {
     });
   }
 };
+/*
+Obtener comentarios reportados y para cada comentario reportado:
+  - Cantidad de reportes
+  - Texto
+  - Usuario que realizó el comentario y lista de reportes
+Desde lista de reportes:
+  - Usuario que reportó
+  - Motivo del reporte
+*/
+export const report_revision = async (req, res) => {
+  try {
+    const comentarios = await pool.query(
+      `SELECT c.id, COUNT(rc.id) as cantidad_reportes, u.username, c.texto
+      FROM comentarios c
+      INNER JOIN reportes_comentarios rc ON c.id = rc.id_comentario
+      JOIN usuarios u ON c.id_usuario = u.id
+      WHERE rc.revisado = false
+      GROUP BY c.id, u.username, c.texto`
+    )
+    const result = [];
+    for(const comentario of comentarios.rows){
+      const reportes = await pool.query(
+        `SELECT u.username, rc.motivo
+        FROM reportes_comentarios rc
+        JOIN usuarios u ON rc.id_usuario = u.id
+        WHERE rc.id_comentario = $1 AND rc.revisado = false`,
+        [comentario.id]
+      )
+      result.push({
+        id: comentario.id,
+        cantidad_reportes: parseInt(comentario.cantidad_reportes),
+        username: comentario.username,
+        texto: comentario.texto,
+        lista_reportes: reportes.rows
+      });
+    }
+    return res.status(200).json({
+      message: 'Comentarios reportados obtenidos exitosamente',
+      data: result
+    });
+  } catch (error) {
+    console.error('Error al obtener comentarios reportados ', error);
+    return res.status(500).json({
+      message: 'Error interno del servidor'
+    });
+  }
+}

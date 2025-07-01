@@ -105,3 +105,11 @@ INSERT INTO comentarios (id_usuario, id_asignatura, texto) VALUES
   (SELECT id FROM asignaturas WHERE codigo = 'CIT-1000'),
   'Demasiado material en poco tiempo.'
 );
+
+-- Insertar reportes
+INSERT INTO reportes_comentarios (id_comentario, id_usuario, motivo) VALUES
+(
+  (SELECT id FROM comentarios LIMIT 1),
+  (SELECT id FROM usuarios WHERE username = 'juan.perez'),
+  'Me cae mal juan perez'
+)
