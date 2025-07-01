@@ -6,10 +6,7 @@ import StarRating from './StarRating';
 import axios from 'axios';
 import edit from "./edit.png"; 
 import warning from "./warning.png"; 
-import thumbsUp from "./thumbsUp.png";
 import flag from "./flag.png";
-import thumbsUpRed from "./thumbsUpRed.png"; 
-
 
 const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   const [motivo, setMotivo] = useState("");
@@ -62,6 +59,15 @@ const VisualizacionAsignatura = () => {
     .then((response) => {
       const data = response.data;
       if (data.ok) {
+        // Agregar logs para verificar los datos
+        console.log('Datos de asignatura recibidos:', data.asignatura);
+        console.log('Comentarios con likes:', data.asignatura.comentarios?.map(c => ({
+          id: c.id,
+          texto: c.texto.substring(0, 30) + '...',
+          likes_usuarios: c.likes_usuarios
+        })));
+        console.log('ID del usuario actual:', user?.id);
+        
         setAsignatura(data.asignatura);
         setPreguntas(data.preguntas || []); 
       } else {
@@ -72,7 +78,7 @@ const VisualizacionAsignatura = () => {
       console.error('Error:', error);
       setError('Error al cargar los datos de la asignatura');
     });
-  }, []);
+  }, [user?.id]); // Agregar user.id como dependencia
 
   const mostrarMetodo = (id, valor) => (
     <span id={id}>
@@ -156,9 +162,6 @@ const VisualizacionAsignatura = () => {
       });
 
       if (response.status === 201 || response.status === 200) {
-        // Mostrar mensaje de éxito
-        //alert(response.data.message || "Encuesta enviada con éxito");
-        
         // Recargar datos para reflejar cambios
         const urlParams = new URLSearchParams(window.location.search);
         const codigo = urlParams.get('id');
@@ -182,7 +185,20 @@ const VisualizacionAsignatura = () => {
       }
     } catch (error) {
       console.error("Error al enviar encuesta:", error);
-      alert(error.response?.data?.message || "Error al enviar la encuesta");
+      // Priorizar errores de validación del servidor
+      let errorMessage = "Error desconocido al enviar la encuesta";
+      
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error al enviar la encuesta: ${errorMessage}`);
     }
   };
 
@@ -221,7 +237,21 @@ const VisualizacionAsignatura = () => {
         throw new Error(data.message || 'Error al crear comentario');
       }
     } catch (error) {
-      alert(error.response?.data?.message || error.message);
+      console.error("Error al publicar comentario:", error);
+      // Priorizar errores de validación del servidor
+      let errorMessage = "Error desconocido al publicar el comentario";
+      
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error al publicar el comentario: ${errorMessage}`);
     }
   };
 
@@ -250,7 +280,21 @@ const VisualizacionAsignatura = () => {
         throw new Error(response.data.error || 'Error al reportar comentario');
       }
     } catch (error) {
-      alert(error.response?.data?.message || error.message);
+      console.error("Error al reportar comentario:", error);
+      // Priorizar errores de validación del servidor
+      let errorMessage = "Error desconocido al reportar el comentario";
+      
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error al reportar el comentario: ${errorMessage}`);
     }
   };
 
@@ -286,21 +330,65 @@ const VisualizacionAsignatura = () => {
         throw new Error(response.data.message || 'Error al editar comentario');
       }
     } catch (error) {
-      alert(error.response?.data?.message || error.message);
+      console.error("Error al editar comentario:", error);
+      // Priorizar errores de validación del servidor
+      let errorMessage = "Error desconocido al editar el comentario";
+      
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error al editar el comentario: ${errorMessage}`);
     }
   };
 
   const handleLikeComentario = async (idComentario) => {
     try {
+      // Actualizar el estado inmediatamente (optimistic update)
+      setAsignatura(prevAsignatura => {
+        const comentariosActualizados = prevAsignatura.comentarios.map(comentario => {
+          if (comentario.id === idComentario) {
+            const yaLikeado = comentario.likes_usuarios?.includes(user.id);
+            return {
+              ...comentario,
+              likes_usuarios: yaLikeado 
+                ? comentario.likes_usuarios.filter(id => id !== user.id)
+                : [...(comentario.likes_usuarios || []), user.id]
+            };
+          }
+          return comentario;
+        });
+        
+        return {
+          ...prevAsignatura,
+          comentarios: comentariosActualizados
+        };
+      });
+
+      // Hacer la petición al servidor pero NO recargar todos los datos
       const response = await axios.patch(`${REACT_APP_BACKEND_URL}/api/comentarios/${idComentario}/like`, {}, {
         withCredentials: true
       });
 
-      if (response.status === 200) {
-        // Recargar datos para reflejar cambios
-        const urlParams = new URLSearchParams(window.location.search);
-        const codigo = urlParams.get('id');
-        
+      if (response.status !== 200) {
+        throw new Error(response.data.message || 'Error al dar like al comentario');
+      }
+      
+      // Solo recargar si hay error, no en caso exitoso
+    } catch (error) {
+      console.error("Error al dar like al comentario:", error);
+      
+      // Revertir el cambio optimista en caso de error
+      const urlParams = new URLSearchParams(window.location.search);
+      const codigo = urlParams.get('id');
+      
+      try {
         const asignaturaResponse = await axios.get(
           `${REACT_APP_BACKEND_URL}/api/asignaturas/${codigo}/all`,
           {
@@ -311,11 +399,24 @@ const VisualizacionAsignatura = () => {
         if (asignaturaResponse.data.ok) {
           setAsignatura(asignaturaResponse.data.asignatura);
         }
-      } else {
-        throw new Error(response.data.message || 'Error al dar like al comentario');
+      } catch (revertError) {
+        console.error("Error al revertir cambios:", revertError);
       }
-    } catch (error) {
-      alert(error.response?.data?.message || error.message);
+      
+      // Priorizar errores de validación del servidor
+      let errorMessage = "Error desconocido al dar like al comentario";
+      
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(`Error al dar like al comentario: ${errorMessage}`);
     }
   };
 
@@ -431,6 +532,17 @@ const VisualizacionAsignatura = () => {
                   const esAutor = user && comentario.id_usuario === user.id;
                   const yaDioLike = user && comentario.likes_usuarios?.includes(user.id);
 
+                  // Log para verificar el estado del like
+                  console.log(`Comentario ${comentario.id}:`, {
+                    likes_usuarios: comentario.likes_usuarios,
+                    user_id: user?.id,
+                    yaDioLike: yaDioLike,
+                    tipos: {
+                      likes_usuarios_type: typeof comentario.likes_usuarios?.[0],
+                      user_id_type: typeof user?.id
+                    }
+                  });
+
                   return (
                     <div className="comentario-box" key={index}>
                       <div className="comentario-header">
@@ -468,17 +580,15 @@ const VisualizacionAsignatura = () => {
                       <div className="comentario-acciones">
                         {user && (
                           <>
-                       <button 
-                          onClick={() => handleLikeComentario(comentario.id)}
-                          className={`like-button ${yaDioLike ? 'liked' : ''}`}
-                        >
-                          <img
-                            src={yaDioLike ? thumbsUpRed : thumbsUp}
-                            alt="Like"
-                            className="icono"
-                          /> 
-                          {yaDioLike ? 'Ya te gusta' : 'Me gusta'}
-                        </button>                 
+                            {/* Botón de like con estrella */}
+                            <button 
+                              onClick={() => handleLikeComentario(comentario.id)}
+                              className={`like-button ${yaDioLike ? 'liked' : ''}`}
+                            >
+                              <span className={`star-like ${yaDioLike ? 'active' : ''}`}>★</span>
+                              {yaDioLike ? 'Ya no me gusta' : 'Me gusta'}
+                            </button>                 
+                            
                             {esAutor && (
                               <button onClick={() => {
                                 setEditandoComentario(comentario);
