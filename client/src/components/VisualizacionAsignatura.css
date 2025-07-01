@@ -656,3 +656,39 @@ h2 {
   background-color: rgba(220, 38, 38, 0.1);
   border-color: var(--wine-red);
 }
+
+/* Agregar estos estilos a VisualizacionAsignatura.css */
+.star-like {
+  color: #ccc;
+  font-size: 1.2em;
+  margin-right: 5px;
+  transition: color 0.3s ease;
+}
+
+.star-like.active {
+  color: #ff6b6b; /* Color rojo para la estrella activa */
+}
+
+.like-button.liked .star-like {
+  color: #ff6b6b; /* Color rojo cuando ya dio like */
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.like-button:hover {
+  background-color: #f5f5f5;
+}
+
+.like-button:hover .star-like {
+  color: #ff6b6b;
+}
