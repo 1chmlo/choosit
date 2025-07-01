@@ -12,6 +12,7 @@ import ReestablecerContrasena from './components/ReestablecerContrasena';
 import AdminReports from './components/AdminReports';
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
+import NotFound from './components/NotFound';
 
 function AppContent() {
   const location = useLocation();
@@ -33,6 +34,8 @@ function AppContent() {
         <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 
         <Route path="/restablecer-contrasena" element={<ReestablecerContrasena />} /> 
          <Route path="/adminreports" element={<AdminReports />} /> 
+        {/* Ruta catch-all para URLs no encontradas - muestra página 404 */}
+        <Route path="*" element={<NotFound />} /> 
       </Routes>
     </div>
   );
