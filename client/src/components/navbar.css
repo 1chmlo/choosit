@@ -160,3 +160,30 @@
 .nav-links-mobile {
   animation: slideDown 0.2s ease-out;
 }
+
+/* Contenedor relativo para el botón de admin */
+.admin-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Estilos del desplegable */
+.admin-dropdown-content {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1100;
+}
+
+/* Ajustes para el enlace interno */
+.admin-dropdown-content .btn-outline {
+  margin: 0;
+  width: auto;
+  text-align: left;
+}

@@ -5,10 +5,12 @@ import "./navbar.css";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { logout, isAuthenticated } = useAuth();
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const { logout, isAuthenticated, user } = useAuth();  // extraer user
   const navigate = useNavigate();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
 
   const handleLogout = async () => {
     const result = await logout();
@@ -17,6 +19,8 @@ export default function Navbar() {
       navigate("/visualizar-semestres");
     }
   };
+
+  const isAdmin = user?.is_admin;  // true si es admin
 
   return (
     <nav className="navbar">
@@ -41,6 +45,30 @@ export default function Navbar() {
               <Link to="/perfil" className="btn-outline">
                 Mi Perfil
               </Link>
+
+              {/* Opciones Admin */}
+              {isAdmin && (
+                <div className="admin-dropdown">
+                  <button
+                    className="btn-outline"
+                    onClick={toggleAdminMenu}
+                  >
+                    Opciones Admin
+                  </button>
+                  {adminMenuOpen && (
+                    <div className="admin-dropdown-content">
+                      <Link
+                        to="/comentarios-reportados"
+                        className="btn-outline"
+                        onClick={() => setAdminMenuOpen(false)}
+                      >
+                        Comentarios Reportados
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <button className="btn-primary" onClick={handleLogout}>
                 Cerrar Sesión
               </button>
@@ -59,7 +87,9 @@ export default function Navbar() {
 
         {/* Mobile menu button */}
         <button className="mobile-menu-button" onClick={toggleMenu}>
-          <span className="menu-toggle-icon">{menuOpen ? "✖" : "☰"}</span>
+          <span className="menu-toggle-icon">
+            {menuOpen ? "✖" : "☰"}
+          </span>
         </button>
       </div>
 
@@ -68,12 +98,32 @@ export default function Navbar() {
         <div className="nav-links-mobile">
           {isAuthenticated ? (
             <>
-              <Link to="/visualizar-semestres" className="btn-outline" onClick={toggleMenu}>
+              <Link
+                to="/visualizar-semestres"
+                className="btn-outline"
+                onClick={toggleMenu}
+              >
                 Ver Asignaturas
               </Link>
-              <Link to="/perfil" className="btn-outline" onClick={toggleMenu}>
+              <Link
+                to="/perfil"
+                className="btn-outline"
+                onClick={toggleMenu}
+              >
                 Mi Perfil
               </Link>
+
+              {/* Link directo en mobile */}
+              {isAdmin && (
+                <Link
+                  to="/comentarios-reportados"
+                  className="btn-outline"
+                  onClick={toggleMenu}
+                >
+                  Comentarios Reportados
+                </Link>
+              )}
+
               <button
                 className="btn-primary"
                 onClick={() => {
@@ -86,10 +136,18 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-outline" onClick={toggleMenu}>
+              <Link
+                to="/login"
+                className="btn-outline"
+                onClick={toggleMenu}
+              >
                 Iniciar Sesión
               </Link>
-              <Link to="/register" className="btn-primary" onClick={toggleMenu}>
+              <Link
+                to="/register"
+                className="btn-primary"
+                onClick={toggleMenu}
+              >
                 Registrarse
               </Link>
             </>
