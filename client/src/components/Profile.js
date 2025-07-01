@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Profile.css';
 import questionMark from './question-mark.png';
+import { REACT_APP_BACKEND_URL } from '../config';
 
 const Profile = () => {
   const { user, loading, error, isAuthenticated, logout } = useAuth();
@@ -180,7 +181,7 @@ const Profile = () => {
       setActionLoading(true);
       
       const response = await axios.post(
-        `http://localhost:3000/api/users/changepassword`,
+        `${REACT_APP_BACKEND_URL}/api/users/changepassword`,
         {
           contrasena: passwordModal.currentPassword,
           nueva_contrasena: passwordModal.newPassword
@@ -223,7 +224,7 @@ const Profile = () => {
       setActionLoading(true);
       
       const response = await axios.post(
-        `http://localhost:3000/api/auth/deactivate`,
+        `${REACT_APP_BACKEND_URL}/api/auth/deactivate`,
         {},
         { withCredentials: true }
       );
