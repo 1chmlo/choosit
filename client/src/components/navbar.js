@@ -1,3 +1,4 @@
+// src/components/Navbar.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -6,21 +7,20 @@ import "./navbar.css";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
-  const { logout, isAuthenticated, user } = useAuth();  // extraer user
+  const { logout, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-  const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const toggleAdminMenu = () => setAdminMenuOpen((prev) => !prev);
 
   const handleLogout = async () => {
     const result = await logout();
     if (result.success) {
       setMenuOpen(false);
+      setAdminMenuOpen(false);
       navigate("/visualizar-semestres");
     }
   };
-
-  const isAdmin = user?.is_admin;  // true si es admin
 
   return (
     <nav className="navbar">
@@ -46,8 +46,7 @@ export default function Navbar() {
                 Mi Perfil
               </Link>
 
-              {/* Opciones Admin */}
-              {isAdmin && (
+              {isAdmin() && (
                 <div className="admin-dropdown">
                   <button
                     className="btn-outline"
@@ -58,7 +57,7 @@ export default function Navbar() {
                   {adminMenuOpen && (
                     <div className="admin-dropdown-content">
                       <Link
-                        to="/comentarios-reportados"
+                        to="/adminreports"
                         className="btn-outline"
                         onClick={() => setAdminMenuOpen(false)}
                       >
@@ -113,8 +112,7 @@ export default function Navbar() {
                 Mi Perfil
               </Link>
 
-              {/* Link directo en mobile */}
-              {isAdmin && (
+              {isAdmin() && (
                 <Link
                   to="/comentarios-reportados"
                   className="btn-outline"
