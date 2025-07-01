@@ -47,6 +47,9 @@ export const modify_subject = async (req, res) => {
   const { id } = req.params;
   const { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo } = req.body || {};
 
+  const asignaturaQuery = await pool.query('SELECT * FROM asignaturas WHERE codigo = $1', [codigo]);
+  if (asignaturaQuery.rows.length > 0) return res.status(400).json({ error: 'Ya existe una asignatura con ese código.' });
+
   const datos_a_cambiar = { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo };
   const campo_con_datos = [];
   const Valores = [];

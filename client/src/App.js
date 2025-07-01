@@ -33,8 +33,7 @@ function AppContent() {
         <Route path="/visualizar-asignatura" element={<VisualizacionAsignatura />} />
         <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 
         <Route path="/restablecer-contrasena" element={<ReestablecerContrasena />} /> 
-         <Route path="/adminreports" element={<AdminReports />} /> 
-        {/* Ruta catch-all para URLs no encontradas - muestra página 404 */}
+         <Route path="/adminreports" element={<AdminReports />} />
         <Route path="*" element={<NotFound />} /> 
       </Routes>
     </div>

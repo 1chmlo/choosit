@@ -31,10 +31,10 @@ export const ValidateCreateAsignatura = [
     .isLength({ max: 500 })
     .withMessage('Maximo 250 caractares de descripcion'),
 
-  body('lab')
+  body('laboratorio')
     .notEmpty()
     .isBoolean()
-    .withMessage("El campo lab debe ser un valor booleano (true o false)"),
+    .withMessage("El campo laboratorio debe ser un valor booleano (true o false)"),
 
   body('controles')
     .notEmpty()
@@ -46,10 +46,10 @@ export const ValidateCreateAsignatura = [
     .isBoolean()
     .withMessage("El campo proyecto debe ser un valor booleano (true o false)"),
 
-  body('cfg')
+  body('electivo')
     .notEmpty()
     .isBoolean()
-    .withMessage("El campo cfg debe ser un valor booleano (true o false)"),
+    .withMessage("El campo electivo debe ser un valor booleano (true o false)"),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -95,41 +95,37 @@ export const ValidateUpdateAsignatura = [
     .isLength({ max: 500 })
     .withMessage('Maximo 500 caractares de descripcion'),
 
-  body('lab')
+  body('laboratorio')
     .optional()
-    .trim()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    .withMessage("El campo laboratorio debe ser un valor booleano (true o false)"),
 
   body('controles')
     .optional()
-    .trim()
     .isBoolean()
     .withMessage("El campo controles debe ser un valor booleano (true o false)"),
-
 
   body('proyecto')
     .optional()
-    .trim()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
+    .withMessage("El campo proyecto debe ser un valor booleano (true o false)"),
 
-  body('cfg')
+  body('electivo')
     .optional()
-    .trim()
     .isBoolean()
-    .withMessage("El campo controles debe ser un valor booleano (true o false)"),
-    (req, res, next) => {
-    const { codigo, nombre, descripcion, lab, controles, proyecto, cfg } = req.body;
+    .withMessage("El campo electivo debe ser un valor booleano (true o false)"),
+
+  (req, res, next) => {
+    const { codigo, nombre, descripcion, laboratorio, controles, proyecto, electivo } = req.body;
     
     if (
       codigo === undefined && 
       nombre === undefined && 
       descripcion === undefined && 
-      lab === undefined && 
+      laboratorio === undefined && 
       controles === undefined && 
       proyecto === undefined && 
-      cfg === undefined
+      electivo === undefined
     ) {
       return res.status(400).json({ 
         errors: [{ 
@@ -151,7 +147,6 @@ export const ValidateUpdateAsignatura = [
   }
 ];
 
-
 export const ValidateSearch = [
   query('busqueda')
   .trim()
@@ -160,8 +155,6 @@ export const ValidateSearch = [
   .customSanitizer(value => value.toLowerCase()) // Transforma el codigo a minúsculas
   .isString()
   .withMessage('El parámetro debe ser texto'),
-
-
 
   (req, res, next) => {
     const errors = validationResult(req);
