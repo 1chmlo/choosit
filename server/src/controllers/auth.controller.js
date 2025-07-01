@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
-import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail } from '../libs/mailer.js';
+import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail, sendActivateAccountEmail } from '../libs/mailer.js';
 import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 

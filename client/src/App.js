@@ -13,6 +13,7 @@ import AdminReports from './components/AdminReports';
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
 import NotFound from './components/NotFound';
+import ActivarCuenta from './components/ActivarCuenta';
 
 function AppContent() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function AppContent() {
         <Route path="/olvide-contrasena" element={<OlvideContrasena />} /> 
         <Route path="/restablecer-contrasena" element={<ReestablecerContrasena />} /> 
          <Route path="/adminreports" element={<AdminReports />} />
+         <Route path="/activar-cuenta" element={<ActivarCuenta />} />
         <Route path="*" element={<NotFound />} /> 
       </Routes>
     </div>
