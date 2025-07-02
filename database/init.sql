@@ -53,7 +53,9 @@ CREATE TABLE encuestas (
       REFERENCES tipo_pregunta(id),
   CONSTRAINT FK_encuesta_id_asignatura
     FOREIGN KEY (id_asignatura)
-      REFERENCES asignaturas(id)
+      REFERENCES asignaturas(id),
+  CONSTRAINT unique_encuesta_asignatura_tipo
+    UNIQUE (id_asignatura, id_tipo_pregunta)
 );
 
 CREATE TABLE evaluacion (
@@ -177,21 +179,27 @@ BEGIN
 
   IF tipo_id IS NOT NULL THEN
     INSERT INTO encuestas (id_asignatura, id_tipo_pregunta)
-    VALUES (NEW.id, tipo_id);
+    VALUES (NEW.id, tipo_id)
+    ON CONFLICT (id_asignatura, id_tipo_pregunta) DO NOTHING;
   END IF;
 
   -- Para tipos condicionales (basados en columnas booleanas)
   FOR col IN SELECT unnest(ARRAY['solemnes','laboratorio', 'controles', 'proyecto', 'electivo', 'cfg']) LOOP
-    IF to_jsonb(NEW) ->> col = 'true' THEN
-      -- Buscar tipo_pregunta que coincida con el nombre del campo
-      SELECT id INTO tipo_id
-      FROM tipo_pregunta
-      WHERE unaccent(lower(tipo)) = unaccent(lower(col))
-      LIMIT 1;
+    SELECT id INTO tipo_id
+    FROM tipo_pregunta
+    WHERE unaccent(lower(tipo)) = unaccent(lower(col))
+    LIMIT 1;
 
-      IF tipo_id IS NOT NULL THEN
+    IF tipo_id IS NOT NULL THEN
+      IF to_jsonb(NEW) ->> col = 'true' THEN
+        -- Insertar encuesta si el atributo está activo
         INSERT INTO encuestas (id_asignatura, id_tipo_pregunta)
-        VALUES (NEW.id, tipo_id);
+        VALUES (NEW.id, tipo_id)
+        ON CONFLICT (id_asignatura, id_tipo_pregunta) DO NOTHING;
+      ELSE
+        -- Eliminar encuesta si el atributo está inactivo
+        DELETE FROM encuestas
+        WHERE id_asignatura = NEW.id AND id_tipo_pregunta = tipo_id;
       END IF;
     END IF;
   END LOOP;
