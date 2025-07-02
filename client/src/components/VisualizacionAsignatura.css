@@ -92,35 +92,48 @@ h2 {
 .rating-item {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   margin-bottom: 20px;
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 6px;
 }
 
 .rating-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
 }
 
 .rating-label {
   font-weight: bold;
-  white-space: nowrap;
-  margin-right: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .rating-stars-value {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  flex-wrap: nowrap;
 }
 
 .stars-container {
-  display: inline-flex;
-  position: relative;
-  margin: 0 10px;
-  font-size: 24px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .stars-background {
@@ -142,9 +155,10 @@ h2 {
 .rating-value {
   color: var(--wine-red);
   font-weight: bold;
-  min-width: 30px;
+  font-size: 16px;
+  flex-shrink: 0;
+  min-width: 35px;
   text-align: right;
-  font-size: 1rem;
 }
 
 .progress-bar-container {
@@ -153,6 +167,7 @@ h2 {
   background-color: var(--light-gray);
   border-radius: 4px;
   overflow: hidden;
+  margin-top: 5px;
 }
 
 .progress-bar {
@@ -494,34 +509,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 15px;
-  }
-  
-  header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .rating-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .stars-container {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .modal-content {
-    width: 90%;
-  }
-
-  .comentario-acciones {
-    flex-wrap: wrap;
-  }
-}
-
 .like-button {
   background: none;
   border: none;
@@ -531,11 +518,24 @@ h2 {
   gap: 5px;
   padding: 5px 10px;
   transition: all 0.2s ease;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #555;
 }
 
 .like-button:hover {
-  background-color: #f0f0f0;
-  border-radius: 5px;
+  background-color: #f5f5f5;
+}
+
+.like-button.liked {
+  color: var(--wine-red);
+  font-weight: bold;
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: var(--wine-red);
+}
+
+.like-button.liked .icono {
+  filter: invert(14%) sepia(77%) saturate(4252%) hue-rotate(345deg) brightness(95%) contrast(93%);
 }
 
 .fa-thumbs-up {
@@ -557,12 +557,14 @@ h2 {
   font-size: 14px;
   color: #666;
 }
+
 .icono {
   width: 16px;
   height: 16px;
   margin-right: 5px;
   vertical-align: middle;
 }
+
 .iniciales-usuario {
   width: 50px;
   height: 50px;
@@ -576,7 +578,6 @@ h2 {
   margin-right: 10px;
 }
 
-/* Agrega estos estilos a tu archivo VisualizacionAsignatura.css */
 .static-stars {
   display: flex;
   align-items: center;
@@ -584,10 +585,11 @@ h2 {
 }
 
 .star {
-  font-size: 18px;
+  font-size: 20px;
   color: #ddd;
   transition: none;
   cursor: default;
+  line-height: 1;
 }
 
 .star.full-star {
@@ -605,59 +607,6 @@ h2 {
   color: #ddd;
 }
 
-/* Estilos mejorados para el botón de like */
-.like-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #555;
-  transition: all 0.2s ease;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-.like-button:hover {
-  background-color: #f0f0f0;
-}
-
-.like-button.liked {
-  color: var(--wine-red);
-  font-weight: bold;
-}
-
-.like-button.liked .icono {
-  filter: invert(14%) sepia(77%) saturate(4252%) hue-rotate(345deg) brightness(95%) contrast(93%);
-}
-
-/* Actualizar la animación del mensaje de éxito para que sea más suave */
-.mensaje-exito {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  text-align: center;
-  animation: fadeInOut 3s forwards;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
-}
-.like-button.liked {
-  color: var(--wine-red);
-  font-weight: bold;
-  /* Estilos adicionales para hacer más visible el cambio */
-  background-color: rgba(220, 38, 38, 0.1);
-  border-color: var(--wine-red);
-}
-
-/* Agregar estos estilos a VisualizacionAsignatura.css */
 .star-like {
   color: #ccc;
   font-size: 1.2em;
@@ -666,34 +615,17 @@ h2 {
 }
 
 .star-like.active {
-  color: #ff6b6b; /* Color rojo para la estrella activa */
+  color: #ff6b6b;
 }
 
 .like-button.liked .star-like {
-  color: #ff6b6b; /* Color rojo cuando ya dio like */
-}
-
-.like-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-  font-size: 14px;
-}
-
-.like-button:hover {
-  background-color: #f5f5f5;
+  color: #ff6b6b;
 }
 
 .like-button:hover .star-like {
   color: #ff6b6b;
 }
 
-/* CSS para los botones de comentarios */
 .edit-button, .report-button {
   display: flex;
   align-items: center;
@@ -730,4 +662,124 @@ h2 {
 .report-button:hover {
   background-color: #dc3545;
   color: white;
+}
+
+/* Asegurar que los textos largos no se desborden */
+.evaluacion-box * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Mejoras responsive para pantallas medianas */
+@media (min-width: 768px) {
+  .rating-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  
+  .rating-label {
+    flex: 1;
+    margin-right: 15px;
+    font-size: 15px;
+  }
+  
+  .rating-stars-value {
+    flex-shrink: 0;
+    min-width: 140px;
+    justify-content: flex-end;
+  }
+}
+
+/* Mejoras para pantallas pequeñas */
+@media (max-width: 767px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .rating-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .rating-label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .rating-stars-value {
+    justify-content: center;
+    padding: 8px 0;
+  }
+  
+  .star {
+    font-size: 18px;
+  }
+  
+  .rating-value {
+    font-size: 16px;
+    margin-left: 10px;
+  }
+  
+  .progress-bar-container {
+    margin-top: 8px;
+  }
+
+  .stars-container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+
+  .comentario-acciones {
+    flex-wrap: wrap;
+  }
+  
+  header h1 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Mejoras para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+    margin-top: 60px;
+  }
+  
+  .evaluacion-box {
+    padding: 15px;
+  }
+  
+  .rating-item {
+    padding: 12px;
+  }
+  
+  .rating-label {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+  
+  .star {
+    font-size: 16px;
+  }
+  
+  .rating-value {
+    font-size: 14px;
+  }
+  
+  header h1 {
+    font-size: 1.6rem;
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+  
+  .evaluacion-titulo {
+    font-size: 1.3rem;
+  }
 }
