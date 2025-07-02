@@ -86,7 +86,7 @@ INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingres
 -- GENERAL
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
 ((SELECT id FROM tipo_pregunta WHERE tipo = 'general'), '¿Qué nivel de dificultad general consideras que tuvo la asignatura, donde 1 es muy fácil y 5 muy difícil?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'general'), '¿Cómo evaluarias en nivel de carga de trabajo general de la asignatura, donde 1 es muy baja y 5 muy alta?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'general'), '¿Cómo evaluarias en nivel de carga de trabajo general de la asignatura, donde 1 es muy baja y 5 muy alta?');
 
 -- LABORATORIO
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
