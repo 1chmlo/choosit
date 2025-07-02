@@ -692,3 +692,42 @@ h2 {
 .like-button:hover .star-like {
   color: #ff6b6b;
 }
+
+/* CSS para los botones de comentarios */
+.edit-button, .report-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover, .report-button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.edit-button {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.edit-button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.report-button {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.report-button:hover {
+  background-color: #dc3545;
+  color: white;
+}

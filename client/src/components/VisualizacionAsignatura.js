@@ -563,16 +563,18 @@ const VisualizacionAsignatura = () => {
                   const esAutor = user && comentario.id_usuario === user.id;
                   const yaDioLike = user && comentario.likes_usuarios?.includes(user.id);
 
-                  // Log para verificar el estado del like
-                  console.log(`Comentario ${comentario.id}:`, {
-                    likes_usuarios: comentario.likes_usuarios,
-                    user_id: user?.id,
-                    yaDioLike: yaDioLike,
-                    tipos: {
-                      likes_usuarios_type: typeof comentario.likes_usuarios?.[0],
-                      user_id_type: typeof user?.id
-                    }
+                  // LOGS DE DEBUG - ELIMINAR CUANDO FUNCIONE
+                  console.log('===== DEBUG COMENTARIO =====');
+                  console.log('Comentario ID:', comentario.id);
+                  console.log('User ID actual:', user?.id);
+                  console.log('Comentario id_usuario:', comentario.id_usuario);
+                  console.log('Es autor?:', esAutor);
+                  console.log('Usuario autenticado?:', !!user);
+                  console.log('Tipos de datos:', {
+                    user_id_type: typeof user?.id,
+                    comentario_id_usuario_type: typeof comentario.id_usuario
                   });
+                  console.log('===========================');
 
                   return (
                     <div className="comentario-box" key={index}>
@@ -620,26 +622,40 @@ const VisualizacionAsignatura = () => {
                               {yaDioLike ? 'Ya no me gusta' : 'Me gusta'}
                             </button>                 
                             
+                            {/* Botón de editar - solo para el autor */}
                             {esAutor && (
-                              <button onClick={() => {
-                                setEditandoComentario(comentario);
-                                setTextoEditado(comentario.texto);
-                              }}>
+                              <button 
+                                className="edit-button"
+                                onClick={() => {
+                                  console.log('Editando comentario:', comentario.id); // LOG DEBUG
+                                  setEditandoComentario(comentario);
+                                  setTextoEditado(comentario.texto);
+                                }}
+                              >
                                 <img
                                   src={edit}
                                   alt="Editar"
                                   className="icono"
-                                /> Editar
+                                /> 
+                                Editar
                               </button>
                             )}
                             
-                            {!esAutor && user && (
-                              <button onClick={() => handleReportarComentario(comentario.id)}>
+                            {/* Botón de reportar - solo para otros usuarios */}
+                            {!esAutor && (
+                              <button 
+                                className="report-button"
+                                onClick={() => {
+                                  console.log('Reportando comentario:', comentario.id); // LOG DEBUG
+                                  handleReportarComentario(comentario.id);
+                                }}
+                              >
                                 <img
                                   src={flag}
                                   alt="Reportar"
                                   className="icono"
-                                /> Reportar
+                                /> 
+                                Reportar
                               </button>
                             )}
                           </>
