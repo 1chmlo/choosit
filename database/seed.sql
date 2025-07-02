@@ -83,13 +83,29 @@ INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingres
 --contrasena = luis.martinez456
 ('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', '$2b$10$bjyGA8bXGuJKvLzFvrFWvebSJ/Gb7xu3guvPlKHeQJ/BsUZSItcVC', 2020, true);
 
--- Insertar preguntas
+-- LABORATORIO
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
-((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Cómo calificarías la carga de trabajo del proyecto?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Los controles fueron justos y bien distribuidos?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'solemnes'), '¿Qué tan claros fueron los objetivos de los solemnes?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿El laboratorio fue útil para entender los conceptos?'),
-((SELECT id FROM tipo_pregunta WHERE tipo = 'electivo'), '¿Recomendarías este curso como electivo?');
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Qué nivel de dificultad tuviste al realizar el laboratorio, donde 1 es muy fácil y 5 muy difícil?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Cómo valorarías el tiempo disponible para completar el laboratorio, donde 1 es muy insuficiente y 5 más que suficiente?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Qué tan útiles fueron los materiales o guías proporcionadas para el laboratorio, donde 1 es nada útiles y 5 muy útiles?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Cómo valorarías las instrucciones dadas para el laboratorio, donde 1 es nada claro y 5 muy claro?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Qué tan satisfecho/a estás con el resultado que obtuviste en el laboratorio, donde 1 es nada satisfactorio y 5 muy satisfactorio?');
+
+-- CONTROLES
+INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Qué nivel de dificultad tuviste al realizar los controles, donde 1 es muy fácil y 5 muy difícil?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Cómo valorarías la claridad de las instrucciones de los controles, donde 1 es muy claro y 5 muy confuso?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Cómo valorarías la preparación previa que recibiste para hacer los controles, donde 1 es nada útil y 5 muy útil?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Qué tan adecuado fue el nivel de dificultad del control respecto a lo enseñado, donde 1 es nada adecuado y 5 muy adecuado?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'controles'), '¿Cómo valorarías la relación entre el tiempo disponible y la cantidad de preguntas del control, donde 1 es nada justo y 5 muy justo?');
+
+-- PROYECTO
+INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Cómo calificarías la dificultad del proyecto, donde 1 es muy fácil y 5 muy difícil?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Cómo calificarías la claridad de los requisitos del proyecto, donde 1 es muy claro y 5 muy confuso?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Qué tan útiles fueron los ejemplos o recursos entregados para desarrollar el proyecto, donde 1 es nada útiles y 5 muy útiles?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Qué tan exigente es el proyecto que el curso exige? Donde 1 es muy poco exigente, y 5 es muy exigente'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'proyecto'), '¿Qué tan realista te pareció la carga de trabajo del proyecto en relación al tiempo disponible, donde 1 es nada realista y 5 muy realista?');
 
 
 
