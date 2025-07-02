@@ -58,7 +58,7 @@ INSERT INTO asignaturas (codigo, nombre,semestre,descripcion, n_encuestas, labor
 ('CIT-3000','Arquitectura de Software',9,'Curso en el que podrás aprender a especificar y evolucionar arquitecturas de software de manera sistemática. Aplicarás métodos formales, modelar requisitos y estructuras, comunicar proyectos TIC y trabajar en equipo. Incluye diseño, estilos arquitecturales y propiedades no funcionales.',0 , false, true, false, false),
 ('CIT-3100','Arquitecturas Emergentes',9,'Curso en el que podrás explorar arquitecturas emergentes en sistemas y redes informáticas. Diseñar y evaluar redes complejas, incluyendo alta disponibilidad, resiliencia y tecnologías como FOG computing.',0 , false, true, false, false),
 --10mo semestre
-('CIT-3203','Proyecto TICS II',10,'Curso en el que desarrollarás un proyecto real de tecnología de la información y comunicaciones. Aprenderás a planificar, gestionar y evaluar proyectos TI, considerando riesgos, calidad y contratos. Se fomentará el trabajo en equipo y la comunicación efectiva.',0 , false, true, false, false);
+('CIT-3203','Proyecto TICS II',10,'Curso en el que desarrollarás un proyecto real de tecnología de la información y comunicaciones. Aprenderás a planificar, gestionar y evaluar proyectos TI, considerando riesgos, calidad y contratos. Se fomentará el trabajo en equipo y la comunicación efectiva.',0 , false, true, true, false);
 --11vo semestre
 
 
