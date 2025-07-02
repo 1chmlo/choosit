@@ -233,7 +233,23 @@ export const validateUpdateComment = [
     .optional()
     .trim()
     .isLength({ min: 1, max: 250 })
-    .withMessage('El comentario debe tener entre 1 y 250 caracteres'),
+    .withMessage('El comentario debe tener entre 1 y 250 caracteres')
+    .custom((value) => {
+      // Solo validar si el campo texto está presente
+      if (value) {
+        console.log(`Validando texto de edición: "${value}"`);
+        // Detectar palabras prohibidas o similares
+        const resultado = detectarVariaciones(value, palabrasProhibidas);
+        
+        if (resultado.encontrada) {
+          console.log(`Edición de comentario rechazada: "${resultado.palabra}" similar a "${resultado.prohibida}"`);
+          throw new Error('El comentario contiene lenguaje inapropiado');
+        }
+        
+        console.log(`Edición de comentario aprobada: "${value}"`);
+      }
+      return true;
+    }),
   
   (req, res, next) => {
     const errors = validationResult(req);
@@ -243,7 +259,6 @@ export const validateUpdateComment = [
     next();
   }
 ];
-
 export const validateLikeComment = [
   param('id')
     .trim()
