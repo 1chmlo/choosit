@@ -166,12 +166,34 @@ export default function RegisterForm() {
       setIsLoading(false)
     }
   }
+// ...existing code...
 
-  const handleResendEmail = () => {
-    console.log("HACER LOGICA DE REENVIO DE CORREO", registeredEmail)
-    alert("Correo de verificación NO reenviado porque todavía no está hecha la ruta.")
+const handleResendEmail = async () => {
+  try {
+    setIsLoading(true)
+    
+    const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/auth/resend-verification-email`, {
+      email: registeredEmail
+    })
+
+    if (response.status === 200) {
+      alert("Correo de verificación reenviado exitosamente. Revisa tu bandeja de entrada.")
+    }
+  } catch (error) {
+    console.error('Error al reenviar correo:', error)
+    if (error.response?.data?.message) {
+      alert(`Error: ${error.response.data.message}`)
+    } else if (error.response?.data?.errors?.length > 0) {
+      alert(`Error: ${error.response.data.errors[0].msg}`)
+    } else {
+      alert("Error al reenviar el correo de verificación. Inténtalo de nuevo más tarde.")
+    }
+  } finally {
+    setIsLoading(false)
   }
+}
 
+// ...existing code...
   const years = Array.from({ length: 2025 - 1989 + 1 }, (_, i) => 2025 - i)
 
   if (step === "verification") {
