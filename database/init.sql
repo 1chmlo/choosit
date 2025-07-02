@@ -202,7 +202,7 @@ $$;
 
 --trigger
 CREATE TRIGGER tr_insertar_encuestas
-AFTER INSERT ON asignaturas
+AFTER INSERT OR UPDATE ON asignaturas
 FOR EACH ROW
 EXECUTE FUNCTION insertar_encuestas();
 
