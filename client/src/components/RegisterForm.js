@@ -10,6 +10,7 @@ import { REACT_APP_BACKEND_URL } from "../config"
 export default function RegisterForm() {
   const [step, setStep] = useState("form") // "form" o "verification"
   const [registeredEmail, setRegisteredEmail] = useState("")
+  const [showTermsModal, setShowTermsModal] = useState(false)
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -166,7 +167,6 @@ export default function RegisterForm() {
       setIsLoading(false)
     }
   }
-// ...existing code...
 
 const handleResendEmail = async () => {
   try {
@@ -193,8 +193,47 @@ const handleResendEmail = async () => {
   }
 }
 
-// ...existing code...
   const years = Array.from({ length: 2025 - 1989 + 1 }, (_, i) => 2025 - i)
+
+  const TermsModal = () => (
+    <div className="modal-overlay" onClick={() => setShowTermsModal(false)}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Términos y Condiciones de Uso</h2>
+          <button className="modal-close" onClick={() => setShowTermsModal(false)}>×</button>
+        </div>
+        <div className="modal-body">
+          <p><strong>Fecha de entrada en vigencia:</strong> 2 de julio de 2025</p>
+          
+          <p>Al crear una cuenta en este sitio web, usted acepta los siguientes términos y condiciones:</p>
+
+          <h3>1. Aceptación de los términos</h3>
+          <p>Al registrarse como usuario, usted acepta cumplir con estos Términos y Condiciones, así como con nuestra Política de Privacidad. Si no está de acuerdo con alguna parte de estos términos, por favor no utilice este sitio web.</p>
+
+          <h3>2. Requisitos de edad</h3>
+          <p>Para registrarse, el usuario declara tener al menos 18 años de edad (a excepción de casos especiales).</p>
+
+          <h3>3. Responsabilidad del usuario</h3>
+          <p>El usuario es responsable de mantener la confidencialidad de su nombre de usuario y contraseña, así como de todas las actividades que ocurran bajo su cuenta.</p>
+
+          <h3>4. Uso adecuado</h3>
+          <p>El usuario se compromete a utilizar este sitio de manera legal y ética, y a no realizar ninguna acción que pueda dañar, deshabilitar o afectar el funcionamiento del mismo.</p>
+
+          <h3>5. Suspensión o eliminación de cuentas</h3>
+          <p>Nos reservamos el derecho de suspender o eliminar cualquier cuenta que infrinja estos términos, sin previo aviso.</p>
+
+          <h3>6. Propiedad intelectual</h3>
+          <p>Todos los contenidos del sitio, salvo los generados por los usuarios (si aplica), son propiedad de Choosit, y no pueden ser reproducidos sin autorización previa.</p>
+
+          <h3>7. Modificaciones</h3>
+          <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán publicados en esta misma página y entrarán en vigencia desde su publicación.</p>
+
+          <h3>8. Datos personales</h3>
+          <p>El manejo de los datos personales se realizará de acuerdo con nuestra Política de Privacidad. Al registrarse, el usuario consiente dicho tratamiento.</p>
+        </div>
+      </div>
+    </div>
+  )
 
   if (step === "verification") {
     return (
@@ -242,6 +281,8 @@ const handleResendEmail = async () => {
 
   return (
     <div className="register-container">
+      {showTermsModal && <TermsModal />}
+      
       <div className="register-card">
         <Link to="/">
           <img
@@ -358,7 +399,13 @@ const handleResendEmail = async () => {
             <input type="checkbox" id="terms" required className="terms-checkbox" />
             <label htmlFor="terms" className="terms-label">
               Acepto los{" "}
-              <Link to="/terms" className="terms-link">términos y condiciones</Link>
+              <button 
+                type="button" 
+                onClick={() => setShowTermsModal(true)} 
+                className="terms-link"
+              >
+                términos y condiciones
+              </button>
             </label>
           </div>
 
