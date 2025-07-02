@@ -88,6 +88,8 @@ export const register = async (req, res) => {
       message: 'El correo fue rechazado por el servidor de correo electrónico'
     });
   }
+
+  console.log(mail)
   
   return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, username, email, nombre, apellido, anio_ingreso, reputacion, activo, verificado, created_at }});
   
