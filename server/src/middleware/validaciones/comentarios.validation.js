@@ -5,23 +5,24 @@ import { obtenerListaPalabras } from '../../utils/csv-reader.js';
 // Obtener la lista de palabras prohibidas
 const palabrasProhibidas = obtenerListaPalabras();
 
-// Función para determinar si dos caracteres son similares
+// Función para determinar si dos caracteres son similares (mucho más restrictiva)
 function sonCaracteresSimilares(char1, char2) {
   if (char1 === char2) return true;
   
-  // Reducir las equivalencias para ser más específicos
+  // Solo equivalencias muy obvias y comunes
   const equivalencias = {
-    'a': ['@', '4'],
+    'a': ['@'],
     'e': ['3'],
-    'i': ['1', '!'],
+    'i': ['1'],
     'o': ['0'],
     's': ['$', '5'],
-   
-    // Equivalencias numéricas más específicas
+    
+    // Equivalencias inversas
+    '@': ['a'],
+    '3': ['e'],
     '1': ['i'],
     '0': ['o'],
-    '3': ['e'],
-    '4': ['a'],
+    '$': ['s'],
     '5': ['s']
   };
   
@@ -29,44 +30,38 @@ function sonCaracteresSimilares(char1, char2) {
          equivalencias[char2]?.includes(char1);
 }
 
-// Función para detectar similitud 
+// Función para detectar similitud (muchísimo más estricta)
 function esSimilar(palabra1, palabra2) {
   // Si las palabras son iguales
   if (palabra1 === palabra2) return true;
   
-  // Solo considerar similares palabras de longitud muy parecida
-  if (Math.abs(palabra1.length - palabra2.length) > 1) return false;
+  // Solo palabras de EXACTAMENTE la misma longitud
+  if (palabra1.length !== palabra2.length) return false;
   
-  // Para palabras cortas, ser más estricto
-  if (palabra1.length <= 3 || palabra2.length <= 3) {
+  // Para palabras cortas, ser extremadamente estricto
+  if (palabra1.length <= 4) {
     return palabra1 === palabra2;
   }
   
-  // Contador de diferencias
+  // Para palabras largas, permitir máximo 1 diferencia
   let diferencias = 0;
-  const maxLen = Math.max(palabra1.length, palabra2.length);
-  
-  // Comparar carácter por carácter
-  for (let i = 0; i < maxLen; i++) {
-    const char1 = palabra1[i] || '';
-    const char2 = palabra2[i] || '';
-    
-    if (!sonCaracteresSimilares(char1, char2)) {
+  for (let i = 0; i < palabra1.length; i++) {
+    if (!sonCaracteresSimilares(palabra1[i], palabra2[i])) {
       diferencias++;
+      // Si ya hay más de 1 diferencia, no es similar
+      if (diferencias > 1) return false;
     }
   }
   
-  // Ser más estricto: solo permitir diferencias muy pequeñas
-  const tolerancia = palabra1.length <= 4 ? 0 : 1;
-  return diferencias <= tolerancia;
+  return diferencias <= 1;
 }
 
-// Función más inteligente para detectar variaciones
+// Función más inteligente para detectar variaciones (ultra conservadora)
 function detectarVariaciones(texto, palabrasProhibidas) {
   // Dividir en palabras y filtrar las muy cortas
   const palabras = texto.toLowerCase()
     .split(/\s+/)
-    .filter(p => p.length >= 3); // Ignorar palabras muy cortas
+    .filter(p => p.length >= 4); // Aumentar mínimo a 4 caracteres
   
   for (const palabraTexto of palabras) {
     // Crear versiones de la palabra para verificar
@@ -74,15 +69,15 @@ function detectarVariaciones(texto, palabrasProhibidas) {
     const palabraSustituciones = sustituirNumerosPorLetras(palabraTexto);
     
     // Ignorar palabras muy cortas después de limpiar
-    if (palabraLimpia.length < 3) continue;
+    if (palabraLimpia.length < 4) continue;
     
     for (const palabraProhibida of palabrasProhibidas) {
       const prohibidaLower = palabraProhibida.toLowerCase();
       
       // Solo verificar palabras prohibidas de cierta longitud
-      if (prohibidaLower.length < 3) continue;
+      if (prohibidaLower.length < 4) continue;
       
-      // Verificación exacta con palabra limpia
+      // SOLO verificación exacta - SIN similitud para evitar falsos positivos
       if (palabraLimpia === prohibidaLower) {
         console.log(`Palabra exacta encontrada: "${palabraLimpia}" = "${prohibidaLower}"`);
         return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
@@ -94,43 +89,30 @@ function detectarVariaciones(texto, palabrasProhibidas) {
         return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
       }
       
-      // Solo verificar similitud para palabras de longitud similar
-      if (Math.abs(palabraLimpia.length - prohibidaLower.length) <= 1) {
-        // Verificación de similitud más estricta
-        if (esSimilar(palabraLimpia, prohibidaLower)) {
-          console.log(`Palabra similar encontrada: "${palabraLimpia}" ≈ "${prohibidaLower}"`);
-          return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
-        }
-        
-        if (esSimilar(palabraSustituciones, prohibidaLower)) {
-          console.log(`Palabra con sustituciones similar encontrada: "${palabraSustituciones}" ≈ "${prohibidaLower}"`);
-          return { encontrada: true, palabra: palabraTexto, prohibida: palabraProhibida };
-        }
-      }
-      
-      
+      // ELIMINAR completamente la verificación de similitud para evitar falsos positivos
+      // Solo mantener coincidencias exactas
     }
   }
   
   return { encontrada: false };
 }
 
-// Función mejorada para sustituir números por letras
+// Función para sustituir números por letras (más conservadora)
 function sustituirNumerosPorLetras(texto) {
   const sustituciones = {
     '1': 'i',
     '0': 'o',
     '3': 'e',
-    '4': 'a',
-    '5': 's'
-   
+    '@': 'a',
+    '$': 's'
+    // Eliminar sustituciones problemáticas como '4': 'a', '5': 's'
   };
   
   let resultado = texto.toLowerCase();
   
-  // Sustituir números por letras
-  for (const [numero, letra] of Object.entries(sustituciones)) {
-    resultado = resultado.replace(new RegExp(numero, 'g'), letra);
+  // Sustituir solo caracteres muy obvios
+  for (const [caracter, letra] of Object.entries(sustituciones)) {
+    resultado = resultado.replace(new RegExp('\\' + caracter, 'g'), letra);
   }
   
   // Limpiar caracteres especiales
