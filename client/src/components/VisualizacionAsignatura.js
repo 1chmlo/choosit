@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+//
+import React, { useEffect, useState, useCallback } from 'react';
 import "./VisualizacionAsignatura.css";
 import { REACT_APP_BACKEND_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
@@ -43,6 +44,33 @@ const VisualizacionAsignatura = () => {
     isOpen: false,
     idComentario: null,
   });
+  const [tieneRespuestasPrevias, setTieneRespuestasPrevias] = useState(false);
+
+  // Función para cargar respuestas previas del usuario
+  const cargarRespuestasPrevias = useCallback(async (codigo) => {
+    if (!isAuthenticated || !user) return;
+
+    try {
+      const response = await axios.get(
+        `${REACT_APP_BACKEND_URL}/api/users/myanswers/${codigo}`, 
+        { withCredentials: true }
+      );
+
+      if (response.data.ok && response.data.respuestas.length > 0) {
+        // Convertir las respuestas a un objeto con id_pregunta como clave
+        const respuestasMap = {};
+        response.data.respuestas.forEach(respuesta => {
+          respuestasMap[respuesta.id_pregunta] = respuesta.respuesta;
+        });
+        
+        setRespuestas(respuestasMap);
+        setTieneRespuestasPrevias(true);
+      }
+    } catch (error) {
+      console.error('Error al cargar respuestas previas:', error);
+      // No mostrar error al usuario ya que es opcional
+    }
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -70,6 +98,9 @@ const VisualizacionAsignatura = () => {
         
         setAsignatura(data.asignatura);
         setPreguntas(data.preguntas || []); 
+
+        // Cargar respuestas previas del usuario después de cargar la asignatura
+        cargarRespuestasPrevias(codigo);
       } else {
         throw new Error('Error al obtener datos de la asignatura');
       }
@@ -78,7 +109,7 @@ const VisualizacionAsignatura = () => {
       console.error('Error:', error);
       setError('Error al cargar los datos de la asignatura');
     });
-  }, [user?.id]); // Agregar user.id como dependencia
+  }, [user?.id, isAuthenticated, cargarRespuestasPrevias]); // Agregar cargarRespuestasPrevias como dependencia
 
   const mostrarMetodo = (id, valor) => (
     <span id={id}>
@@ -175,9 +206,9 @@ const VisualizacionAsignatura = () => {
         
         if (asignaturaResponse.data.ok) {
           setAsignatura(asignaturaResponse.data.asignatura);
-          // Resetear respuestas después de enviar
-          setRespuestas({});
-          setMensajeExito('Encuesta enviada exitosamente');
+          // No resetear respuestas después de enviar para mantener el estado
+          setTieneRespuestasPrevias(true);
+          setMensajeExito(tieneRespuestasPrevias ? 'Encuesta actualizada exitosamente' : 'Encuesta enviada exitosamente');
           setTimeout(() => setMensajeExito(''), 3000);
         }
       } else {
@@ -480,13 +511,13 @@ const VisualizacionAsignatura = () => {
             </div>
             
             {/* QUITAR DISPLAY NONE CUANDO EXISTA LA FUNCIONALIDAD */}
-            <div className="encuestas-info" style={{ display: 'none' }}>
-              Basado en <span id="n-encuestas">{asignatura.n_encuestas || 0}</span> encuestas
+            <div className="encuestas-info">
+              Basado en <span id="n-encuestas">{asignatura.cantidad_respuestas || 0}</span> encuestas
             </div>
 
             {preguntas.length > 0 && isAuthenticated && (
               <div className="encuesta-formulario">
-                <h3>Responde la encuesta</h3>
+                <h3>{tieneRespuestasPrevias ? 'Actualiza tu evaluación' : 'Responde la encuesta'}</h3>
                 {preguntas.map((pregunta) => (
                   <div key={pregunta.id} className="pregunta-item">
                     <p>{pregunta.pregunta}</p>
@@ -498,7 +529,7 @@ const VisualizacionAsignatura = () => {
                   </div>
                 ))}
                 <button className="btn-enviar-encuesta" onClick={enviarEncuesta}>
-                  Enviar Encuesta
+                  {tieneRespuestasPrevias ? 'Reenviar Encuesta' : 'Enviar Encuesta'}
                 </button>
               </div>
             )}
