@@ -83,6 +83,11 @@ INSERT INTO usuarios (nombre, apellido, username, email, contrasena, anio_ingres
 --contrasena = luis.martinez456
 ('Luis', 'Martínez', 'luis.martinez', 'luis.martinez@mail.udp.cl', '$2b$10$bjyGA8bXGuJKvLzFvrFWvebSJ/Gb7xu3guvPlKHeQJ/BsUZSItcVC', 2020, true);
 
+-- GENERAL
+INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
+((SELECT id FROM tipo_pregunta WHERE tipo = 'general'), '¿Qué nivel de dificultad general consideras que tuvo la asignatura, donde 1 es muy fácil y 5 muy difícil?'),
+((SELECT id FROM tipo_pregunta WHERE tipo = 'general'), '¿Cómo evaluarias en nivel de carga de trabajo general de la asignatura, donde 1 es muy baja y 5 muy alta?'),
+
 -- LABORATORIO
 INSERT INTO preguntas (id_tipo_pregunta, pregunta) VALUES
 ((SELECT id FROM tipo_pregunta WHERE tipo = 'laboratorio'), '¿Qué nivel de dificultad tuviste al realizar el laboratorio, donde 1 es muy fácil y 5 muy difícil?'),
