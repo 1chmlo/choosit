@@ -2,7 +2,7 @@ import { pool } from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt, { compare } from 'bcrypt';
 import { createAccessToken } from "../libs/jwt.js";
-import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail } from '../libs/mailer.js';
+import { transport, sendMail, sendVerificationEmail, resendVerificationEmail, sendResetPasswordEmail, sendActivateAccountEmail } from '../libs/mailer.js';
 import { BACKEND_URL, FRONTEND_URL, JWT_SECRET, MAX_AGE_TOKEN } from '../config.js';
 import jwt from 'jsonwebtoken';
 
@@ -77,7 +77,19 @@ export const register = async (req, res) => {
   // Enviar correo de verificación
   // TODO: Validar que el email sea enviado y recibido de forma correcta
   const mail = await sendVerificationEmail(email, username, token, `${FRONTEND_URL}/verificar-correo`)
-  console.log(mail); 
+
+  if (!mail) {
+    return res.status(500).json({ ok: false, message: 'Error al enviar el correo de verificación' });
+  }
+  // Verificar rejected array para asegurarse de que el correo no fue rechazado
+  if (mail.rejected && mail.rejected.length > 0) {
+    return res.status(500).json({
+      ok: false,
+      message: 'El correo fue rechazado por el servidor de correo electrónico'
+    });
+  }
+
+  console.log(mail)
   
   return res.status(201).json({ ok: true, message: 'Usuario creado correctamente', nuevoUsuario: { id, username, email, nombre, apellido, anio_ingreso, reputacion, activo, verificado, created_at }});
   

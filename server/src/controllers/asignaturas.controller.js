@@ -47,7 +47,7 @@ export const modify_subject = async (req, res) => {
   const { id } = req.params;
   const { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo } = req.body || {};
 
-  const asignaturaQuery = await pool.query('SELECT * FROM asignaturas WHERE codigo = $1', [codigo]);
+  const asignaturaQuery = await pool.query('SELECT * FROM asignaturas WHERE codigo = $1 AND id != $2', [codigo, id]);
   if (asignaturaQuery.rows.length > 0) return res.status(400).json({ error: 'Ya existe una asignatura con ese código.' });
 
   const datos_a_cambiar = { codigo, nombre, semestre, descripcion, laboratorio, controles, proyecto, electivo };
@@ -118,7 +118,7 @@ export const subject_all = async (req, res) => {
     const id_asignatura = asignatura.id;
 
     const comentariosQuery = await pool.query( //* faltaba u.activo, no se mandaba *//
-      `SELECT u.nombre, u.apellido, u.activo, c.id, c.fecha, c.reputacion, c.texto, c.likes_usuarios
+      `SELECT u.id as id_usuario, u.nombre, u.apellido, u.activo, c.id, c.fecha, c.reputacion, c.texto, c.likes_usuarios
        FROM comentarios AS c
        JOIN usuarios AS u ON c.id_usuario = u.id
        WHERE c.id_asignatura = $1
@@ -142,7 +142,24 @@ export const subject_all = async (req, res) => {
     if (respuestasPonderadasQuery.rowCount === 0) {
       respuestasPonderadasQuery.rows = [];
     }
+    /*
+CREATE TABLE evaluacion (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
+  id_pregunta uuid NOT NULL,
+  id_asignatura uuid NOT NULL,
+  id_usuario uuid NOT NULL,
+  respuesta int NOT NULL
 
+    */
+
+    const cantidad_respuestas_query = await pool.query(`
+      SELECT COUNT(DISTINCT id_usuario) as cantidad
+      FROM evaluacion
+      WHERE id_asignatura = $1
+    `, [id_asignatura]);
+
+    asignatura.cantidad_respuestas = cantidad_respuestas_query.rows[0].cantidad;
+    console.log(cantidad_respuestas_query.rows)
     asignatura.respuestasPonderadas = respuestasPonderadasQuery.rows;
 
     return res.status(200).json({

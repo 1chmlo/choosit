@@ -104,3 +104,39 @@ export const changepassword = async (req, res) => {
 
 
 }
+
+export const myAnswers = async (req, res) => {
+  try {
+    const userId = req.userId; // Obtiene el ID del usuario desde el middleware
+    const { codigo } = req.params; // Obtiene el código de la asignatura desde los parámetros de la ruta
+
+    // Consulta para obtener las respuestas del usuario a las preguntas de la asignatura
+    const query = `
+      SELECT 
+        e.id, 
+        e.id_pregunta, 
+        e.respuesta, 
+        p.pregunta AS pregunta_texto,
+        tp.tipo AS tipo_pregunta,
+        a.nombre AS asignatura_nombre,
+        a.codigo AS asignatura_codigo
+      FROM evaluacion e
+      JOIN preguntas p ON e.id_pregunta = p.id
+      JOIN tipo_pregunta tp ON p.id_tipo_pregunta = tp.id
+      JOIN asignaturas a ON e.id_asignatura = a.id
+      WHERE e.id_usuario = $1 AND a.codigo = $2
+      ORDER BY tp.tipo, p.pregunta
+    `;
+
+    const result = await pool.query(query, [userId, codigo]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ ok: false, message: 'No se encontraron respuestas para esta asignatura.' });
+    }
+
+    return res.status(200).json({ ok: true, respuestas: result.rows });
+  } catch (error) {
+    console.error('Error al obtener las respuestas del usuario:', error);
+    return res.status(500).json({ ok: false, message: 'Error interno del servidor.' });
+  }
+}
